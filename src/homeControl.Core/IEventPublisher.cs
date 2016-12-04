@@ -2,6 +2,6 @@
 {
     public interface IEventPublisher
     {
-        void PostMessage(IMessage message);
+        void PublishEvent(IEvent @event);
     }
 }

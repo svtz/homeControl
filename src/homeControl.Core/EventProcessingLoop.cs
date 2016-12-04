@@ -13,7 +13,7 @@
         {
             while (true)
             {
-                _eventProcessor.ProcessMessages();
+                _eventProcessor.ProcessEvents();
             }
         }
     }

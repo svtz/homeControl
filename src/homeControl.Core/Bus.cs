@@ -7,35 +7,35 @@ namespace homeControl.Core
     internal class Bus : IEventPublisher, IEventProcessor
     {
         private readonly IHandler[] _handlers;
-        private readonly ConcurrentQueue<IMessage> _queue;
+        private readonly ConcurrentQueue<IEvent> _queue;
 
 
         public Bus(params IHandler[] handlers)
         {
             _handlers = handlers;
-            _queue = new ConcurrentQueue<IMessage>();
+            _queue = new ConcurrentQueue<IEvent>();
         }
 
-        public void PostMessage(IMessage message)
+        public void PublishEvent(IEvent @event)
         {
-            _queue.Enqueue(message);
+            _queue.Enqueue(@event);
         }
 
-        public void ProcessMessages()
+        public void ProcessEvents()
         {
-            IMessage message;
-            while (_queue.TryDequeue(out message))
+            IEvent @event;
+            while (_queue.TryDequeue(out @event))
             {
-                ProcessMessage(message);
+                ProcessEvent(@event);
             }
         }
 
-        private void ProcessMessage(IMessage message)
+        private void ProcessEvent(IEvent @event)
         {
-            var suitableHandlers = _handlers.Where(h => h.CanHandle(message));
+            var suitableHandlers = _handlers.Where(h => h.CanHandle(@event));
             foreach (var handler in suitableHandlers)
             {
-                handler.Handle(message);
+                handler.Handle(@event);
             }
         }
     }

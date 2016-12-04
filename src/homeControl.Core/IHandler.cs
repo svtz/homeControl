@@ -4,7 +4,7 @@ namespace homeControl.Core
 {
     public interface IHandler
     {
-        bool CanHandle(IMessage message);
-        void Handle(IMessage message);
+        bool CanHandle(IEvent @event);
+        void Handle(IEvent @event);
     }
 }
