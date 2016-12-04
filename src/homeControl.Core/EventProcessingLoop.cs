@@ -1,19 +1,35 @@
-﻿namespace homeControl.Core
+﻿using System;
+using System.Threading;
+
+namespace homeControl.Core
 {
     public class EventProcessingLoop
     {
         private readonly IEventProcessor _eventProcessor;
+
+        public TimeSpan ThrottleTime { get; set; } = TimeSpan.Zero;
 
         public EventProcessingLoop(IEventProcessor processor)
         {
             _eventProcessor = processor;
         }
 
-        void Run()
+        public void Run(CancellationToken token)
         {
             while (true)
             {
-                _eventProcessor.ProcessEvents();
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                var processingResult = _eventProcessor.ProcessEvents();
+
+                if (processingResult == EventProcessingResult.Idle 
+                    && ThrottleTime > TimeSpan.Zero)
+                {
+                    Thread.Sleep(ThrottleTime);
+                }
             }
         }
     }
