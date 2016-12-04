@@ -15,6 +15,7 @@ namespace homeControl.Core.Tests
 
             var bus = new Bus(handlerMock.Object);
             bus.PostMessage(Mock.Of<IMessage>());
+            bus.ProcessMessages();
 
             handlerMock.Verify(h => h.CanHandle(It.IsAny<IMessage>()), Times.Once);
             handlerMock.Verify(h => h.Handle(It.IsAny<IMessage>()), Times.Never);
@@ -28,6 +29,7 @@ namespace homeControl.Core.Tests
 
             var bus = new Bus(handlerMock.Object);
             bus.PostMessage(Mock.Of<IMessage>());
+            bus.ProcessMessages();
 
             handlerMock.Verify(h => h.CanHandle(It.IsAny<IMessage>()), Times.Once);
             handlerMock.Verify(h => h.Handle(It.IsAny<IMessage>()), Times.Once);
@@ -45,6 +47,7 @@ namespace homeControl.Core.Tests
             var bus = new Bus(handlerMock.Object);
             bus.PostMessage(msgCanHandle);
             bus.PostMessage(msgCantHandle);
+            bus.ProcessMessages();
 
             handlerMock.Verify(h => h.CanHandle(It.IsAny<IMessage>()), Times.Exactly(2));
             handlerMock.Verify(h => h.Handle(It.IsAny<IMessage>()), Times.Once);
@@ -61,6 +64,7 @@ namespace homeControl.Core.Tests
 
             var bus = new Bus(suitableHandlerMock.Object, unsuitableHandlerMock.Object);
             bus.PostMessage(message);
+            bus.ProcessMessages();
 
             suitableHandlerMock.Verify(h => h.CanHandle(message), Times.Once);
             suitableHandlerMock.Verify(h => h.Handle(message), Times.Once);
