@@ -11,7 +11,7 @@ namespace homeControl.Core.Tests
         public void WhenCantHandle_ThenDontCallHandle()
         {
             var handlerMock = new Mock<IHandler>();
-            handlerMock.Setup(m => m.CanHandle(It.IsAny<IMessage>())).Returns(false);
+            handlerMock.Setup(h => h.CanHandle(It.IsAny<IMessage>())).Returns(false);
 
             var bus = new Bus(handlerMock.Object);
             bus.PostMessage(Mock.Of<IMessage>());
@@ -25,7 +25,7 @@ namespace homeControl.Core.Tests
         public void WhenCanHandle_ThanCallHandle()
         {
             var handlerMock = new Mock<IHandler>();
-            handlerMock.Setup(m => m.CanHandle(It.IsAny<IMessage>())).Returns(true);
+            handlerMock.Setup(h => h.CanHandle(It.IsAny<IMessage>())).Returns(true);
 
             var bus = new Bus(handlerMock.Object);
             bus.PostMessage(Mock.Of<IMessage>());
@@ -40,9 +40,9 @@ namespace homeControl.Core.Tests
         {
             var handlerMock = new Mock<IHandler>();
             var msgCanHandle = Mock.Of<IMessage>();
-            handlerMock.Setup(m => m.CanHandle(msgCanHandle)).Returns(true);
+            handlerMock.Setup(h => h.CanHandle(msgCanHandle)).Returns(true);
             var msgCantHandle = Mock.Of<IMessage>();
-            handlerMock.Setup(m => m.CanHandle(msgCantHandle)).Returns(false);
+            handlerMock.Setup(h => h.CanHandle(msgCantHandle)).Returns(false);
 
             var bus = new Bus(handlerMock.Object);
             bus.PostMessage(msgCanHandle);
@@ -58,9 +58,9 @@ namespace homeControl.Core.Tests
         {
             var message = Mock.Of<IMessage>();
             var suitableHandlerMock = new Mock<IHandler>();
-            suitableHandlerMock.Setup(m => m.CanHandle(message)).Returns(true);
+            suitableHandlerMock.Setup(h => h.CanHandle(message)).Returns(true);
             var unsuitableHandlerMock = new Mock<IHandler>();
-            unsuitableHandlerMock.Setup(m => m.CanHandle(message)).Returns(false);
+            unsuitableHandlerMock.Setup(h => h.CanHandle(message)).Returns(false);
 
             var bus = new Bus(suitableHandlerMock.Object, unsuitableHandlerMock.Object);
             bus.PostMessage(message);

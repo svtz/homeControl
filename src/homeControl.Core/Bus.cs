@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace homeControl.Core
 {
-    public class Bus
+    public class Bus : IEventPublisher
     {
         private readonly IHandler[] _handlers;
         private readonly ConcurrentQueue<IMessage> _queue;
