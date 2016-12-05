@@ -21,13 +21,18 @@ namespace homeControl.Core
             _queue.Enqueue(@event);
         }
 
-        public void ProcessEvents()
+        public EventProcessingResult ProcessEvents()
         {
+            var eventsProcessed = false;
+
             IEvent @event;
             while (_queue.TryDequeue(out @event))
             {
                 ProcessEvent(@event);
+                eventsProcessed = true;
             }
+
+            return eventsProcessed ? EventProcessingResult.Complete : EventProcessingResult.Idle;
         }
 
         private void ProcessEvent(IEvent @event)
