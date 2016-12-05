@@ -17,5 +17,13 @@
                 }
             }
         }
+    },
+
+    "buildOptions": {
+        "compile": {
+            "includeFiles": [
+                "../../GlobalAssemblyInfo.cs"
+            ]
+        }
     }
 }
