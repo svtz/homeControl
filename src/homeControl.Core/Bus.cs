@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using homeControl.Core.Misc;
 
 namespace homeControl.Core
 {
@@ -12,12 +13,17 @@ namespace homeControl.Core
 
         public Bus(params IHandler[] handlers)
         {
+            Guard.DebugAssertArgumentNotNull(handlers, nameof(handlers));
+            Guard.DebugAssertArgument(handlers.All(h => h != null), nameof(handlers));
+
             _handlers = handlers;
             _queue = new ConcurrentQueue<IEvent>();
         }
 
         public void PublishEvent(IEvent @event)
         {
+            Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
+
             _queue.Enqueue(@event);
         }
 

@@ -9,7 +9,7 @@ namespace homeControl.Core.Events
 
         protected AbstractSwitchEvent(Guid switchId)
         {
-            Guard.DebugAssertArgument(switchId != Guid.Empty, nameof(switchId));
+            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
             SwitchId = switchId;
         }
     }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
+using homeControl.Core.Misc;
 
 namespace homeControl.Core
 {
@@ -11,11 +13,15 @@ namespace homeControl.Core
 
         public EventProcessingLoop(IEventProcessor processor)
         {
+            Guard.DebugAssertArgumentNotNull(processor, nameof(processor));
+
             _eventProcessor = processor;
         }
 
         public void Run(CancellationToken token)
         {
+            Guard.DebugAssertArgumentNotDefault(token, nameof(token));
+
             while (true)
             {
                 if (token.IsCancellationRequested)

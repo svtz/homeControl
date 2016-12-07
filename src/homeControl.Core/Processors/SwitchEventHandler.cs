@@ -14,24 +14,29 @@ namespace homeControl.Core.Processors
             get { return _switchId; }
             set
             {
-                Guard.DebugAssertArgument(value != Guid.Empty, nameof(value));
+                Guard.DebugAssertArgumentNotDefault(value, nameof(value));
                 _switchId = value;
             }
         }
 
         public SwitchEventHandler(ISwitchController switchController)
         {
+            Guard.DebugAssertArgumentNotNull(switchController, nameof(switchController));
+
             _switchController = switchController;
         }
 
         public bool CanHandle(IEvent @event)
         {
+            Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
+
             var switchEvent = @event as AbstractSwitchEvent;
             return switchEvent != null && switchEvent.SwitchId == SwitchId;
         }
 
         public void Handle(IEvent @event)
         {
+            Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
             Guard.DebugAssertArgument(CanHandle(@event), nameof(@event));
 
             if (@event is TurnOnEvent)
