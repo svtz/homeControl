@@ -7,5 +7,6 @@ using System.Reflection;
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("homeControl")]
 [assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright © 2016 Svyatoslav Zakhryapin")]
 
 [assembly: AssemblyVersion("0.1.0")]
