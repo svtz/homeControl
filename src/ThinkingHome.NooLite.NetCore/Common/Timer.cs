@@ -14,7 +14,7 @@ namespace ThinkingHome.NooLite.Common
 
         public void Start()
         {
-            _internalTimer = new System.Threading.Timer(OnTimerTriggered, null, _milliseconds, 0);
+            _internalTimer = new System.Threading.Timer(OnTimerTriggered, null, _milliseconds, _milliseconds);
         }
 
         public void Dispose()

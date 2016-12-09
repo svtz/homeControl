@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HidLibrary
 {
@@ -22,7 +23,7 @@ namespace HidLibrary
         public void Init()
         {
             var eventMonitor = new Action(DeviceEventMonitor);
-            eventMonitor.BeginInvoke(DisposeDeviceEventMonitor, eventMonitor);
+            Task.Factory.StartNew(eventMonitor);
         }
 
         private void DeviceEventMonitor()
@@ -39,11 +40,6 @@ namespace HidLibrary
             Thread.Sleep(500);
 
             if (_device.MonitorDeviceEvents) Init();
-        }
-
-        private static void DisposeDeviceEventMonitor(IAsyncResult ar)
-        {
-            ((Action)ar.AsyncState).EndInvoke(ar);
         }
     }
 }
