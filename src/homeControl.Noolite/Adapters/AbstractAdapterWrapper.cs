@@ -1,11 +1,11 @@
 ﻿using System;
 using homeControl.Peripherals;
-using ThinkingHome.NooLite;
 using ThinkingHome.NooLite.Common;
 
-namespace homeControl.Noolite
+namespace homeControl.Noolite.Adapters
 {
-    internal class AdapterWrapperBase<TAdapter> : IDisposable where TAdapter : BaseAdapter, IPC11XXAdapter, IDisposable, new()
+    internal class AdapterWrapperBase<TAdapter> : IDisposable
+        where TAdapter : BaseAdapter, IDisposable, new()
     {
         protected TAdapter Adapter { get; }
 
@@ -28,7 +28,7 @@ namespace homeControl.Noolite
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Adapter.Dispose();
         }

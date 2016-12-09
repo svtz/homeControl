@@ -6,8 +6,8 @@ using ThinkingHome.NooLite.ReceivedData;
 
 namespace ThinkingHome.NooLite
 {
-	public class RX2164Adapter : BaseRxAdapter
-	{
+    public class RX2164Adapter : BaseRxAdapter, IRX2164Adapter
+    {
 		protected RX2164ReceivedCommandData lastReceivedData;
 
 		protected override HidDevice SelectDevice()
