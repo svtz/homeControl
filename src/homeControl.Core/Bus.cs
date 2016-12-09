@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using homeControl.Core.Misc;
 
 namespace homeControl.Core
 {

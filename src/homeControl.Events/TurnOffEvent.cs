@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.Core.Events
+namespace homeControl.Events
 {
     public class TurnOffEvent : AbstractSwitchEvent
     {

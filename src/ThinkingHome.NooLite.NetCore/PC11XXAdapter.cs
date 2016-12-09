@@ -3,10 +3,10 @@ using ThinkingHome.NooLite.ReceivedData;
 
 namespace ThinkingHome.NooLite
 {
-	/// <summary>
+    /// <summary>
 	/// Class for working wuth device
 	/// </summary>
-	public class PC11XXAdapter : BaseAdapter
+	public class PC11XXAdapter : BaseAdapter, IPC11XXAdapter
 	{
 		public override int ProductId
 		{

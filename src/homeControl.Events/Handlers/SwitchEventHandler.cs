@@ -1,8 +1,8 @@
 ﻿using System;
-using homeControl.Core.Events;
-using homeControl.Core.Misc;
+using homeControl.Core;
+using homeControl.Peripherals;
 
-namespace homeControl.Core.Processors
+namespace homeControl.Events.Handlers
 {
     public class SwitchEventHandler : IHandler
     {

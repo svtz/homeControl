@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using homeControl.Core.Events;
-using homeControl.Core.Processors;
+using homeControl.Core;
+using homeControl.Events.Handlers;
+using homeControl.Peripherals;
 using Moq;
 using Xunit;
 
-namespace homeControl.Core.Tests
+namespace homeControl.Events.Tests
 {
     public class SwitchEventHandlerTests
     {
@@ -38,7 +39,6 @@ namespace homeControl.Core.Tests
             };
 
             Assert.False(handler.CanHandle(@event));
-            Assert.Throws<ArgumentException>(() => handler.Handle(@event));
         }
 
         [Fact]
@@ -48,7 +48,6 @@ namespace homeControl.Core.Tests
             var handler = new SwitchEventHandler(Mock.Of<ISwitchController>());
 
             Assert.False(handler.CanHandle(@event));
-            Assert.Throws<ArgumentException>(() => handler.Handle(@event));
         }
 
         [Fact]

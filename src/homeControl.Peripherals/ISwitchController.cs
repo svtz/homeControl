@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.Core
+namespace homeControl.Peripherals
 {
     public interface ISwitchController
     {

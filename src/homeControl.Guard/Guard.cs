@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace homeControl.Core.Misc
+namespace homeControl
 {
     public static class Guard
     {
