@@ -6,6 +6,7 @@
         "homeControl.Guard": "1.0.0-*",
         "homeControl.Peripherals": "1.0.0-*",
         "NETStandard.Library": "1.6.1",
+        "StructureMap": "4.4.2",
         "ThinkingHome.NooLite.NetCore": "1.0.0-*"
     },
 

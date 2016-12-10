@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
@@ -7,6 +6,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("59b1e6dd-b2fa-41a8-9908-1220d9fc3789")]
-
-[assembly: InternalsVisibleTo("homeControl.Pepipherals.Tests")]
+[assembly: Guid("ca66c50f-1740-41e6-b1ab-0a038c32cf11")]

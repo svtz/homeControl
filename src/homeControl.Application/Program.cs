@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using homeControl.Application.IoC;
 using homeControl.Core;
+using StructureMap;
 
 namespace homeControl.Application
 {
@@ -10,6 +9,12 @@ namespace homeControl.Application
     {
         public static void Main(string[] args)
         {
+            var container = new Container(c => c.AddRegistry<ApplicationRegistry>());
+            using (var child = container.CreateChildContainer())
+            {
+                var loop = child.GetInstance<EventProcessingLoop>();
+
+            }
         }
     }
 }
