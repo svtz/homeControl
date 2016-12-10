@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.Events
+namespace homeControl.Events.Switches
 {
     public class TurnOnEvent : AbstractSwitchEvent
     {

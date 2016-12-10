@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using homeControl.Core;
-using homeControl.Events.Handlers;
+using homeControl.Events.Switches;
 using homeControl.Peripherals;
 using Moq;
 using Xunit;

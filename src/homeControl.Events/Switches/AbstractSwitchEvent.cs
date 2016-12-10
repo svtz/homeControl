@@ -1,7 +1,7 @@
 ﻿using System;
 using homeControl.Core;
 
-namespace homeControl.Events
+namespace homeControl.Events.Switches
 {
     public abstract class AbstractSwitchEvent : IEvent
     {

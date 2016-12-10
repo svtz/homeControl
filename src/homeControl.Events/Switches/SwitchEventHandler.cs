@@ -2,9 +2,9 @@
 using homeControl.Core;
 using homeControl.Peripherals;
 
-namespace homeControl.Events.Handlers
+namespace homeControl.Events.Switches
 {
-    public class SwitchEventHandler : IHandler
+    public sealed class SwitchEventHandler : IHandler
     {
         private readonly ISwitchController _switchController;
         private Guid _switchId;
