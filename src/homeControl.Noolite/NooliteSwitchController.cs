@@ -23,23 +23,29 @@ namespace homeControl.Noolite
             _adapter = adapter;
         }
 
-        public void TurnOn(Guid switchId)
+        public bool CanHandleSwitch(Guid switchId)
         {
             Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
 
+            return _configurationRepository.ContainsConfig<NooliteSwitchConfig>(switchId);
+        }
+
+        public void TurnOn(Guid switchId)
+        {
             ExecuteImpl(switchId, PC11XXCommand.On);
         }
 
         public void TurnOff(Guid switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
-
             ExecuteImpl(switchId, PC11XXCommand.Off);
         }
 
         private void ExecuteImpl(Guid switchId, PC11XXCommand command)
         {
-            var config = _configurationRepository.GetSwicthConfig<NooliteSwitchConfig>(switchId);
+            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
+
+            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);
             _adapter.SendCommand(command, config.Channel);
         }
     }

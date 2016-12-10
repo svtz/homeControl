@@ -31,7 +31,7 @@ namespace homeControl.Events.Switches
             Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
 
             var switchEvent = @event as AbstractSwitchEvent;
-            return switchEvent != null && switchEvent.SwitchId == SwitchId;
+            return switchEvent != null && switchEvent.SwitchId == SwitchId && _switchController.CanHandleSwitch(switchEvent.SwitchId);
         }
 
         public void Handle(IEvent @event)

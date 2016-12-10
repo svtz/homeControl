@@ -2,6 +2,6 @@
 {
     public interface ISensorConfigurationRepository
     {
-        TSensorConfig[] GetAllSensorConfigs<TSensorConfig>();
+        TSensorConfig[] GetAllConfigs<TSensorConfig>();
     }
 }

@@ -34,7 +34,7 @@ namespace homeControl.Noolite
         {
             Guard.DebugAssertArgumentNotNull(config, nameof(config));
 
-            return config.GetAllSensorConfigs<NooliteSensorConfig>().ToDictionary(cfg => cfg.Channel);
+            return config.GetAllConfigs<NooliteSensorConfig>().ToDictionary(cfg => cfg.Channel);
         }
 
         private void AdapterOnCommandReceived(ReceivedCommandData receivedCommandData)

@@ -4,6 +4,7 @@ namespace homeControl.Configuration
 {
     public interface ISwitchConfigurationRepository
     {
-        TConfig GetSwicthConfig<TConfig>(Guid switchId);
+        bool ContainsConfig<TConfig>(Guid switchId);
+        TConfig GetConfig<TConfig>(Guid switchId);
     }
 }

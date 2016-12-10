@@ -21,19 +21,23 @@ namespace homeControl.Events.Tests
         [MemberData(nameof(AbstractSwitchEvents))]
         public void TestCanHandleSwitchEvent(AbstractSwitchEvent @event)
         {
-            var handler = new SwitchEventHandler(Mock.Of<ISwitchController>())
+            var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(@event.SwitchId)).Returns(true);
+            var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
                 SwitchId = @event.SwitchId
             };
 
             Assert.True(handler.CanHandle(@event));
+            switchControllerMock.Verify(cntr => cntr.CanHandleSwitch(It.IsAny<Guid>()), Times.Once);
         }
 
         [Theory]
         [MemberData(nameof(AbstractSwitchEvents))]
         public void DontProcessEventWithNonMatchedId(AbstractSwitchEvent @event)
         {
-            var handler = new SwitchEventHandler(Mock.Of<ISwitchController>())
+            var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
                 SwitchId = Guid.NewGuid()
             };
@@ -44,10 +48,26 @@ namespace homeControl.Events.Tests
         [Fact]
         public void TestCantHandleOtherEvents()
         {
+            var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            var handler = new SwitchEventHandler(switchControllerMock.Object);
             var @event = Mock.Of<IEvent>();
-            var handler = new SwitchEventHandler(Mock.Of<ISwitchController>());
 
             Assert.False(handler.CanHandle(@event));
+        }
+
+        [Theory]
+        [MemberData(nameof(AbstractSwitchEvents))]
+        public void TestHandlerCantHandleEventIfControllerCant(AbstractSwitchEvent @event)
+        {
+            var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(@event.SwitchId)).Returns(false);
+            var handler = new SwitchEventHandler(switchControllerMock.Object)
+            {
+                SwitchId = @event.SwitchId
+            };
+
+            Assert.False(handler.CanHandle(@event));
+            switchControllerMock.Verify(cntr => cntr.CanHandleSwitch(It.IsAny<Guid>()), Times.Once);
         }
 
         [Fact]
@@ -55,7 +75,9 @@ namespace homeControl.Events.Tests
         {
             var swicthId = Guid.NewGuid();
             var onEvent = new TurnOnEvent(swicthId);
-            var switchControllerMock = new Mock<ISwitchController>();
+            var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
+            switchControllerMock.Setup(cntr => cntr.TurnOn(swicthId));
 
             var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
@@ -71,7 +93,9 @@ namespace homeControl.Events.Tests
         {
             var swicthId = Guid.NewGuid();
             var onEvent = new TurnOffEvent(swicthId);
-            var switchControllerMock = new Mock<ISwitchController>();
+            var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
+            switchControllerMock.Setup(cntr => cntr.TurnOff(swicthId));
 
             var handler = new SwitchEventHandler(switchControllerMock.Object)
             {

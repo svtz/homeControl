@@ -27,7 +27,7 @@ namespace homeControl.Noolite.Tests
             var sensorConfig = new NooliteSensorConfig {SensorId = Guid.NewGuid(), Channel = 17 };
 
             var configMock = new Mock<ISensorConfigurationRepository>();
-            configMock.Setup(cfg => cfg.GetAllSensorConfigs<NooliteSensorConfig>()).Returns(new[] { sensorConfig });
+            configMock.Setup(cfg => cfg.GetAllConfigs<NooliteSensorConfig>()).Returns(new[] { sensorConfig });
 
             var adapterMock = new Mock<IRX2164Adapter>();
             var sensor = new NooliteSensor(adapterMock.Object, configMock.Object);
