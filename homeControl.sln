@@ -19,7 +19,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Core.Tests", "s
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HidLibrary.NetCore", "src\HidLibrary.NetCore\HidLibrary.NetCore.xproj", "{32D74498-C081-4074-8C19-CD0BEF4049C8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThtirdPartyLibraries", "ThtirdPartyLibraries", "{8EDE3D21-5976-4DE7-AA94-07EE410AEB08}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPartyLibraries", "ThirdPartyLibraries", "{8EDE3D21-5976-4DE7-AA94-07EE410AEB08}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ThinkingHome.NooLite.NetCore", "src\ThinkingHome.NooLite.NetCore\ThinkingHome.NooLite.NetCore.xproj", "{EFA03B8C-F9E1-4E65-B823-5682D0F63B8B}"
 EndProject

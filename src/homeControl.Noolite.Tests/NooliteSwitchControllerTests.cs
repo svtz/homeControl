@@ -13,7 +13,7 @@ namespace homeControl.Noolite.Tests
         public void Test_TurnOn_SendsAdapterOnCommand()
         {
             var switchId = Guid.NewGuid();
-            var configRepositoryMock = new Mock<IConfigurationRepository>();
+            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>();
             var adapterMock = new Mock<IPC11XXAdapter>();
             var config = new NooliteSwitchConfig { Channel = 123 };
             configRepositoryMock
@@ -30,7 +30,7 @@ namespace homeControl.Noolite.Tests
         public void Test_TurnOff_SendsAdapterOffCommand()
         {
             var switchId = Guid.NewGuid();
-            var configRepositoryMock = new Mock<IConfigurationRepository>();
+            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>();
             var adapterMock = new Mock<IPC11XXAdapter>();
             var config = new NooliteSwitchConfig { Channel = 98 };
             configRepositoryMock

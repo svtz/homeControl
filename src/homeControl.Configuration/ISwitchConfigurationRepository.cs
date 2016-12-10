@@ -2,7 +2,7 @@
 
 namespace homeControl.Configuration
 {
-    public interface IConfigurationRepository
+    public interface ISwitchConfigurationRepository
     {
         TConfig GetSwicthConfig<TConfig>(Guid switchId);
     }

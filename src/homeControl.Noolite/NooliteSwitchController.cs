@@ -8,11 +8,11 @@ namespace homeControl.Noolite
 {
     internal class NooliteSwitchController : ISwitchController
     {
-        private readonly IConfigurationRepository _configurationRepository;
+        private readonly ISwitchConfigurationRepository _configurationRepository;
         private readonly IPC11XXAdapter _adapter;
 
         public NooliteSwitchController(
-            IConfigurationRepository configurationRepository,
+            ISwitchConfigurationRepository configurationRepository,
             IPC11XXAdapter adapter)
         {
             Guard.DebugAssertArgumentNotNull(configurationRepository, nameof(configurationRepository));
