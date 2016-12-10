@@ -6,7 +6,7 @@ namespace ThinkingHome.NooLite
     /// <summary>
 	/// Class for working wuth device
 	/// </summary>
-	public class PC11XXAdapter : BaseAdapter, IPC11XXAdapter
+	public class PC11XXAdapter : BaseAdapter
 	{
 		public override int ProductId
 		{

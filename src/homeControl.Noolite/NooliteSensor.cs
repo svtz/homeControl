@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using homeControl.Configuration;
+using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
 using homeControl.Peripherals;
-using ThinkingHome.NooLite;
 using ThinkingHome.NooLite.ReceivedData;
 
 namespace homeControl.Noolite
 {
-    public sealed class NooliteSensor : ISensor, IDisposable
+    internal sealed class NooliteSensor : ISensor, IDisposable
     {
         private const byte CommandOn = 2;
         private const byte CommandOff = 0;

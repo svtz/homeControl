@@ -1,5 +1,6 @@
 ﻿using System;
 using homeControl.Configuration;
+using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
 using homeControl.Peripherals;
 using ThinkingHome.NooLite;

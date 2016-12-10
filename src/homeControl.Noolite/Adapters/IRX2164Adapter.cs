@@ -1,9 +1,9 @@
 ﻿using System;
 using ThinkingHome.NooLite.ReceivedData;
 
-namespace ThinkingHome.NooLite
+namespace homeControl.Noolite.Adapters
 {
-    public interface IRX2164Adapter
+    internal interface IRX2164Adapter
     {
         event Action<MicroclimateReceivedCommandData> MicroclimateDataReceived;
         event Action<ReceivedCommandData> CommandReceived;

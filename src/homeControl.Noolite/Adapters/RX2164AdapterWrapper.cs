@@ -1,14 +1,12 @@
 ﻿using System;
 using ThinkingHome.NooLite;
-using ThinkingHome.NooLite.Common;
 using ThinkingHome.NooLite.ReceivedData;
 
 namespace homeControl.Noolite.Adapters
 {
-    internal sealed class ReceiverAdapterWrapper<TAdapter> : AdapterWrapperBase<TAdapter>, IRX2164Adapter
-        where TAdapter : BaseAdapter, IRX2164Adapter, IDisposable, new()
+    internal sealed class RX2164AdapterWrapper : AdapterWrapperBase<RX2164Adapter>, IRX2164Adapter
     {
-        public ReceiverAdapterWrapper()
+        public RX2164AdapterWrapper()
         {
             Adapter.CommandReceived += OnCommandReceived;
             Adapter.MicroclimateDataReceived += OnMicroclimateDataReceived;

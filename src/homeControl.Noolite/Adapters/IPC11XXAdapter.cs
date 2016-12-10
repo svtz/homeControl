@@ -1,6 +1,8 @@
-﻿namespace ThinkingHome.NooLite
+﻿using ThinkingHome.NooLite;
+
+namespace homeControl.Noolite.Adapters
 {
-    public interface IPC11XXAdapter
+    internal interface IPC11XXAdapter
     {
         void SendLedCommand(
             PC11XXLedCommand cmd,
