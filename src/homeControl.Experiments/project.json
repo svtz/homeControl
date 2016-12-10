@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+    "version": "1.0.0-*",
     "buildOptions": {
         "emitEntryPoint": true,
         "compile": {
@@ -9,17 +9,19 @@
         }
     },
 
-  "dependencies": {
-    "Microsoft.NETCore.App": {
-        "type": "platform",
-        "version": "1.0.1"
+    "dependencies": {
+        "homeControl.Configuration": "1.0.0-*",
+        "homeControl.Noolite": "1.0.0-*",
+        "Microsoft.NETCore.App": {
+            "type": "platform",
+            "version": "1.1.0"
+        },
+        "ThinkingHome.NooLite.NetCore": "1.0.0-*"
     },
-    "ThinkingHome.NooLite.NetCore": "1.0.0-*"
-  },
 
-  "frameworks": {
-    "netcoreapp1.0": {
-      "imports": "dnxcore50"
+    "frameworks": {
+        "netcoreapp1.1": {
+            "imports": "dnxcore50"
+        }
     }
-  }
 }

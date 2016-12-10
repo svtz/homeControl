@@ -4,7 +4,7 @@ using homeControl.Peripherals;
 
 namespace homeControl.Events.Sensors
 {
-    public sealed class SensorWatcher : IDisposable
+    internal sealed class SensorWatcher : IDisposable
     {
         private readonly ISensor _sensor;
         private readonly IEventPublisher _eventPublisher;

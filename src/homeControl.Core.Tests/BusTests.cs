@@ -1,7 +1,6 @@
 ﻿using System;
 using Moq;
 using Xunit;
-using homeControl.Core;
 
 namespace homeControl.Core.Tests
 {
@@ -12,8 +11,10 @@ namespace homeControl.Core.Tests
         {
             var handlerMock = new Mock<IHandler>();
             handlerMock.Setup(h => h.CanHandle(It.IsAny<IEvent>())).Returns(false);
+            var handlerFactoryMock = new Mock<IHandlerFactory>();
+            handlerFactoryMock.Setup(factory => factory.CreateHandlers()).Returns(new[] {handlerMock.Object});
 
-            var bus = new Bus(handlerMock.Object);
+            var bus = new Bus(handlerFactoryMock.Object);
             bus.PublishEvent(Mock.Of<IEvent>());
             bus.ProcessEvents();
 
@@ -26,8 +27,10 @@ namespace homeControl.Core.Tests
         {
             var handlerMock = new Mock<IHandler>();
             handlerMock.Setup(h => h.CanHandle(It.IsAny<IEvent>())).Returns(true);
+            var handlerFactoryMock = new Mock<IHandlerFactory>();
+            handlerFactoryMock.Setup(factory => factory.CreateHandlers()).Returns(new[] { handlerMock.Object });
 
-            var bus = new Bus(handlerMock.Object);
+            var bus = new Bus(handlerFactoryMock.Object);
             bus.PublishEvent(Mock.Of<IEvent>());
             bus.ProcessEvents();
 
@@ -43,8 +46,10 @@ namespace homeControl.Core.Tests
             handlerMock.Setup(h => h.CanHandle(eventCanHandle)).Returns(true);
             var msgCantHandle = Mock.Of<IEvent>();
             handlerMock.Setup(h => h.CanHandle(msgCantHandle)).Returns(false);
+            var handlerFactoryMock = new Mock<IHandlerFactory>();
+            handlerFactoryMock.Setup(factory => factory.CreateHandlers()).Returns(new[] { handlerMock.Object });
 
-            var bus = new Bus(handlerMock.Object);
+            var bus = new Bus(handlerFactoryMock.Object);
             bus.PublishEvent(eventCanHandle);
             bus.PublishEvent(msgCantHandle);
             bus.ProcessEvents();
@@ -61,8 +66,10 @@ namespace homeControl.Core.Tests
             suitableHandlerMock.Setup(h => h.CanHandle(@event)).Returns(true);
             var unsuitableHandlerMock = new Mock<IHandler>();
             unsuitableHandlerMock.Setup(h => h.CanHandle(@event)).Returns(false);
+            var handlerFactoryMock = new Mock<IHandlerFactory>();
+            handlerFactoryMock.Setup(factory => factory.CreateHandlers()).Returns(new[] { suitableHandlerMock.Object, unsuitableHandlerMock.Object });
 
-            var bus = new Bus(suitableHandlerMock.Object, unsuitableHandlerMock.Object);
+            var bus = new Bus(handlerFactoryMock.Object);
             bus.PublishEvent(@event);
             bus.ProcessEvents();
 

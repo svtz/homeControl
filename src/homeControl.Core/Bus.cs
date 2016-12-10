@@ -10,12 +10,11 @@ namespace homeControl.Core
         private readonly ConcurrentQueue<IEvent> _queue;
 
 
-        public Bus(params IHandler[] handlers)
+        public Bus(IHandlerFactory handlerFactory)
         {
-            Guard.DebugAssertArgumentNotNull(handlers, nameof(handlers));
-            Guard.DebugAssertArgument(handlers.All(h => h != null), nameof(handlers));
+            Guard.DebugAssertArgumentNotNull(handlerFactory, nameof(handlerFactory));
 
-            _handlers = handlers;
+            _handlers = handlerFactory.CreateHandlers();
             _queue = new ConcurrentQueue<IEvent>();
         }
 

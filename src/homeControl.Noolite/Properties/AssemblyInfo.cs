@@ -10,4 +10,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("85244812-6255-415b-a937-126f8d62e0c2")]
 
 [assembly: InternalsVisibleTo("homeControl.Noolite.Tests")]
+[assembly: InternalsVisibleTo("homeControl.Experiments")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] // required by Moq

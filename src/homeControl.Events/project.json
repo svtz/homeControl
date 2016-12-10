@@ -2,9 +2,11 @@
     "version": "1.0.0-*",
 
     "dependencies": {
+        "homeControl.Configuration": "1.0.0-*",
         "homeControl.Core": "1.0.0-*",
         "homeControl.Peripherals": "1.0.0-*",
-        "NETStandard.Library": "1.6.1"
+        "NETStandard.Library": "1.6.1",
+        "StructureMap": "4.4.2"
     },
 
     "frameworks": {

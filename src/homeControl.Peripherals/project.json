@@ -3,7 +3,8 @@
 
     "dependencies": {
         "homeControl.Guard": "1.0.0-*",
-        "NETStandard.Library": "1.6.1"
+        "NETStandard.Library": "1.6.1",
+        "StructureMap": "4.4.2"
     },
 
     "frameworks": {

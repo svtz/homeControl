@@ -1,0 +1,16 @@
+{
+    "SwitchConfigurations": {
+        "1a6956b9-ec4e-4097-bec9-b7fc4f50483f": {
+            "$type": "homeControl.Noolite.Configuration.NooliteSwitchConfig, homeControl.Noolite",
+            "Channel": 1
+        }
+    },
+
+  "SensorConfigurations": [
+    {
+      "$type": "homeControl.Noolite.Configuration.NooliteSensorConfig, homeControl.Noolite",
+      "Channel": 0,
+      "SensorId": "c65f434a-11d8-4490-bb19-5ac94b82c048"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace homeControl.Peripherals
 {
-    internal sealed class SwitchControllerSelector : ISwitchController
+    internal sealed class SwitchControllerSelector : ISwitchControllerSelector
     {
         private readonly ISwitchController[] _controllerImplementations;
 

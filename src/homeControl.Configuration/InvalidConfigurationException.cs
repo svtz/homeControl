@@ -7,5 +7,9 @@ namespace homeControl.Configuration
         public InvalidConfigurationException(string message) : base(message)
         {
         }
+
+        public InvalidConfigurationException(Exception innerException, string message) : base(message, innerException)
+        {
+        }
     }
 }

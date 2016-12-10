@@ -4,7 +4,7 @@ using homeControl.Peripherals;
 
 namespace homeControl.Events.Switches
 {
-    public sealed class SwitchEventHandler : IHandler
+    internal sealed class SwitchEventHandler : IHandler
     {
         private readonly ISwitchController _switchController;
         private Guid _switchId;

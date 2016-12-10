@@ -1,6 +1,5 @@
 ﻿using System;
 using homeControl.Application.IoC;
-using homeControl.Core;
 using StructureMap;
 
 namespace homeControl.Application
@@ -10,9 +9,10 @@ namespace homeControl.Application
         public static void Main(string[] args)
         {
             var container = new Container(c => c.AddRegistry<ApplicationRegistry>());
-            using (var child = container.CreateChildContainer())
+            using (var child = container.GetNestedContainer())
             {
-                var loop = child.GetInstance<EventProcessingLoop>();
+                container.AssertConfigurationIsValid();
+                //var loop = child.GetInstance<EventProcessingLoop>();
 
             }
         }
