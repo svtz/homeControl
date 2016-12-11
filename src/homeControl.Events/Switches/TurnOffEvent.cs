@@ -4,7 +4,7 @@ namespace homeControl.Events.Switches
 {
     public class TurnOffEvent : AbstractSwitchEvent
     {
-        public TurnOffEvent(Guid switchId) : base(switchId)
+        public TurnOffEvent(SwitchId switchId) : base(switchId)
         {
         }
     }

@@ -13,8 +13,8 @@ namespace homeControl.Events.Tests
         public static IEnumerable<object[]> AbstractSwitchEvents =>
             new[]
             {
-                new object[] { new TurnOnEvent(Guid.NewGuid()), }, 
-                new object[] { new TurnOffEvent(Guid.NewGuid()), }, 
+                new object[] { new TurnOnEvent(SwitchId.NewId()), }, 
+                new object[] { new TurnOffEvent(SwitchId.NewId()), }, 
             };
 
         [Theory]
@@ -22,7 +22,7 @@ namespace homeControl.Events.Tests
         public void TestCanHandleSwitchEvent(AbstractSwitchEvent @event)
         {
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
-            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(@event.SwitchId)).Returns(true);
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(@event.SwitchId.Id)).Returns(true);
             var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
                 SwitchId = @event.SwitchId
@@ -39,7 +39,7 @@ namespace homeControl.Events.Tests
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
             var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
-                SwitchId = Guid.NewGuid()
+                SwitchId = SwitchId.NewId()
             };
 
             Assert.False(handler.CanHandle(@event));
@@ -60,7 +60,7 @@ namespace homeControl.Events.Tests
         public void TestHandlerCantHandleEventIfControllerCant(AbstractSwitchEvent @event)
         {
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
-            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(@event.SwitchId)).Returns(false);
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(@event.SwitchId.Id)).Returns(false);
             var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
                 SwitchId = @event.SwitchId
@@ -73,11 +73,11 @@ namespace homeControl.Events.Tests
         [Fact]
         public void TestTurnOn()
         {
-            var swicthId = Guid.NewGuid();
+            var swicthId = SwitchId.NewId();
             var onEvent = new TurnOnEvent(swicthId);
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
-            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
-            switchControllerMock.Setup(cntr => cntr.TurnOn(swicthId));
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId.Id)).Returns(true);
+            switchControllerMock.Setup(cntr => cntr.TurnOn(swicthId.Id));
 
             var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
@@ -85,17 +85,17 @@ namespace homeControl.Events.Tests
             };
             handler.Handle(onEvent);
 
-            switchControllerMock.Verify(sc => sc.TurnOn(swicthId), Times.Once);
+            switchControllerMock.Verify(sc => sc.TurnOn(swicthId.Id), Times.Once);
         }
 
         [Fact]
         public void TestTurnOff()
         {
-            var swicthId = Guid.NewGuid();
+            var swicthId = SwitchId.NewId();
             var onEvent = new TurnOffEvent(swicthId);
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
-            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
-            switchControllerMock.Setup(cntr => cntr.TurnOff(swicthId));
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId.Id)).Returns(true);
+            switchControllerMock.Setup(cntr => cntr.TurnOff(swicthId.Id));
 
             var handler = new SwitchEventHandler(switchControllerMock.Object)
             {
@@ -103,7 +103,7 @@ namespace homeControl.Events.Tests
             };
             handler.Handle(onEvent);
 
-            switchControllerMock.Verify(sc => sc.TurnOff(swicthId), Times.Once);
+            switchControllerMock.Verify(sc => sc.TurnOff(swicthId.Id), Times.Once);
         }
     }
 }

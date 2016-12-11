@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace homeControl.Events.Sensors
+﻿namespace homeControl.Events.Sensors
 {
     public class SensorDeactivatedEvent : AbstractSensorEvent
     {
-        public SensorDeactivatedEvent(Guid sensorId) : base(sensorId)
+        public SensorDeactivatedEvent(SensorId sensorId) : base(sensorId)
         {
         }
     }

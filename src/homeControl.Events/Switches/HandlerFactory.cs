@@ -27,7 +27,7 @@ namespace homeControl.Events.Switches
 
             _handlerLazy = new Lazy<IHandler[]>(() =>
                     _switchConfigurationRepository.GetAllIds()
-                        .Select(id => new SwitchEventHandler(_switchController) {SwitchId = id})
+                        .Select(id => new SwitchEventHandler(_switchController) {SwitchId = new SwitchId(id)})
                         .ToArray<IHandler>()
             );
         }

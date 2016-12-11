@@ -1,15 +1,14 @@
-﻿using System;
-using homeControl.Core;
+﻿using homeControl.Core;
 
 namespace homeControl.Events.Sensors
 {
     public abstract class AbstractSensorEvent : IEvent
     {
-        public Guid SensorId { get; }
+        public SensorId SensorId { get; }
 
-        protected AbstractSensorEvent(Guid sensorId)
+        protected AbstractSensorEvent(SensorId sensorId)
         {
-            Guard.DebugAssertArgumentNotDefault(sensorId, nameof(sensorId));
+            Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
             SensorId = sensorId;
         }
     }

@@ -14,8 +14,8 @@ namespace homeControl.Events.Tests
         public static IEnumerable<object[]> AbstractSensorEvents =>
             new[]
             {
-                new object[] { new SensorActivatedEvent(Guid.NewGuid()), },
-                new object[] { new SensorDeactivatedEvent(Guid.NewGuid()), },
+                new object[] { new SensorActivatedEvent(SensorId.NewId()), },
+                new object[] { new SensorDeactivatedEvent(SensorId.NewId()), },
             };
 
         [Theory]
@@ -24,7 +24,7 @@ namespace homeControl.Events.Tests
         {
             var handler = new SensorTrigger(Mock.Of<IEventPublisher>())
             {
-                SwitchId = Guid.NewGuid(),
+                SwitchId = SwitchId.NewId(),
                 SensorId = @event.SensorId
             };
 
@@ -37,8 +37,8 @@ namespace homeControl.Events.Tests
         {
             var handler = new SensorTrigger(Mock.Of<IEventPublisher>())
             {
-                SwitchId = Guid.NewGuid(),
-                SensorId = Guid.NewGuid()
+                SwitchId = SwitchId.NewId(),
+                SensorId = SensorId.NewId()
             };
 
             Assert.False(handler.CanHandle(@event));
@@ -56,9 +56,9 @@ namespace homeControl.Events.Tests
         [Fact]
         public void TestTurnOn()
         {
-            var sensorId = Guid.NewGuid();
+            var sensorId = SensorId.NewId();
             var sensorActivatedEvent = new SensorActivatedEvent(sensorId);
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<TurnOnEvent>(e => e.SwitchId == switchId)));
 
@@ -75,9 +75,9 @@ namespace homeControl.Events.Tests
         [Fact]
         public void TestTurnOff()
         {
-            var sensorId = Guid.NewGuid();
+            var sensorId = SensorId.NewId();
             var sensorActivatedEvent = new SensorDeactivatedEvent(sensorId);
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<TurnOffEvent>(e => e.SwitchId == switchId)));
 

@@ -7,14 +7,14 @@ namespace homeControl.Events.Switches
     internal sealed class SwitchEventHandler : IHandler
     {
         private readonly ISwitchController _switchController;
-        private Guid _switchId;
+        private SwitchId _switchId;
 
-        public Guid SwitchId
+        public SwitchId SwitchId
         {
             get { return _switchId; }
             set
             {
-                Guard.DebugAssertArgumentNotDefault(value, nameof(value));
+                Guard.DebugAssertArgumentNotNull(value, nameof(value));
                 _switchId = value;
             }
         }
@@ -31,7 +31,7 @@ namespace homeControl.Events.Switches
             Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
 
             var switchEvent = @event as AbstractSwitchEvent;
-            return switchEvent != null && switchEvent.SwitchId == SwitchId && _switchController.CanHandleSwitch(switchEvent.SwitchId);
+            return switchEvent != null && switchEvent.SwitchId == SwitchId && _switchController.CanHandleSwitch(switchEvent.SwitchId.Id);
         }
 
         public void Handle(IEvent @event)
@@ -41,11 +41,11 @@ namespace homeControl.Events.Switches
 
             if (@event is TurnOnEvent)
             {
-                _switchController.TurnOn(SwitchId);
+                _switchController.TurnOn(SwitchId.Id);
             }
             else if (@event is TurnOffEvent)
             {
-                _switchController.TurnOff(SwitchId);
+                _switchController.TurnOff(SwitchId.Id);
             }
             else
             {

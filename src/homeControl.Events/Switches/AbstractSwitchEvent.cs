@@ -1,15 +1,14 @@
-﻿using System;
-using homeControl.Core;
+﻿using homeControl.Core;
 
 namespace homeControl.Events.Switches
 {
     public abstract class AbstractSwitchEvent : IEvent
     {
-        public Guid SwitchId { get; }
+        public SwitchId SwitchId { get; }
 
-        protected AbstractSwitchEvent(Guid switchId)
+        protected AbstractSwitchEvent(SwitchId switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             SwitchId = switchId;
         }
     }

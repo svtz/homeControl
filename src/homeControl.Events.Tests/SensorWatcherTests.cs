@@ -14,11 +14,11 @@ namespace homeControl.Events.Tests
         {
             var sensorMock = new Mock<ISensor>();
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            var sensorId = Guid.NewGuid();
+            var sensorId = SensorId.NewId();
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<IEvent>(e => e is SensorActivatedEvent && ((SensorActivatedEvent)e).SensorId == sensorId)));
             var watcher = new SensorWatcher(sensorMock.Object, publisherMock.Object);
 
-            sensorMock.Raise(sensor => sensor.SensorActivated += null, new SensorEventArgs(sensorId));
+            sensorMock.Raise(sensor => sensor.SensorActivated += null, new SensorEventArgs(sensorId.Id));
 
             publisherMock.Verify(publisher => publisher.PublishEvent(It.IsAny<IEvent>()), Times.Once);
         }
@@ -28,11 +28,11 @@ namespace homeControl.Events.Tests
         {
             var sensorMock = new Mock<ISensor>();
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            var sensorId = Guid.NewGuid();
+            var sensorId = SensorId.NewId();
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<IEvent>(e => e is SensorDeactivatedEvent && ((SensorDeactivatedEvent)e).SensorId == sensorId)));
             var watcher = new SensorWatcher(sensorMock.Object, publisherMock.Object);
 
-            sensorMock.Raise(sensor => sensor.SensorDeactivated += null, new SensorEventArgs(sensorId));
+            sensorMock.Raise(sensor => sensor.SensorDeactivated += null, new SensorEventArgs(sensorId.Id));
 
             publisherMock.Verify(publisher => publisher.PublishEvent(It.IsAny<IEvent>()), Times.Once);
         }

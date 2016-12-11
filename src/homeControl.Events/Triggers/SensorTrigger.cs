@@ -14,24 +14,24 @@ namespace homeControl.Events.Triggers
             _eventPublisher = eventPublisher;
         }
 
-        private Guid _switchId;
-        public Guid SwitchId
+        private SwitchId _switchId;
+        public SwitchId SwitchId
         {
             get { return _switchId; }
             set
             {
-                Guard.DebugAssertArgumentNotDefault(value, nameof(value));
+                Guard.DebugAssertArgumentNotNull(value, nameof(value));
                 _switchId = value;
             }
         }
 
-        private Guid _sensorId;
-        public Guid SensorId
+        private SensorId _sensorId;
+        public SensorId SensorId
         {
             get { return _sensorId; }
             set
             {
-                Guard.DebugAssertArgumentNotDefault(value, nameof(value));
+                Guard.DebugAssertArgumentNotNull(value, nameof(value));
                 _sensorId = value;
             }
         }
