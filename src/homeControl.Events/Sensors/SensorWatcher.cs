@@ -25,16 +25,14 @@ namespace homeControl.Events.Sensors
         {
             Guard.DebugAssertArgumentNotNull(sensorEventArgs, nameof(sensorEventArgs));
 
-            var id = new SensorId(sensorEventArgs.SensorId);
-            _eventPublisher.PublishEvent(new SensorActivatedEvent(id));
+            _eventPublisher.PublishEvent(new SensorActivatedEvent(sensorEventArgs.SensorId));
         }
 
         private void OnSensorDeactivated(object sender, SensorEventArgs sensorEventArgs)
         {
             Guard.DebugAssertArgumentNotNull(sensorEventArgs, nameof(sensorEventArgs));
 
-            var id = new SensorId(sensorEventArgs.SensorId);
-            _eventPublisher.PublishEvent(new SensorDeactivatedEvent(id));
+            _eventPublisher.PublishEvent(new SensorDeactivatedEvent(sensorEventArgs.SensorId));
         }
 
         public void Dispose()

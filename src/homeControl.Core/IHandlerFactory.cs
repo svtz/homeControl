@@ -2,6 +2,6 @@
 {
     public interface IHandlerFactory
     {
-        IHandler[] CreateHandlers();
+        IHandler[] GetHandlers();
     }
 }

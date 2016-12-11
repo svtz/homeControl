@@ -14,7 +14,7 @@ namespace homeControl.Core
         {
             Guard.DebugAssertArgumentNotNull(handlerFactory, nameof(handlerFactory));
 
-            _handlers = handlerFactory.CreateHandlers();
+            _handlers = handlerFactory.GetHandlers();
             _queue = new ConcurrentQueue<IEvent>();
         }
 

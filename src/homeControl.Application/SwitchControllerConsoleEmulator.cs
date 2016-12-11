@@ -1,24 +1,25 @@
 ﻿using System;
+using homeControl.Configuration.Switches;
 using homeControl.Peripherals;
 
 namespace homeControl.Application
 {
     internal sealed class SwitchControllerConsoleEmulator : ISwitchController
     {
-        public bool CanHandleSwitch(Guid switchId)
+        public bool CanHandleSwitch(SwitchId switchId)
         {
             return true;
         }
 
-        public void TurnOn(Guid switchId)
+        public void TurnOn(SwitchId switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Console.WriteLine($"{switchId}: TurnOn");
         }
 
-        public void TurnOff(Guid switchId)
+        public void TurnOff(SwitchId switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Console.WriteLine($"{switchId}: TurnOff");
         }
     }

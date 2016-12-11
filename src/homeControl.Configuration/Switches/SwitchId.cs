@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace homeControl.Events.Switches
+namespace homeControl.Configuration.Switches
 {
     [DebuggerDisplay("Id")]
     public sealed class SwitchId : IEquatable<SwitchId>

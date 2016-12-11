@@ -1,14 +1,15 @@
 ﻿using System;
+using homeControl.Configuration.Sensors;
 
 namespace homeControl.Peripherals
 {
     public sealed class SensorEventArgs : EventArgs
     {
-        public Guid SensorId { get; }
+        public SensorId SensorId { get; }
 
-        public SensorEventArgs(Guid sensorId)
+        public SensorEventArgs(SensorId sensorId)
         {
-            Guard.DebugAssertArgumentNotDefault(sensorId, nameof(sensorId));
+            Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
             SensorId = sensorId;
         }
     }

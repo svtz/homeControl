@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace homeControl.Events.Sensors
+namespace homeControl.Configuration.Sensors
 {
     [DebuggerDisplay("Id")]
     public sealed class SensorId : IEquatable<SensorId>

@@ -6,11 +6,11 @@
         }
     },
 
-  "SensorConfigurations": [
-    {
-      "$type": "homeControl.Noolite.Configuration.NooliteSensorConfig, homeControl.Noolite",
-      "Channel": 0,
-      "SensorId": "c65f434a-11d8-4490-bb19-5ac94b82c048"
-    }
-  ]
+    "SensorConfigurations": [
+        {
+            "$type": "homeControl.Noolite.Configuration.NooliteSensorConfig, homeControl.Noolite",
+            "Channel": 0,
+            "SensorId": "c65f434a-11d8-4490-bb19-5ac94b82c048"
+        }
+    ]
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using homeControl.Configuration;
+using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Peripherals;
 
@@ -11,7 +11,7 @@ namespace homeControl.Events.Switches
         private readonly ISwitchConfigurationRepository _switchConfigurationRepository;
         private readonly ISwitchControllerSelector _switchController;
 
-        public IHandler[] CreateHandlers()
+        public IHandler[] GetHandlers()
         {
             return _handlerLazy.Value;
         }
@@ -25,11 +25,14 @@ namespace homeControl.Events.Switches
             _switchConfigurationRepository = switchConfigurationRepository;
             _switchController = switchController;
 
-            _handlerLazy = new Lazy<IHandler[]>(() =>
-                    _switchConfigurationRepository.GetAllIds()
-                        .Select(id => new SwitchEventHandler(_switchController) {SwitchId = new SwitchId(id)})
-                        .ToArray<IHandler>()
-            );
+            _handlerLazy = new Lazy<IHandler[]>(CreateHandlers);
+        }
+
+        private IHandler[] CreateHandlers()
+        {
+            return _switchConfigurationRepository.GetAllIds()
+                .Select(id => new SwitchEventHandler(_switchController) {SwitchId = id})
+                .ToArray<IHandler>();
         }
     }
 }

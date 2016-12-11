@@ -1,4 +1,4 @@
-﻿namespace homeControl.Configuration
+﻿namespace homeControl.Configuration.Switches
 {
     public interface ISwitchConfiguration
     {

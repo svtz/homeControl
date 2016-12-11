@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace homeControl.Configuration
+namespace homeControl.Configuration.Sensors
 {
     internal sealed class SensorConfgurationRepository : ISensorConfigurationRepository
     {

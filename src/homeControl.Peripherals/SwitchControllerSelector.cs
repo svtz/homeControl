@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using homeControl.Configuration.Switches;
 
 namespace homeControl.Peripherals
 {
@@ -12,17 +12,17 @@ namespace homeControl.Peripherals
             _controllerImplementations = controllerImplementations;
         }
 
-        public bool CanHandleSwitch(Guid switchId)
+        public bool CanHandleSwitch(SwitchId switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
 
             return _controllerImplementations.Any(cntr => cntr.CanHandleSwitch(switchId));
 
         }
 
-        public void TurnOn(Guid switchId)
+        public void TurnOn(SwitchId switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
             foreach (var controller in _controllerImplementations.Where(cntr => cntr.CanHandleSwitch(switchId)))
@@ -31,9 +31,9 @@ namespace homeControl.Peripherals
             }
         }
 
-        public void TurnOff(Guid switchId)
+        public void TurnOff(SwitchId switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
             foreach (var controller in _controllerImplementations.Where(cntr => cntr.CanHandleSwitch(switchId)))

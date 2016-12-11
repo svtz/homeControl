@@ -1,5 +1,4 @@
-﻿using System;
-using homeControl.Configuration;
+﻿using homeControl.Configuration.Switches;
 using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
 using homeControl.Peripherals;
@@ -23,26 +22,26 @@ namespace homeControl.Noolite
             _adapter = adapter;
         }
 
-        public bool CanHandleSwitch(Guid switchId)
+        public bool CanHandleSwitch(SwitchId switchId)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
 
             return _configurationRepository.ContainsConfig<NooliteSwitchConfig>(switchId);
         }
 
-        public void TurnOn(Guid switchId)
+        public void TurnOn(SwitchId switchId)
         {
             ExecuteImpl(switchId, PC11XXCommand.On);
         }
 
-        public void TurnOff(Guid switchId)
+        public void TurnOff(SwitchId switchId)
         {
             ExecuteImpl(switchId, PC11XXCommand.Off);
         }
 
-        private void ExecuteImpl(Guid switchId, PC11XXCommand command)
+        private void ExecuteImpl(SwitchId switchId, PC11XXCommand command)
         {
-            Guard.DebugAssertArgumentNotDefault(switchId, nameof(switchId));
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
             var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);

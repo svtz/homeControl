@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using homeControl.Configuration;
+using homeControl.Configuration.Sensors;
 using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
 using homeControl.Peripherals;

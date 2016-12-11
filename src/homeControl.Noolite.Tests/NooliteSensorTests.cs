@@ -1,9 +1,9 @@
 ﻿using System;
 using homeControl.Configuration;
+using homeControl.Configuration.Sensors;
 using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
 using Moq;
-using ThinkingHome.NooLite;
 using ThinkingHome.NooLite.ReceivedData;
 using Xunit;
 
@@ -24,7 +24,7 @@ namespace homeControl.Noolite.Tests
         [InlineData(0, 0, 1)]
         public void TestWhenAdapterReceivedCommand_ThenRaiseEvent(byte command, int expectedActivateCallCount, int expectedDeactivateCallCount)
         {
-            var sensorConfig = new NooliteSensorConfig {SensorId = Guid.NewGuid(), Channel = 17 };
+            var sensorConfig = new NooliteSensorConfig {SensorId = SensorId.NewId(), Channel = 17 };
 
             var configMock = new Mock<ISensorConfigurationRepository>();
             configMock.Setup(cfg => cfg.GetAllConfigs<NooliteSensorConfig>()).Returns(new[] { sensorConfig });
@@ -32,7 +32,7 @@ namespace homeControl.Noolite.Tests
             var adapterMock = new Mock<IRX2164Adapter>();
             var sensor = new NooliteSensor(adapterMock.Object, configMock.Object);
 
-            var affectedSensorId = Guid.Empty;
+            SensorId affectedSensorId = null;
             var activateCallCount = 0;
             sensor.SensorActivated += (s, e) =>
             {

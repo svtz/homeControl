@@ -1,4 +1,6 @@
 ﻿using System;
+using homeControl.Configuration.Sensors;
+using homeControl.Configuration.Switches;
 using StructureMap;
 
 namespace homeControl.Configuration.IoC

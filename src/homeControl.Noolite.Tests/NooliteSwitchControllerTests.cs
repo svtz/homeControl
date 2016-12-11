@@ -1,5 +1,4 @@
-﻿using System;
-using homeControl.Configuration;
+﻿using homeControl.Configuration.Switches;
 using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
 using Moq;
@@ -13,7 +12,7 @@ namespace homeControl.Noolite.Tests
         [Fact]
         public void Test_TurnOn_SendsAdapterOnCommand()
         {
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
             var adapterMock = new Mock<IPC11XXAdapter>();
             var config = new NooliteSwitchConfig { Channel = 123 };
@@ -33,7 +32,7 @@ namespace homeControl.Noolite.Tests
         [Fact]
         public void Test_TurnOff_SendsAdapterOffCommand()
         {
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
             var adapterMock = new Mock<IPC11XXAdapter>();
             var config = new NooliteSwitchConfig { Channel = 98 };
@@ -55,20 +54,20 @@ namespace homeControl.Noolite.Tests
         {
             var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
             configRepositoryMock
-                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(It.IsAny<Guid>()))
+                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(It.IsAny<SwitchId>()))
                 .Returns(false);
 
             var controller = new NooliteSwitchController(configRepositoryMock.Object, Mock.Of<IPC11XXAdapter>());
-            Assert.False(controller.CanHandleSwitch(Guid.NewGuid()));
+            Assert.False(controller.CanHandleSwitch(SwitchId.NewId()));
 
-            configRepositoryMock.Verify(repo => repo.ContainsConfig<NooliteSwitchConfig>(It.IsAny<Guid>()), Times.Once);
+            configRepositoryMock.Verify(repo => repo.ContainsConfig<NooliteSwitchConfig>(It.IsAny<SwitchId>()), Times.Once);
         }
 
         [Fact]
         public void Test_IfRepoContainsConfig_ThenCanHandle()
         {
             var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             configRepositoryMock
                 .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(switchId))
                 .Returns(true);

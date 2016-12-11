@@ -1,4 +1,5 @@
-﻿using homeControl.Core;
+﻿using homeControl.Configuration.Sensors;
+using homeControl.Core;
 
 namespace homeControl.Events.Sensors
 {

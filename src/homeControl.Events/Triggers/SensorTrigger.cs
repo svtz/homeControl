@@ -1,4 +1,6 @@
 ﻿using System;
+using homeControl.Configuration.Sensors;
+using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Events.Sensors;
 using homeControl.Events.Switches;

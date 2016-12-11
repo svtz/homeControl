@@ -1,4 +1,5 @@
 ﻿using System;
+using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Peripherals;
 
@@ -31,7 +32,7 @@ namespace homeControl.Events.Switches
             Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
 
             var switchEvent = @event as AbstractSwitchEvent;
-            return switchEvent != null && switchEvent.SwitchId == SwitchId && _switchController.CanHandleSwitch(switchEvent.SwitchId.Id);
+            return switchEvent != null && switchEvent.SwitchId == SwitchId && _switchController.CanHandleSwitch(switchEvent.SwitchId);
         }
 
         public void Handle(IEvent @event)
@@ -41,11 +42,11 @@ namespace homeControl.Events.Switches
 
             if (@event is TurnOnEvent)
             {
-                _switchController.TurnOn(SwitchId.Id);
+                _switchController.TurnOn(SwitchId);
             }
             else if (@event is TurnOffEvent)
             {
-                _switchController.TurnOff(SwitchId.Id);
+                _switchController.TurnOff(SwitchId);
             }
             else
             {

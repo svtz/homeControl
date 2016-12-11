@@ -1,4 +1,4 @@
-﻿using System;
+﻿using homeControl.Configuration.Switches;
 using Moq;
 using Xunit;
 
@@ -9,7 +9,7 @@ namespace homeControl.Peripherals.Tests
         [Fact]
         public void TestCanHandle_WhenImplementationCanHandle()
         {
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var implCanHandleMock = new Mock<ISwitchController>(MockBehavior.Strict);
             implCanHandleMock.Setup(cntr => cntr.CanHandleSwitch(switchId)).Returns(true);
             var implCannotHandleMock = new Mock<ISwitchController>(MockBehavior.Strict);
@@ -23,7 +23,7 @@ namespace homeControl.Peripherals.Tests
         [Fact]
         public void TestCantHandle_WhenImplementationCantHandle()
         {
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var impl1Mock = new Mock<ISwitchController>(MockBehavior.Strict);
             impl1Mock.Setup(cntr => cntr.CanHandleSwitch(switchId)).Returns(false);
             var impl2Mock = new Mock<ISwitchController>(MockBehavior.Strict);
@@ -37,7 +37,7 @@ namespace homeControl.Peripherals.Tests
         [Fact]
         public void Test_SelectorCallsAllSuitableImplementations()
         {
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var implCannotHandleMock = new Mock<ISwitchController>(MockBehavior.Strict);
             implCannotHandleMock.Setup(cntr => cntr.CanHandleSwitch(switchId)).Returns(false);
             var implCanHandle1Mock = new Mock<ISwitchController>(MockBehavior.Strict);
@@ -58,7 +58,7 @@ namespace homeControl.Peripherals.Tests
         [Fact]
         public void Test_SelectorTurnOn_CallsImplsTurnOn()
         {
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var implMock = new Mock<ISwitchController>(MockBehavior.Strict);
             implMock.Setup(cntr => cntr.CanHandleSwitch(switchId)).Returns(true);
             implMock.Setup(cntr => cntr.TurnOn(switchId));
@@ -72,7 +72,7 @@ namespace homeControl.Peripherals.Tests
         [Fact]
         public void Test_SelectorTurnOff_CallsImplsTurnOff()
         {
-            var switchId = Guid.NewGuid();
+            var switchId = SwitchId.NewId();
             var implMock = new Mock<ISwitchController>(MockBehavior.Strict);
             implMock.Setup(cntr => cntr.CanHandleSwitch(switchId)).Returns(true);
             implMock.Setup(cntr => cntr.TurnOff(switchId));

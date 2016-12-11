@@ -1,4 +1,6 @@
-﻿namespace homeControl.Events.Sensors
+﻿using homeControl.Configuration.Sensors;
+
+namespace homeControl.Events.Sensors
 {
     public class SensorActivatedEvent : AbstractSensorEvent
     {

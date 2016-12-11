@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using homeControl.Configuration.Sensors;
+using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Events.Sensors;
 using homeControl.Events.Switches;

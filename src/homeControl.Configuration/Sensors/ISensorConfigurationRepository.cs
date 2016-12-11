@@ -1,4 +1,4 @@
-﻿namespace homeControl.Configuration
+﻿namespace homeControl.Configuration.Sensors
 {
     public interface ISensorConfigurationRepository
     {

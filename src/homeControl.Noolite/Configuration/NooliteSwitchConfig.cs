@@ -1,4 +1,5 @@
 ﻿using homeControl.Configuration;
+using homeControl.Configuration.Switches;
 
 namespace homeControl.Noolite.Configuration
 {
