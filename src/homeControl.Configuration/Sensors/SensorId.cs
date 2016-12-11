@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace homeControl.Configuration.Sensors
 {
     [DebuggerDisplay("Id")]
+    [JsonConverter(typeof(SensorIdSerializer))]
     public sealed class SensorId : IEquatable<SensorId>
     {
         public Guid Id { get; }

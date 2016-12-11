@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace homeControl.Configuration.Switches
 {
     [DebuggerDisplay("Id")]
+    [JsonConverter(typeof(SwitchIdSerializer))]
     public sealed class SwitchId : IEquatable<SwitchId>
     {
         public Guid Id { get; }
