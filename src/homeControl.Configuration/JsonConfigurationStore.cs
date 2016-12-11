@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using Newtonsoft.Json;
@@ -9,7 +7,7 @@ namespace homeControl.Configuration
 {
     internal sealed class JsonConfigurationStore
     {
-        public Dictionary<SwitchId, ISwitchConfiguration> SwitchConfigurations { get; set; }
+        public ISwitchConfiguration[] SwitchConfigurations { get; set; }
         public ISensorConfiguration[] SensorConfigurations { get; set; }
 
         internal static JsonConfigurationStore Load(string configPath)

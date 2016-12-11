@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using homeControl.Configuration;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
@@ -15,9 +13,9 @@ namespace homeControl.Experiments
         {
             var config = new JsonConfigurationStore();
 
-            config.SwitchConfigurations = new Dictionary<SwitchId, ISwitchConfiguration>
+            config.SwitchConfigurations = new ISwitchConfiguration[]
             {
-                { SwitchId.NewId(), new NooliteSwitchConfig() { Channel = 1 } }
+                new NooliteSwitchConfig() { SwitchId = SwitchId.NewId(), Channel = 1 } 
             };
 
             config.SensorConfigurations = new ISensorConfiguration[]

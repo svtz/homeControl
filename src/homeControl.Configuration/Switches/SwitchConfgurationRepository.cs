@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace homeControl.Configuration.Switches
 {
@@ -7,13 +9,20 @@ namespace homeControl.Configuration.Switches
     {
         private readonly IDictionary<SwitchId, ISwitchConfiguration> _configurations;
 
-        public SwitchConfgurationRepository(IDictionary<SwitchId, ISwitchConfiguration> configurations)
+        public SwitchConfgurationRepository(ISwitchConfiguration[] configurations)
         {
             Guard.DebugAssertArgumentNotNull(configurations, nameof(configurations));
-            if (configurations.Any(cfg => cfg.Value == null))
+            if (configurations.Any(cfg => cfg == null))
                 throw new InvalidConfigurationException($"Found null-configuration for switch.");
 
-            _configurations = configurations;
+            try
+            {
+                _configurations = configurations.ToDictionary(cfg => cfg.SwitchId);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidConfigurationException(ex, "Found duplicated switch ids in the configuration file.");
+            }
         }
 
         public bool ContainsConfig<TConfig>(SwitchId switchId) where TConfig : ISwitchConfiguration

@@ -2,5 +2,6 @@
 {
     public interface ISwitchConfiguration
     {
+        SwitchId SwitchId { get; }
     }
 }

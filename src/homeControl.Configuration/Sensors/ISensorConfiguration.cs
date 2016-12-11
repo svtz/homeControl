@@ -2,5 +2,6 @@
 {
     public interface ISensorConfiguration
     {
+        SensorId SensorId { get; }
     }
 }

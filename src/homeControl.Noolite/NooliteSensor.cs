@@ -35,7 +35,14 @@ namespace homeControl.Noolite
         {
             Guard.DebugAssertArgumentNotNull(config, nameof(config));
 
-            return config.GetAllConfigs<NooliteSensorConfig>().ToDictionary(cfg => cfg.Channel);
+            try
+            {
+                return config.GetAllConfigs<NooliteSensorConfig>().ToDictionary(cfg => cfg.Channel);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidConfigurationException(ex, "Found duplicated Noolite sensor channels in the configuration file.");
+            }
         }
 
         private void AdapterOnCommandReceived(ReceivedCommandData receivedCommandData)
