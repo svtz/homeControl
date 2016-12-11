@@ -41,7 +41,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Experiments", "
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Application", "src\homeControl.Application\homeControl.Application.xproj", "{FA6442D6-7107-4189-8843-CA20D713F9F6}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Pepipherals.Tests", "src\homeControl.Pepipherals.Tests\homeControl.Pepipherals.Tests.xproj", "{CA66C50F-1740-41E6-B1AB-0A038C32CF11}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Peripherals.Tests", "src\homeControl.Peripherals.Tests\homeControl.Peripherals.Tests.xproj", "{CA66C50F-1740-41E6-B1AB-0A038C32CF11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

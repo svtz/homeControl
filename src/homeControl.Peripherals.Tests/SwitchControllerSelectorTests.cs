@@ -1,9 +1,8 @@
 ﻿using System;
-using homeControl.Peripherals;
 using Moq;
 using Xunit;
 
-namespace homeControl.Pepipherals.Tests
+namespace homeControl.Peripherals.Tests
 {
     public class SwitchControllerSelectorTests
     {
