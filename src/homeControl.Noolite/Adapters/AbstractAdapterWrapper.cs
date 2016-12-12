@@ -18,13 +18,15 @@ namespace homeControl.Noolite.Adapters
 
         protected void EnsureAdapterConnected()
         {
-            if (!Adapter.IsConnected)
-                throw new DeviceDisconnectedException(DeviceName);
-
             if (!Adapter.IsOpen)
             {
                 if (!Adapter.OpenDevice())
+                {
+                    if (!Adapter.IsConnected)
+                        throw new DeviceDisconnectedException(DeviceName);
+
                     throw new DeviceInitializationException(DeviceName, "Could not open the device.");
+                }
             }
         }
 

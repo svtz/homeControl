@@ -8,6 +8,7 @@ namespace homeControl.Noolite.Adapters
     {
         public RX2164AdapterWrapper()
         {
+            EnsureAdapterConnected();
             Adapter.CommandReceived += OnCommandReceived;
             Adapter.MicroclimateDataReceived += OnMicroclimateDataReceived;
         }
