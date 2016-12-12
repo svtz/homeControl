@@ -7,5 +7,7 @@ namespace homeControl.Noolite.Adapters
     {
         event Action<MicroclimateReceivedCommandData> MicroclimateDataReceived;
         event Action<ReceivedCommandData> CommandReceived;
+
+        void Activate();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using homeControl.Application.IoC;
+using homeControl.Configuration;
 using homeControl.Core;
 using StructureMap;
 
@@ -13,7 +14,12 @@ namespace homeControl.Application
             var container = new Container(c => c.AddRegistry<ApplicationRegistry>());
             using (var child = container.GetNestedContainer())
             {
-                //container.AssertConfigurationIsValid();
+                var initializers = child.GetAllInstances<IInitializer>();
+                foreach (var initializer in initializers)
+                {
+                    initializer.Init();
+                }
+
                 var loop = child.GetInstance<EventProcessingLoop>();
                 loop.ThrottleTime = TimeSpan.FromMilliseconds(100);
 

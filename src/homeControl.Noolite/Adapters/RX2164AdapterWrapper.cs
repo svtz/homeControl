@@ -8,12 +8,17 @@ namespace homeControl.Noolite.Adapters
     {
         public RX2164AdapterWrapper()
         {
-            EnsureAdapterConnected();
             Adapter.CommandReceived += OnCommandReceived;
             Adapter.MicroclimateDataReceived += OnMicroclimateDataReceived;
         }
 
         public event Action<ReceivedCommandData> CommandReceived;
+
+        public void Activate()
+        {
+            EnsureAdapterConnected();
+        }
+
         public event Action<MicroclimateReceivedCommandData> MicroclimateDataReceived;
 
         private void OnCommandReceived(ReceivedCommandData obj)

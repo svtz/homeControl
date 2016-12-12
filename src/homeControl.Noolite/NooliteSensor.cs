@@ -31,8 +31,12 @@ namespace homeControl.Noolite
             _sensorGate = sensorGate;
             _adapter = adapter;
             _channelToConfig = new Lazy<IDictionary<byte, NooliteSensorConfig>>(() => LoadConfig(configuration));
+        }
 
+        public void Activate()
+        {
             _adapter.CommandReceived += AdapterOnCommandReceived;
+            _adapter.Activate();
         }
 
         private static Dictionary<byte, NooliteSensorConfig> LoadConfig(ISensorConfigurationRepository config)
