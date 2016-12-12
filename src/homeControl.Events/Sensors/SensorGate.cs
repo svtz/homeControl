@@ -1,20 +1,14 @@
-﻿using System;
-using homeControl.Configuration.Sensors;
+﻿using homeControl.Configuration.Sensors;
 using homeControl.Core;
+using homeControl.Peripherals;
 
 namespace homeControl.Events.Sensors
 {
-    internal interface ISensorWatcher
-    {
-        void OnSensorActivated(SensorId sensorId);
-        void OnSensorDeactivated(SensorId sensorId);
-    }
-
-    internal sealed class SensorWatcher : ISensorWatcher
+    internal sealed class SensorGate : ISensorGate
     {
         private readonly IEventPublisher _eventPublisher;
 
-        public SensorWatcher(IEventPublisher eventPublisher)
+        public SensorGate(IEventPublisher eventPublisher)
         {
             Guard.DebugAssertArgumentNotNull(eventPublisher, nameof(eventPublisher));
 

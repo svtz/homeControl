@@ -1,5 +1,6 @@
 ﻿using homeControl.Core;
 using homeControl.Events.Sensors;
+using homeControl.Peripherals;
 using StructureMap;
 
 namespace homeControl.Events.IoC
@@ -8,7 +9,7 @@ namespace homeControl.Events.IoC
     {
         public EventsRegistry()
         {
-            ForSingletonOf<SensorWatcher>();
+            For<ISensorGate>().Use<SensorGate>().Singleton();
             For<IHandlerRepository>().Use<HandlerRepository>().Singleton();
             ForSingletonOf<EventPublisherAccessor>();
         }

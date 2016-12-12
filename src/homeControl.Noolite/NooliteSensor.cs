@@ -10,21 +10,25 @@ using ThinkingHome.NooLite.ReceivedData;
 
 namespace homeControl.Noolite
 {
-    internal sealed class NooliteSensor : ISensor, IDisposable
+    internal sealed class NooliteSensor : IDisposable
     {
         private const byte CommandOn = 2;
         private const byte CommandOff = 0;
 
+        private readonly ISensorGate _sensorGate;
         private readonly IRX2164Adapter _adapter;
         private readonly Lazy<IDictionary<byte, NooliteSensorConfig>> _channelToConfig;
 
         public NooliteSensor(
+            ISensorGate sensorGate,
             IRX2164Adapter adapter,
             ISensorConfigurationRepository configuration)
         {
+            Guard.DebugAssertArgumentNotNull(sensorGate, nameof(sensorGate));
             Guard.DebugAssertArgumentNotNull(adapter, nameof(adapter));
             Guard.DebugAssertArgumentNotNull(configuration, nameof(configuration));
 
+            _sensorGate = sensorGate;
             _adapter = adapter;
             _channelToConfig = new Lazy<IDictionary<byte, NooliteSensorConfig>>(() => LoadConfig(configuration));
 
@@ -56,10 +60,10 @@ namespace homeControl.Noolite
             switch (receivedCommandData.Cmd)
             {
                 case CommandOn:
-                    OnSensorActivated(new SensorEventArgs(config.SensorId));
+                    _sensorGate.OnSensorActivated(config.SensorId);
                     break;
                 case CommandOff:
-                    OnSensorDeactivated(new SensorEventArgs(config.SensorId));
+                    _sensorGate.OnSensorDeactivated(config.SensorId);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(receivedCommandData.Cmd));

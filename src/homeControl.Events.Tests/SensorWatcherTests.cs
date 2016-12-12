@@ -1,8 +1,6 @@
-﻿using System;
-using homeControl.Configuration.Sensors;
+﻿using homeControl.Configuration.Sensors;
 using homeControl.Core;
 using homeControl.Events.Sensors;
-using homeControl.Peripherals;
 using Moq;
 using Xunit;
 
@@ -13,13 +11,12 @@ namespace homeControl.Events.Tests
         [Fact]
         public void Test_WhenSensorActivated_ThenPublishActivationEvent()
         {
-            var sensorMock = new Mock<ISensor>();
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
             var sensorId = SensorId.NewId();
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<IEvent>(e => e is SensorActivatedEvent && ((SensorActivatedEvent)e).SensorId == sensorId)));
-            var watcher = new SensorWatcher(sensorMock.Object, publisherMock.Object);
+            var gate = new SensorGate(publisherMock.Object);
 
-            sensorMock.Raise(sensor => sensor.SensorActivated += null, new SensorEventArgs(sensorId));
+            gate.OnSensorActivated(sensorId);
 
             publisherMock.Verify(publisher => publisher.PublishEvent(It.IsAny<IEvent>()), Times.Once);
         }
@@ -27,13 +24,12 @@ namespace homeControl.Events.Tests
         [Fact]
         public void Test_WhenSensorDeactivated_ThenPublishDeactivationEvent()
         {
-            var sensorMock = new Mock<ISensor>();
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
             var sensorId = SensorId.NewId();
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<IEvent>(e => e is SensorDeactivatedEvent && ((SensorDeactivatedEvent)e).SensorId == sensorId)));
-            var watcher = new SensorWatcher(sensorMock.Object, publisherMock.Object);
+            var gate = new SensorGate(publisherMock.Object);
 
-            sensorMock.Raise(sensor => sensor.SensorDeactivated += null, new SensorEventArgs(sensorId));
+            gate.OnSensorDeactivated(sensorId);
 
             publisherMock.Verify(publisher => publisher.PublishEvent(It.IsAny<IEvent>()), Times.Once);
         }

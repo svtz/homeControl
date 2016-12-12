@@ -3,6 +3,7 @@ using homeControl.Configuration;
 using homeControl.Configuration.Sensors;
 using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
+using homeControl.Peripherals;
 using Moq;
 using ThinkingHome.NooLite.ReceivedData;
 using Xunit;
@@ -29,40 +30,32 @@ namespace homeControl.Noolite.Tests
             var configMock = new Mock<ISensorConfigurationRepository>();
             configMock.Setup(cfg => cfg.GetAllConfigs<NooliteSensorConfig>()).Returns(new[] { sensorConfig });
 
+            var gateMock = new Mock<ISensorGate>(MockBehavior.Strict);
+            gateMock.Setup(g => g.OnSensorActivated(sensorConfig.SensorId));
+            gateMock.Setup(g => g.OnSensorDeactivated(sensorConfig.SensorId));
+
             var adapterMock = new Mock<IRX2164Adapter>();
-            var sensor = new NooliteSensor(adapterMock.Object, configMock.Object);
-
-            SensorId affectedSensorId = null;
-            var activateCallCount = 0;
-            sensor.SensorActivated += (s, e) =>
-            {
-                activateCallCount++;
-                affectedSensorId = e.SensorId;
-            };
-            var deactivateCallCount = 0;
-            sensor.SensorDeactivated += (s, e) =>
-            {
-                deactivateCallCount++;
-                affectedSensorId = e.SensorId;
-            };
-
+            var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object);
 
             adapterMock.Raise(ad => ad.CommandReceived += null, CreateCommandData(command, sensorConfig.Channel));
 
-            Assert.Equal(expectedActivateCallCount, activateCallCount);
-            Assert.Equal(expectedDeactivateCallCount, deactivateCallCount);
-            Assert.Equal(sensorConfig.SensorId, affectedSensorId);
+            gateMock.Verify(m => m.OnSensorActivated(It.IsAny<SensorId>()), Times.Exactly(expectedActivateCallCount));
+            gateMock.Verify(m => m.OnSensorDeactivated(It.IsAny<SensorId>()), Times.Exactly(expectedDeactivateCallCount));
         }
 
-        [Fact]
-        public void TestWhenAdapterReceivedCommandWithUnknownChannel_ThenError()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(2)]
+        public void TestWhenAdapterReceivedCommandWithUnknownChannel_ThenError(byte command)
         {
             var configMock = new Mock<ISensorConfigurationRepository>();
 
             var adapterMock = new Mock<IRX2164Adapter>();
-            var sensor = new NooliteSensor(adapterMock.Object, configMock.Object);
 
-            Action act = () => adapterMock.Raise(ad => ad.CommandReceived += null, CreateCommandData(2, 13));
+            var gateMock = new Mock<ISensorGate>(MockBehavior.Strict);
+            var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object);
+
+            Action act = () => adapterMock.Raise(ad => ad.CommandReceived += null, CreateCommandData(command, 13));
 
             Assert.Throws<InvalidConfigurationException>(act);
         }
