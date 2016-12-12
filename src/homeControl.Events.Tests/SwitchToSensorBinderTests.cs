@@ -5,13 +5,12 @@ using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Events.Sensors;
 using homeControl.Events.Switches;
-using homeControl.Events.Triggers;
 using Moq;
 using Xunit;
 
 namespace homeControl.Events.Tests
 {
-    public class SensorTriggerTests
+    public class SwitchToSensorBinderTests
     {
         public static IEnumerable<object[]> AbstractSensorEvents =>
             new[]
@@ -24,7 +23,7 @@ namespace homeControl.Events.Tests
         [MemberData(nameof(AbstractSensorEvents))]
         public void TestCanHandleSensorEvent(AbstractSensorEvent @event)
         {
-            var handler = new SensorTrigger(Mock.Of<IEventPublisher>())
+            var handler = new SwitchToSensorBinderHandler(Mock.Of<IEventPublisher>())
             {
                 SwitchId = SwitchId.NewId(),
                 SensorId = @event.SensorId
@@ -37,7 +36,7 @@ namespace homeControl.Events.Tests
         [MemberData(nameof(AbstractSensorEvents))]
         public void DontProcessEventWithNonMatchedId(AbstractSensorEvent @event)
         {
-            var handler = new SensorTrigger(Mock.Of<IEventPublisher>())
+            var handler = new SwitchToSensorBinderHandler(Mock.Of<IEventPublisher>())
             {
                 SwitchId = SwitchId.NewId(),
                 SensorId = SensorId.NewId()
@@ -49,7 +48,7 @@ namespace homeControl.Events.Tests
         [Fact]
         public void TestCantHandleOtherEvents()
         {
-            var handler = new SensorTrigger(Mock.Of<IEventPublisher>());
+            var handler = new SwitchToSensorBinderHandler(Mock.Of<IEventPublisher>());
             var @event = Mock.Of<IEvent>();
 
             Assert.False(handler.CanHandle(@event));
@@ -64,7 +63,7 @@ namespace homeControl.Events.Tests
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<TurnOnEvent>(e => e.SwitchId == switchId)));
 
-            var handler = new SensorTrigger(publisherMock.Object)
+            var handler = new SwitchToSensorBinderHandler(publisherMock.Object)
             {
                 SwitchId = switchId,
                 SensorId = sensorId
@@ -83,7 +82,7 @@ namespace homeControl.Events.Tests
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
             publisherMock.Setup(publisher => publisher.PublishEvent(It.Is<TurnOffEvent>(e => e.SwitchId == switchId)));
 
-            var handler = new SensorTrigger(publisherMock.Object)
+            var handler = new SwitchToSensorBinderHandler(publisherMock.Object)
             {
                 SwitchId = switchId,
                 SensorId = sensorId

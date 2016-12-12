@@ -1,44 +1,38 @@
 ﻿using System;
+using homeControl.Configuration.Sensors;
 using homeControl.Core;
-using homeControl.Peripherals;
 
 namespace homeControl.Events.Sensors
 {
-    internal sealed class SensorWatcher : IDisposable
+    internal interface ISensorWatcher
     {
-        private readonly ISensor _sensor;
+        void OnSensorActivated(SensorId sensorId);
+        void OnSensorDeactivated(SensorId sensorId);
+    }
+
+    internal sealed class SensorWatcher : ISensorWatcher
+    {
         private readonly IEventPublisher _eventPublisher;
 
-        public SensorWatcher(ISensor sensor, IEventPublisher eventPublisher)
+        public SensorWatcher(IEventPublisher eventPublisher)
         {
-            Guard.DebugAssertArgumentNotNull(sensor, nameof(sensor));
             Guard.DebugAssertArgumentNotNull(eventPublisher, nameof(eventPublisher));
 
-            _sensor = sensor;
             _eventPublisher = eventPublisher;
-
-            _sensor.SensorActivated += OnSensorActivated;
-            _sensor.SensorDeactivated += OnSensorDeactivated;
         }
 
-        private void OnSensorActivated(object sender, SensorEventArgs sensorEventArgs)
+        public void OnSensorActivated(SensorId sensorId)
         {
-            Guard.DebugAssertArgumentNotNull(sensorEventArgs, nameof(sensorEventArgs));
+            Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
 
-            _eventPublisher.PublishEvent(new SensorActivatedEvent(sensorEventArgs.SensorId));
+            _eventPublisher.PublishEvent(new SensorActivatedEvent(sensorId));
         }
 
-        private void OnSensorDeactivated(object sender, SensorEventArgs sensorEventArgs)
+        public void OnSensorDeactivated(SensorId sensorId)
         {
-            Guard.DebugAssertArgumentNotNull(sensorEventArgs, nameof(sensorEventArgs));
+            Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
 
-            _eventPublisher.PublishEvent(new SensorDeactivatedEvent(sensorEventArgs.SensorId));
-        }
-
-        public void Dispose()
-        {
-            _sensor.SensorActivated -= OnSensorActivated;
-            _sensor.SensorDeactivated -= OnSensorDeactivated;
+            _eventPublisher.PublishEvent(new SensorDeactivatedEvent(sensorId));
         }
     }
 }

@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Linq;
 
 namespace homeControl.Core
 {
     internal class Bus : IEventPublisher, IEventProcessor
     {
-        private readonly IHandler[] _handlers;
+        private readonly IHandlerRepository _handlerRepository;
         private readonly ConcurrentQueue<IEvent> _queue;
 
 
-        public Bus(IHandlerFactory handlerFactory)
+        public Bus(IHandlerRepository handlerRepository)
         {
-            Guard.DebugAssertArgumentNotNull(handlerFactory, nameof(handlerFactory));
+            _handlerRepository = handlerRepository;
+            Guard.DebugAssertArgumentNotNull(handlerRepository, nameof(handlerRepository));
 
-            _handlers = handlerFactory.GetHandlers();
             _queue = new ConcurrentQueue<IEvent>();
         }
 
@@ -41,7 +40,7 @@ namespace homeControl.Core
 
         private void ProcessEvent(IEvent @event)
         {
-            var suitableHandlers = _handlers.Where(h => h.CanHandle(@event));
+            var suitableHandlers = _handlerRepository.GetHandlers().Where(h => h.CanHandle(@event));
             foreach (var handler in suitableHandlers)
             {
                 handler.Handle(@event);

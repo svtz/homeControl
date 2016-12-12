@@ -36,7 +36,7 @@ namespace homeControl.Configuration.Switches
             return (TConfig)_configurations[switchId];
         }
 
-        public SwitchId[] GetAllIds()
+        public SwitchId[] GetAll()
         {
             return _configurations.Keys.ToArray();
         }

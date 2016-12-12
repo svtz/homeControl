@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ namespace homeControl.Configuration
     {
         public ISwitchConfiguration[] SwitchConfigurations { get; set; }
         public ISensorConfiguration[] SensorConfigurations { get; set; }
+        public ISwitchToSensorBinding[] Bindings { get; set; }
 
         internal static JsonConfigurationStore Load(string configPath)
         {

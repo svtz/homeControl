@@ -5,13 +5,13 @@ using homeControl.Core;
 using homeControl.Events.Sensors;
 using homeControl.Events.Switches;
 
-namespace homeControl.Events.Triggers
+namespace homeControl.Events
 {
-    internal class SensorTrigger : IHandler
+    internal class SwitchToSensorBinderHandler : IHandler
     {
         private readonly IEventPublisher _eventPublisher;
 
-        public SensorTrigger(IEventPublisher eventPublisher)
+        public SwitchToSensorBinderHandler(IEventPublisher eventPublisher)
         {
             _eventPublisher = eventPublisher;
         }

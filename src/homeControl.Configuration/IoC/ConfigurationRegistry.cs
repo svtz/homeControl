@@ -1,4 +1,4 @@
-﻿using System;
+﻿using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using StructureMap;
@@ -13,6 +13,7 @@ namespace homeControl.Configuration.IoC
 
             For<ISensorConfigurationRepository>().Use(new SensorConfgurationRepository(config.SensorConfigurations));
             For<ISwitchConfigurationRepository>().Use(new SwitchConfgurationRepository(config.SwitchConfigurations));
+            For<ISwitchToSensorBindingsRepository>().Use(new SwitchToSensorBindingsRepository(config.Bindings));
         }
     }
 }

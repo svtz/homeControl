@@ -1,6 +1,6 @@
 ﻿namespace homeControl.Core
 {
-    public interface IHandlerFactory
+    public interface IHandlerRepository
     {
         IHandler[] GetHandlers();
     }

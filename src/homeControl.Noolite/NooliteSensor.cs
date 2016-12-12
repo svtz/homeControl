@@ -70,25 +70,5 @@ namespace homeControl.Noolite
         {
             _adapter.CommandReceived -= AdapterOnCommandReceived;
         }
-
-        #region ISensor
-
-        public event EventHandler<SensorEventArgs> SensorActivated;
-        private void OnSensorActivated(SensorEventArgs e)
-        {
-            Guard.DebugAssertArgumentNotNull(e, nameof(e));
-
-            SensorActivated?.Invoke(this, e);
-        }
-
-        public event EventHandler<SensorEventArgs> SensorDeactivated;
-        private void OnSensorDeactivated(SensorEventArgs e)
-        {
-            Guard.DebugAssertArgumentNotNull(e, nameof(e));
-
-            SensorDeactivated?.Invoke(this, e);
-        }
-
-        #endregion
     }
 }

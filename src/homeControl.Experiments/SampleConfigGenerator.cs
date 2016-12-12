@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using homeControl.Configuration;
+using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
+using homeControl.Events.Configuration;
 using homeControl.Noolite.Configuration;
 using Newtonsoft.Json;
 
@@ -13,14 +15,25 @@ namespace homeControl.Experiments
         {
             var config = new JsonConfigurationStore();
 
+            var switchId = SwitchId.NewId();
             config.SwitchConfigurations = new ISwitchConfiguration[]
             {
-                new NooliteSwitchConfig() { SwitchId = SwitchId.NewId(), Channel = 1 } 
+                new NooliteSwitchConfig() { SwitchId = switchId, Channel = 1 } 
             };
 
+            var sensorId = SensorId.NewId();
             config.SensorConfigurations = new ISensorConfiguration[]
             {
-                new NooliteSensorConfig { Channel = 0, SensorId = SensorId.NewId() }, 
+                new NooliteSensorConfig { Channel = 0, SensorId = sensorId }, 
+            };
+
+            config.Bindings = new ISwitchToSensorBinding[]
+            {
+                new SwitchToSensorBinding
+                {
+                    SwitchId = switchId,
+                    SensorId = sensorId
+                }
             };
 
             var configString = JsonConvert.SerializeObject(config, new JsonSerializerSettings

@@ -7,7 +7,7 @@ namespace homeControl.Peripherals.IoC
     {
         public PeripheralsRegistry()
         {
-            For<ISwitchControllerSelector>().Use<SwitchControllerSelector>();
+            For<ISwitchControllerSelector>().Use<SwitchControllerSelector>().Singleton();
         }
     }
 }

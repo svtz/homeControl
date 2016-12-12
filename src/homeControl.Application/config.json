@@ -1,16 +1,23 @@
 {
-  "SwitchConfigurations": [
-    {
-      "$type": "homeControl.Noolite.Configuration.NooliteSwitchConfig, homeControl.Noolite",
-      "Channel": 1,
-      "SwitchId": "6b5f1ca7-2c55-4a87-a087-0f57d24fa1fd"
-    }
-  ],
-  "SensorConfigurations": [
-    {
-      "$type": "homeControl.Noolite.Configuration.NooliteSensorConfig, homeControl.Noolite",
-      "Channel": 0,
-      "SensorId": "0cd9e55b-f665-4cdb-b8e1-8ec03252d591"
-    }
-  ]
+    "SwitchConfigurations": [
+        {
+            "$type": "homeControl.Noolite.Configuration.NooliteSwitchConfig, homeControl.Noolite",
+            "Channel": 1,
+            "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c"
+        }
+    ],
+    "SensorConfigurations": [
+        {
+            "$type": "homeControl.Noolite.Configuration.NooliteSensorConfig, homeControl.Noolite",
+            "Channel": 0,
+            "SensorId": "1f94da1e-6fc8-4977-ab9a-96654adcacb8"
+        }
+    ],
+    "Bindings": [
+        {
+            "$type": "homeControl.Events.Configuration.SwitchToSensorBinding, homeControl.Events",
+            "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c",
+            "SensorId": "1f94da1e-6fc8-4977-ab9a-96654adcacb8"
+        }
+    ]
 }
