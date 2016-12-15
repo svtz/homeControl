@@ -1,5 +1,4 @@
-﻿using System;
-using homeControl.Configuration.Sensors;
+﻿using homeControl.Configuration.Sensors;
 
 namespace homeControl.Noolite.Configuration
 {

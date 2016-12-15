@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Events.Switches;

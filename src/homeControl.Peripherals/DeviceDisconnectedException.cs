@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace homeControl.Peripherals
+﻿namespace homeControl.Peripherals
 {
     public sealed class DeviceDisconnectedException : DeviceException
     {

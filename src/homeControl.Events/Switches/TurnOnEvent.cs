@@ -1,5 +1,4 @@
-﻿using System;
-using homeControl.Configuration.Switches;
+﻿using homeControl.Configuration.Switches;
 
 namespace homeControl.Events.Switches
 {

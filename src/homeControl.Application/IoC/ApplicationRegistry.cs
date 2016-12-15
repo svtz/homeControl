@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using homeControl.Configuration.IoC;
 using homeControl.Core.IoC;
 using homeControl.Events.IoC;

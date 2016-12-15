@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace homeControl.Core
+﻿namespace homeControl.Core
 {
     public interface IHandler
     {

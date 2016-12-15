@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace homeControl.Experiments
+﻿namespace homeControl.Experiments
 {
     public class Program
     {

@@ -1,5 +1,4 @@
-﻿using System;
-using homeControl.Configuration;
+﻿using homeControl.Configuration;
 
 namespace homeControl.Noolite
 {

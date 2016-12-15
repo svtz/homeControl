@@ -1,5 +1,4 @@
-﻿using homeControl.Configuration;
-using homeControl.Configuration.Bindings;
+﻿using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 
