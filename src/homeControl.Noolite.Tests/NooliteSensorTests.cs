@@ -36,6 +36,7 @@ namespace homeControl.Noolite.Tests
 
             var adapterMock = new Mock<IRX2164Adapter>();
             var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object);
+            sensor.Activate();
 
             adapterMock.Raise(ad => ad.CommandReceived += null, CreateCommandData(command, sensorConfig.Channel));
 
@@ -54,6 +55,7 @@ namespace homeControl.Noolite.Tests
 
             var gateMock = new Mock<ISensorGate>(MockBehavior.Strict);
             var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object);
+            sensor.Activate();
 
             Action act = () => adapterMock.Raise(ad => ad.CommandReceived += null, CreateCommandData(command, 13));
 
