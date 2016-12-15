@@ -12,15 +12,23 @@ namespace homeControl.Events.Tests
 {
     public class SwitchToSensorBinderTests
     {
-        public static IEnumerable<object[]> AbstractSensorEvents =>
+        public static IEnumerable<object[]> SensorActivationEvents =>
             new[]
             {
-                new object[] { new SensorActivatedEvent(SensorId.NewId()), },
-                new object[] { new SensorDeactivatedEvent(SensorId.NewId()), },
+                new object[] { new SensorActivatedEvent(SensorId.NewId()) },
+                new object[] { new SensorDeactivatedEvent(SensorId.NewId()) },
+            };
+
+        public static IEnumerable<object[]> SensorAutomationEvents =>
+            new[]
+            {
+                new object[] { new EnableSensorAutomationEvent(SensorId.NewId()) },
+                new object[] { new DisableSensorAutomationEvent(SensorId.NewId()) },
             };
 
         [Theory]
-        [MemberData(nameof(AbstractSensorEvents))]
+        [MemberData(nameof(SensorActivationEvents))]
+        [MemberData(nameof(SensorAutomationEvents))]
         public void TestCanHandleSensorEvent(AbstractSensorEvent @event)
         {
             var handler = new SwitchToSensorBinderHandler(Mock.Of<IEventPublisher>())
@@ -33,7 +41,8 @@ namespace homeControl.Events.Tests
         }
 
         [Theory]
-        [MemberData(nameof(AbstractSensorEvents))]
+        [MemberData(nameof(SensorActivationEvents))]
+        [MemberData(nameof(SensorAutomationEvents))]
         public void DontProcessEventWithNonMatchedId(AbstractSensorEvent @event)
         {
             var handler = new SwitchToSensorBinderHandler(Mock.Of<IEventPublisher>())
@@ -90,6 +99,64 @@ namespace homeControl.Events.Tests
             handler.Handle(sensorActivatedEvent);
 
             publisherMock.Verify(sc => sc.PublishEvent(It.IsAny<IEvent>()), Times.Once);
+        }
+
+        [Theory]
+        [MemberData(nameof(SensorAutomationEvents))]
+        public void Test_ChangingSensorRegime_ShouldNotCauseEventPublishing(AbstractSensorEvent @event)
+        {
+            var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
+            var handler = new SwitchToSensorBinderHandler(publisherMock.Object)
+            {
+                SwitchId = SwitchId.NewId(),
+                SensorId = @event.SensorId
+            };
+
+            handler.Handle(@event);
+
+            publisherMock.Verify(publisher => publisher.PublishEvent(It.IsAny<IEvent>()), Times.Never);
+        }
+
+        [Theory]
+        [MemberData(nameof(SensorActivationEvents))]
+        public void Test_WhenAutomationEnabled_ThenProcessEvents(AbstractSensorEvent @event)
+        {
+            var disableAutomationEvent = new DisableSensorAutomationEvent(@event.SensorId);
+            var enableAutomationEvent = new EnableSensorAutomationEvent(@event.SensorId);
+            var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
+            publisherMock.Setup(publisher => publisher.PublishEvent(It.IsAny<IEvent>()));
+            var handler = new SwitchToSensorBinderHandler(publisherMock.Object)
+            {
+                SwitchId = SwitchId.NewId(),
+                SensorId = @event.SensorId
+            };
+            handler.Handle(disableAutomationEvent);
+            handler.Handle(enableAutomationEvent);
+
+            handler.Handle(@event);
+
+            publisherMock.Verify(publisher => publisher.PublishEvent(It.IsAny<IEvent>()), Times.Once);
+        }
+
+        [Theory]
+        [MemberData(nameof(SensorActivationEvents))]
+        public void Test_WhenAutomationDisabled_ThenDontProcessEvents(AbstractSensorEvent @event)
+        {
+            var disableAutomationEvent = new DisableSensorAutomationEvent(@event.SensorId);
+            var enableAutomationEvent = new EnableSensorAutomationEvent(@event.SensorId);
+            var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
+            publisherMock.Setup(publisher => publisher.PublishEvent(It.IsAny<IEvent>()));
+            var handler = new SwitchToSensorBinderHandler(publisherMock.Object)
+            {
+                SwitchId = SwitchId.NewId(),
+                SensorId = @event.SensorId
+            };
+            handler.Handle(enableAutomationEvent);
+            handler.Handle(disableAutomationEvent);
+
+            handler.Handle(@event);
+
+            publisherMock.Verify(publisher => publisher.PublishEvent(It.IsAny<IEvent>()), Times.Never);
         }
     }
 }

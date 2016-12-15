@@ -38,6 +38,8 @@ namespace homeControl.Events
             }
         }
 
+        private bool _automationEnabled = true;
+
         public bool CanHandle(IEvent @event)
         {
             Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
@@ -53,15 +55,31 @@ namespace homeControl.Events
 
             if (@event is SensorActivatedEvent)
             {
-                _eventPublisher.PublishEvent(new TurnOnEvent(SwitchId));
+                PublishEventIfNeeded(new TurnOnEvent(SwitchId));
             }
             else if (@event is SensorDeactivatedEvent)
             {
-                _eventPublisher.PublishEvent(new TurnOffEvent(SwitchId));
+                PublishEventIfNeeded(new TurnOffEvent(SwitchId));
+            }
+            else if (@event is EnableSensorAutomationEvent)
+            {
+                _automationEnabled = true;
+            }
+            else if (@event is DisableSensorAutomationEvent)
+            {
+                _automationEnabled = false;
             }
             else
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        private void PublishEventIfNeeded(IEvent @event)
+        {
+            if (_automationEnabled)
+            {
+                _eventPublisher.PublishEvent(@event);
             }
         }
     }

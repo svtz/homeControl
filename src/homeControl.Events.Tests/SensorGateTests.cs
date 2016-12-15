@@ -6,7 +6,7 @@ using Xunit;
 
 namespace homeControl.Events.Tests
 {
-    public class SensorWatcherTests
+    public class SensorGateTests
     {
         [Fact]
         public void Test_WhenSensorActivated_ThenPublishActivationEvent()
