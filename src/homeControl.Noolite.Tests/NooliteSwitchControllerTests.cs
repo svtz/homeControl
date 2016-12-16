@@ -77,5 +77,37 @@ namespace homeControl.Noolite.Tests
 
             configRepositoryMock.Verify(repo => repo.ContainsConfig<NooliteSwitchConfig>(switchId), Times.Once);
         }
+
+        [Theory]
+        [InlineData(127, 0, 1.0, 127)]
+        [InlineData(127, 0, 0.0, 0)]
+        [InlineData(127, 0, 0.5, 64)]
+        [InlineData(100, 50, 1.0, 100)]
+        [InlineData(100, 50, 0.0, 50)]
+        [InlineData(100, 50, 0.2, 60)]
+        public void Test_SetPower_ChangesAdapterLevel(byte fullPower, byte zeroPower, double requestedPower, byte expectedLevel)
+        {
+            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
+            var config = new NooliteSwitchConfig
+            {
+                SwitchId = SwitchId.NewId(),
+                Channel = 98,
+                FullPowerLevel = fullPower,
+                ZeroPowerLevel = zeroPower
+            };
+            configRepositoryMock
+                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(config.SwitchId))
+                .Returns(true);
+            configRepositoryMock
+                .Setup(repository => repository.GetConfig<NooliteSwitchConfig>(config.SwitchId))
+                .Returns(config);
+            var adapterMock = new Mock<IPC11XXAdapter>(MockBehavior.Strict);
+            adapterMock.Setup(adapter => adapter.SendCommand(PC11XXCommand.SetLevel, config.Channel, expectedLevel));
+            var controller = new NooliteSwitchController(configRepositoryMock.Object, adapterMock.Object);
+
+            controller.SetPower(config.SwitchId, requestedPower);
+
+            adapterMock.Verify(adapter => adapter.SendCommand(PC11XXCommand.SetLevel, config.Channel, expectedLevel), Times.Once);
+        }
     }
 }

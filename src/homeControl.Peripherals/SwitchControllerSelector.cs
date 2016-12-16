@@ -41,5 +41,16 @@ namespace homeControl.Peripherals
                 controller.TurnOff(switchId);
             }
         }
+
+        public void SetPower(SwitchId switchId, double power)
+        {
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
+            Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
+
+            foreach (var controller in _controllerImplementations.Where(cntr => cntr.CanHandleSwitch(switchId)))
+            {
+                controller.SetPower(switchId, power);
+            }
+        }
     }
 }

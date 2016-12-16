@@ -22,5 +22,12 @@ namespace homeControl.Application
             Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Console.WriteLine($"{switchId}: TurnOff");
         }
+
+        public void SetPower(SwitchId switchId, double power)
+        {
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
+            Guard.DebugAssertArgument(power >= 0 && power <= 1, nameof(switchId));
+            Console.WriteLine($"{switchId}: SetPower {power:F}");
+        }
     }
 }

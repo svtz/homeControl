@@ -1,4 +1,6 @@
-﻿using homeControl.Configuration.Switches;
+﻿using System;
+using homeControl.Configuration;
+using homeControl.Configuration.Switches;
 using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
 using homeControl.Peripherals;
@@ -31,21 +33,36 @@ namespace homeControl.Noolite
 
         public void TurnOn(SwitchId switchId)
         {
-            ExecuteImpl(switchId, PC11XXCommand.On);
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
+            Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
+
+            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);
+            _adapter.SendCommand(PC11XXCommand.On, config.Channel);
         }
 
         public void TurnOff(SwitchId switchId)
-        {
-            ExecuteImpl(switchId, PC11XXCommand.Off);
-        }
-
-        private void ExecuteImpl(SwitchId switchId, PC11XXCommand command)
         {
             Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
             var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);
-            _adapter.SendCommand(command, config.Channel);
+            _adapter.SendCommand(PC11XXCommand.Off, config.Channel);
+        }
+
+        public void SetPower(SwitchId switchId, double power)
+        {
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
+            Guard.DebugAssertArgument(power >= 0 && power <= 1, nameof(switchId));
+            Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
+
+            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);
+            if (config.FullPowerLevel <= config.ZeroPowerLevel)
+            {
+                throw new InvalidConfigurationException($"Invalid configuration for switch {switchId}. FullPowerLevel should be greater then ZeroPowerLevel.");
+            }
+
+            var level = Convert.ToByte(config.ZeroPowerLevel + (config.FullPowerLevel - config.ZeroPowerLevel) * power);
+            _adapter.SendCommand(PC11XXCommand.SetLevel, config.Channel, level);
         }
     }
 }

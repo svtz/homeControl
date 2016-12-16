@@ -6,5 +6,8 @@ namespace homeControl.Noolite.Configuration
     {
         public byte Channel { get; set; }
         public SwitchId SwitchId { get; set; }
+
+        public byte FullPowerLevel { get; set; }
+        public byte ZeroPowerLevel { get; set; }
     }
 }

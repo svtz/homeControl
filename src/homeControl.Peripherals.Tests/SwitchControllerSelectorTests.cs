@@ -82,5 +82,20 @@ namespace homeControl.Peripherals.Tests
 
             implMock.Verify(cntr => cntr.TurnOff(switchId), Times.Once);
         }
+
+        [Fact]
+        public void Test_SelectorSetPower_CallsImplsSetPower()
+        {
+            var switchId = SwitchId.NewId();
+            const double power = 0.73;
+            var implMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            implMock.Setup(cntr => cntr.CanHandleSwitch(switchId)).Returns(true);
+            implMock.Setup(cntr => cntr.SetPower(switchId, power));
+
+            var selector = new SwitchControllerSelector(new[] { implMock.Object });
+            selector.SetPower(switchId, power);
+
+            implMock.Verify(cntr => cntr.SetPower(switchId, power), Times.Once);
+        }
     }
 }
