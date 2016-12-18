@@ -15,6 +15,7 @@ namespace homeControl.Events.Tests
             {
                 new object[] { new TurnOnEvent(SwitchId.NewId()), }, 
                 new object[] { new TurnOffEvent(SwitchId.NewId()), }, 
+                new object[] { new SetPowerEvent(SwitchId.NewId(), 0.333), }, 
             };
 
         [Theory]
@@ -104,6 +105,25 @@ namespace homeControl.Events.Tests
             handler.Handle(onEvent);
 
             switchControllerMock.Verify(sc => sc.TurnOff(swicthId), Times.Once);
+        }
+
+        [Fact]
+        public void TestSetPower()
+        {
+            var swicthId = SwitchId.NewId();
+            const double power = 0.4;
+            var onEvent = new SetPowerEvent(swicthId, power);
+            var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
+            switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
+            switchControllerMock.Setup(cntr => cntr.SetPower(swicthId, power));
+
+            var handler = new SwitchEventHandler(switchControllerMock.Object)
+            {
+                SwitchId = swicthId
+            };
+            handler.Handle(onEvent);
+
+            switchControllerMock.Verify(sc => sc.SetPower(swicthId, power), Times.Once);
         }
     }
 }

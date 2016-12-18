@@ -48,6 +48,11 @@ namespace homeControl.Events.Switches
             {
                 _switchController.TurnOff(SwitchId);
             }
+            else if (@event is SetPowerEvent)
+            {
+                var setPower = (SetPowerEvent)@event;
+                _switchController.SetPower(SwitchId, setPower.Power);
+            }
             else
             {
                 throw new NotImplementedException();
