@@ -1,0 +1,33 @@
+{
+    "dependencies": {
+        "homeControl.Core": "1.0.0-*",
+        "homeControl.Events": "1.0.0-*",
+        "Microsoft.ApplicationInsights.AspNetCore": "1.0.2",
+        "Microsoft.AspNetCore.Mvc": "1.1.0",
+        "Microsoft.AspNetCore.Routing": "1.1.0",
+        "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+        "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
+        "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
+        "Microsoft.Extensions.Configuration.Json": "1.1.0",
+        "Microsoft.Extensions.Logging": "1.1.0",
+        "Microsoft.Extensions.Logging.Console": "1.1.0",
+        "Microsoft.Extensions.Logging.Debug": "1.1.0",
+        "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+        "NETStandard.Library": "1.6.1",
+        "StructureMap": "4.4.2"
+    },
+
+    "frameworks": {
+        "netstandard1.6": {
+            "imports": "dnxcore50"
+        }
+    },
+
+    "buildOptions": {
+        "compile": {
+            "includeFiles": [
+                "../../GlobalAssemblyInfo.cs"
+            ]
+        }
+    }
+}
