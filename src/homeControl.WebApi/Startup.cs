@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.Swagger.Application;
+using Swashbuckle.Swagger.Model;
+using Swashbuckle.SwaggerUi.Application;
 
 namespace homeControl.WebApi
 {
@@ -34,6 +37,16 @@ namespace homeControl.WebApi
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SingleApiVersion(new Info()
+                {
+                    Version = "v1",
+                    Title = "homeControl API",
+                    Description = "API to control devices in your home",
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -47,6 +60,9 @@ namespace homeControl.WebApi
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUi();
         }
     }
 }
