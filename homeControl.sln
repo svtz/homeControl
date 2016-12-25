@@ -45,6 +45,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Peripherals.Tes
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.WebApi", "src\homeControl.WebApi\homeControl.WebApi.xproj", "{17B4FFE5-5559-4F3F-8635-0CBC0D118F2A}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.WebApi.Tests", "src\homeControl.WebApi.Tests\homeControl.WebApi.Tests.xproj", "{DA1B150C-00EF-4740-85FE-9D251C675452}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{17B4FFE5-5559-4F3F-8635-0CBC0D118F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17B4FFE5-5559-4F3F-8635-0CBC0D118F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17B4FFE5-5559-4F3F-8635-0CBC0D118F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA1B150C-00EF-4740-85FE-9D251C675452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA1B150C-00EF-4740-85FE-9D251C675452}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA1B150C-00EF-4740-85FE-9D251C675452}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA1B150C-00EF-4740-85FE-9D251C675452}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,5 +139,6 @@ Global
 		{FA6442D6-7107-4189-8843-CA20D713F9F6} = {5E6AD965-3922-494B-8811-E338422090DE}
 		{CA66C50F-1740-41E6-B1AB-0A038C32CF11} = {4E5A487F-908F-4B60-8F95-B0FDA4E701CB}
 		{17B4FFE5-5559-4F3F-8635-0CBC0D118F2A} = {5E6AD965-3922-494B-8811-E338422090DE}
+		{DA1B150C-00EF-4740-85FE-9D251C675452} = {4E5A487F-908F-4B60-8F95-B0FDA4E701CB}
 	EndGlobalSection
 EndGlobal
