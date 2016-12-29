@@ -2,6 +2,7 @@
     "version": "1.0.0-*",
 
     "dependencies": {
+        "homeControl.Configuration": "1.0.0-*",
         "homeControl.Core": "1.0.0-*",
         "homeControl.Events": "1.0.0-*",
         "Microsoft.AspNetCore.Mvc": "1.1.0",

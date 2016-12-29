@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using homeControl.Core;
+using homeControl.WebApi.Controllers;
+using Moq;
 using Xunit;
 
 namespace homeControl.WebApi.Tests
 {
-    public class Class1
+    public class SwitchesControllerTests
     {
         [Fact]
-        public void Test()
+        public void TestGetSwitches_ReturnsConfiguredSwitches()
         {
-            Assert.Equal(4, 2 + 2);
+            var controller = new SwitchesController(Mock.Of<IEventPublisher>());
+
+            var switches = controller.GetAll();
         }
     }
 }

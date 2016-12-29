@@ -11,7 +11,7 @@ namespace homeControl.Noolite.IoC
         {
             For<IPC11XXAdapter>().Use<PC11XXAdapterWrapper>().Singleton();
             For<IRX2164Adapter>().Use<RX2164AdapterWrapper>().Singleton();
-            For<ISwitchController>().Add<NooliteSwitchController>().Singleton();
+            //For<ISwitchController>().Add<NooliteSwitchController>().Singleton();
             ForSingletonOf<NooliteSensor>();
             For<IInitializer>().Add<NooliteSensorLoader>().Singleton();
         }
