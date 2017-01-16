@@ -13,7 +13,5 @@ namespace homeControl.WebApi.Dto
         public SwitchKind Kind { get; set; }
 
         public SwitchAutomation Automation { get; set; }
-
-        public SwitchValueType ValueType { get; set; }
     }
 }
