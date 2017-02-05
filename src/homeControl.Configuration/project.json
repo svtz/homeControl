@@ -4,7 +4,7 @@
     "dependencies": {
         "homeControl.Guard": "1.0.0-*",
         "NETStandard.Library": "1.6.1",
-        "Newtonsoft.Json": "9.0.2-beta1",
+        "Newtonsoft.Json": "9.0.2-beta2",
         "StructureMap": "4.4.2"
     },
 
