@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using homeControl.Core;
 using homeControl.Events.Sensors;
@@ -14,33 +13,26 @@ namespace homeControl.WebApi.Controllers
     public class SwitchesController : Controller
     {
         private readonly IEventPublisher _eventPublisher;
-        private readonly Lazy<ReadOnlyDictionary<Guid, SwitchApiConfig>> _configuration;
-        private ReadOnlyDictionary<Guid, SwitchApiConfig> Configruration => _configuration.Value;
+        private readonly IClientApiConfigurationRepository _configuration;
         private readonly ISetSwitchValueStrategy[] _setValueStrategies;
 
-        public SwitchesController(IEventPublisher eventPublisher, IClientApiConfigurationRepository configuration,
+        public SwitchesController(IEventPublisher eventPublisher,
+            IClientApiConfigurationRepository configuration,
             ISetSwitchValueStrategy[] setSwitchValueStrategies)
         {
             Guard.DebugAssertArgumentNotNull(eventPublisher, nameof(eventPublisher));
             Guard.DebugAssertArgumentNotNull(configuration, nameof(configuration));
 
             _eventPublisher = eventPublisher;
+            _configuration = configuration;
 
-            _configuration = new Lazy<ReadOnlyDictionary<Guid, SwitchApiConfig>>(() => LoadConfig(configuration));
             _setValueStrategies = setSwitchValueStrategies;
         }
-
-        private ReadOnlyDictionary<Guid, SwitchApiConfig> LoadConfig(IClientApiConfigurationRepository configuration)
-        {
-            var configDict = configuration.GetClientApiConfig().ToDictionary(cfg => cfg.ConfigId);
-            return new ReadOnlyDictionary<Guid, SwitchApiConfig>(configDict);
-        }
-
 
         [HttpGet]
         public SwitchDto[] GetDescriptions()
         {
-            return Configruration.Values.Select(CreateSwitchDto).ToArray();
+            return _configuration.GetAll().Select(CreateSwitchDto).ToArray();
         }
 
         private SwitchDto CreateSwitchDto(SwitchApiConfig config)
@@ -60,8 +52,8 @@ namespace homeControl.WebApi.Controllers
         [HttpPut]
         public IActionResult SetValue(Guid id, object value)
         {
-            SwitchApiConfig config;
-            if (!Configruration.TryGetValue(id, out config))
+            var config = _configuration.TryGetById(id);
+            if (config == null)
             {
                 return BadRequest();
             }
@@ -83,8 +75,8 @@ namespace homeControl.WebApi.Controllers
         [HttpPut]
         public IActionResult TurnOn(Guid id)
         {
-            SwitchApiConfig config;
-            if (!Configruration.TryGetValue(id, out config))
+            var config = _configuration.TryGetById(id);
+            if (config == null)
             {
                 return BadRequest();
             }
@@ -97,8 +89,8 @@ namespace homeControl.WebApi.Controllers
         [HttpPut]
         public IActionResult TurnOff(Guid id)
         {
-            SwitchApiConfig config;
-            if (!Configruration.TryGetValue(id, out config))
+            var config = _configuration.TryGetById(id);
+            if (config == null)
             {
                 return BadRequest();
             }
@@ -111,19 +103,13 @@ namespace homeControl.WebApi.Controllers
         [HttpPut]
         public IActionResult EnableAutomation(Guid id)
         {
-            SwitchApiConfig config;
-            if (!Configruration.TryGetValue(id, out config))
+            var config = _configuration.TryGetById(id) as AutomatedSwitchApiConfig;
+            if (config == null)
             {
                 return BadRequest();
             }
 
-            var automatedConfig = config as AutomatedSwitchApiConfig;
-            if (automatedConfig == null)
-            {
-                return BadRequest();
-            }
-
-            _eventPublisher.PublishEvent(new EnableSensorAutomationEvent(automatedConfig.SensorId));
+            _eventPublisher.PublishEvent(new EnableSensorAutomationEvent(config.SensorId));
 
             return Ok();
         }
@@ -131,19 +117,13 @@ namespace homeControl.WebApi.Controllers
         [HttpPut]
         public IActionResult DisableAutomation(Guid id)
         {
-            SwitchApiConfig config;
-            if (!Configruration.TryGetValue(id, out config))
+            var config = _configuration.TryGetById(id) as AutomatedSwitchApiConfig;
+            if (config == null)
             {
                 return BadRequest();
             }
 
-            var automatedConfig = config as AutomatedSwitchApiConfig;
-            if (automatedConfig == null)
-            {
-                return BadRequest();
-            }
-
-            _eventPublisher.PublishEvent(new DisableSensorAutomationEvent(automatedConfig.SensorId));
+            _eventPublisher.PublishEvent(new DisableSensorAutomationEvent(config.SensorId));
 
             return Ok();
         }

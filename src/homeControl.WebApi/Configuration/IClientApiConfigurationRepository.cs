@@ -1,7 +1,10 @@
-﻿namespace homeControl.WebApi.Configuration
+﻿using System;
+
+namespace homeControl.WebApi.Configuration
 {
     public interface IClientApiConfigurationRepository
     {
-        SwitchApiConfig[] GetClientApiConfig();
+        SwitchApiConfig[] GetAll();
+        SwitchApiConfig TryGetById(Guid id);
     }
 }
