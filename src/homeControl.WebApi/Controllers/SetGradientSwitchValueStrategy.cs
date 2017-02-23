@@ -20,20 +20,20 @@ namespace homeControl.WebApi.Controllers
         }
 
 
-        public SetPowerEvent CreateSetPowerEvent(Guid id, object value)
+        public SetPowerEvent CreateSetPowerEvent(SwitchId id, object value)
         {
-            return new SetPowerEvent(new SwitchId(id), (double)value);
+            return new SetPowerEvent(id, (double)value);
         }
 
-        public AbstractSwitchEvent CreateControlEvent(Guid id, object value)
+        public AbstractSwitchEvent CreateControlEvent(SwitchId id, object value)
         {
             var d = (double)value;
             if (AreEqual(d, SetPowerEvent.MinPower))
             {
-                return new TurnOffEvent(new SwitchId(id));
+                return new TurnOffEvent(id);
             }
 
-            return new TurnOnEvent(new SwitchId(id));
+            return new TurnOnEvent(id);
         }
 
         private static bool AreEqual(double a, double b)

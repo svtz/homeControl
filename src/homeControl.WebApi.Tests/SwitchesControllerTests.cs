@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
@@ -28,31 +29,35 @@ namespace homeControl.WebApi.Tests
             {
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = SwitchKind.ToggleSwitch
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId()
                 },
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch2",
                     Description = "Description2",
-                    Kind = SwitchKind.GradientSwitch
+                    Kind = SwitchKind.GradientSwitch,
+                    SwitchId = SwitchId.NewId()
                 },
                 new AutomatedSwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch3-automated",
                     Description = "Description3",
-                    Kind = SwitchKind.ToggleSwitch
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId()
                 },
                 new AutomatedSwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch4-automated",
                     Description = "Description4",
-                    Kind = SwitchKind.GradientSwitch
+                    Kind = SwitchKind.GradientSwitch,
+                    SwitchId = SwitchId.NewId()
                 }
             };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(configs);
@@ -63,7 +68,7 @@ namespace homeControl.WebApi.Tests
             Assert.Equal(configs.Length, switches.Length);
             Assert.Equal(configs.Select(c => c.Name), switches.Select(s => s.Name));
             Assert.Equal(configs.Select(c => c.Description), switches.Select(s => s.Description));
-            Assert.Equal(configs.Select(c => c.Id), switches.Select(s => s.Id));
+            Assert.Equal(configs.Select(c => c.ConfigId), switches.Select(s => s.Id));
             Assert.Equal(configs.Select(c => c.Kind), switches.Select(s => s.Kind));
             Assert.Equal(configs.Select(c => c is AutomatedSwitchApiConfig ? SwitchAutomation.Supported : SwitchAutomation.None), 
                          switches.Select(s => s.Automation));
@@ -76,7 +81,7 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
                     Kind = SwitchKind.ToggleSwitch
@@ -100,15 +105,16 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = switchKind
+                    Kind = switchKind,
+                    SwitchId = SwitchId.NewId()
                 };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(new [] {config});
             var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
 
-            var result = controller.SetValue(config.Id, value);
+            var result = controller.SetValue(config.ConfigId, value);
 
             Assert.IsType<BadRequestResult>(result);
         }
@@ -124,20 +130,21 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = SwitchKind.GradientSwitch
+                    Kind = SwitchKind.GradientSwitch,
+                    SwitchId = SwitchId.NewId()
                 };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            publisherMock.Setup(m => m.PublishEvent(It.Is<AbstractSwitchEvent>(e => e.SwitchId.Id == config.Id && e.GetType() == controlEventType)))
+            publisherMock.Setup(m => m.PublishEvent(It.Is<AbstractSwitchEvent>(e => e.SwitchId == config.SwitchId && e.GetType() == controlEventType)))
                          .Verifiable();
-            publisherMock.Setup(m => m.PublishEvent(It.Is<SetPowerEvent>(e => e.SwitchId.Id == config.Id && AreEqual(e.Power, value))))
+            publisherMock.Setup(m => m.PublishEvent(It.Is<SetPowerEvent>(e => e.SwitchId == config.SwitchId && AreEqual(e.Power, value))))
                          .Verifiable();
             var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
 
-            var result = controller.SetValue(config.Id, value);
+            var result = controller.SetValue(config.ConfigId, value);
 
             Assert.IsType<OkResult>(result);
             publisherMock.VerifyAll();
@@ -152,20 +159,21 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = SwitchKind.ToggleSwitch
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId()
                 };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            publisherMock.Setup(m => m.PublishEvent(It.Is<AbstractSwitchEvent>(e => e.SwitchId.Id == config.Id && e.GetType() == controlEventType)))
+            publisherMock.Setup(m => m.PublishEvent(It.Is<AbstractSwitchEvent>(e => e.SwitchId == config.SwitchId && e.GetType() == controlEventType)))
                          .Verifiable();
-            publisherMock.Setup(m => m.PublishEvent(It.Is<SetPowerEvent>(e => e.SwitchId.Id == config.Id && AreEqual(e.Power, value ? 1 : 0))))
+            publisherMock.Setup(m => m.PublishEvent(It.Is<SetPowerEvent>(e => e.SwitchId == config.SwitchId && AreEqual(e.Power, value ? 1 : 0))))
                          .Verifiable();
             var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
 
-            var result = controller.SetValue(config.Id, value);
+            var result = controller.SetValue(config.ConfigId, value);
 
             Assert.IsType<OkResult>(result);
             publisherMock.VerifyAll();
@@ -183,10 +191,11 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = SwitchKind.GradientSwitch
+                    Kind = SwitchKind.GradientSwitch,
+                    SwitchId = SwitchId.NewId()
                 };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
             var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
@@ -205,17 +214,18 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = switchKind
+                    Kind = switchKind,
+                    SwitchId = SwitchId.NewId()
                 };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            publisherMock.Setup(m => m.PublishEvent(It.Is<TurnOnEvent>(e => e.SwitchId.Id == config.Id)));
+            publisherMock.Setup(m => m.PublishEvent(It.Is<TurnOnEvent>(e => e.SwitchId == config.SwitchId)));
             var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
 
-            var result = controller.TurnOn(config.Id);
+            var result = controller.TurnOn(config.ConfigId);
 
             Assert.IsType<OkResult>(result);
             publisherMock.Verify(m => m.PublishEvent(It.IsAny<TurnOnEvent>()), Times.Once);
@@ -228,10 +238,11 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = SwitchKind.ToggleSwitch
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId()
                 };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
             var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
@@ -250,17 +261,18 @@ namespace homeControl.WebApi.Tests
             var config =
                 new SwitchApiConfig
                 {
-                    Id = Guid.NewGuid(),
+                    ConfigId = Guid.NewGuid(),
                     Name = "Switch1",
                     Description = "Description1",
-                    Kind = switchKind
+                    Kind = switchKind,
+                    SwitchId = SwitchId.NewId()
                 };
             configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            publisherMock.Setup(m => m.PublishEvent(It.Is<TurnOffEvent>(e => e.SwitchId.Id == config.Id)));
+            publisherMock.Setup(m => m.PublishEvent(It.Is<TurnOffEvent>(e => e.SwitchId == config.SwitchId)));
             var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
 
-            var result = controller.TurnOff(config.Id);
+            var result = controller.TurnOff(config.ConfigId);
 
             Assert.IsType<OkResult>(result);
             publisherMock.Verify(m => m.PublishEvent(It.IsAny<TurnOffEvent>()), Times.Once);

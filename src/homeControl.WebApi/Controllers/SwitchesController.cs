@@ -33,7 +33,7 @@ namespace homeControl.WebApi.Controllers
 
         private ReadOnlyDictionary<Guid, SwitchApiConfig> LoadConfig(IClientApiConfigurationRepository configuration)
         {
-            var configDict = configuration.GetClientApiConfig().ToDictionary(cfg => cfg.Id);
+            var configDict = configuration.GetClientApiConfig().ToDictionary(cfg => cfg.ConfigId);
             return new ReadOnlyDictionary<Guid, SwitchApiConfig>(configDict);
         }
 
@@ -53,7 +53,7 @@ namespace homeControl.WebApi.Controllers
                 Automation = config is AutomatedSwitchApiConfig ? SwitchAutomation.Supported : SwitchAutomation.None,
                 Kind = config.Kind,
                 Description = config.Description,
-                Id = config.Id,
+                Id = config.ConfigId,
                 Name = config.Name
             };
         }
@@ -72,8 +72,8 @@ namespace homeControl.WebApi.Controllers
                 return BadRequest();
             }
 
-            var e1 = strategy.CreateControlEvent(id, value);
-            var e2 = strategy.CreateSetPowerEvent(id, value);
+            var e1 = strategy.CreateControlEvent(config.SwitchId, value);
+            var e2 = strategy.CreateSetPowerEvent(config.SwitchId, value);
 
             _eventPublisher.PublishEvent(e1);
             _eventPublisher.PublishEvent(e2);
@@ -90,7 +90,7 @@ namespace homeControl.WebApi.Controllers
                 return BadRequest();
             }
 
-            _eventPublisher.PublishEvent(new TurnOnEvent(new SwitchId(id)));
+            _eventPublisher.PublishEvent(new TurnOnEvent(config.SwitchId));
 
             return Ok();
         }
@@ -104,7 +104,7 @@ namespace homeControl.WebApi.Controllers
                 return BadRequest();
             }
 
-            _eventPublisher.PublishEvent(new TurnOffEvent(new SwitchId(id)));
+            _eventPublisher.PublishEvent(new TurnOffEvent(config.SwitchId));
 
             return Ok();
         }

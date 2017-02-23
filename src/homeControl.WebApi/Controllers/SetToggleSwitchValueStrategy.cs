@@ -17,17 +17,17 @@ namespace homeControl.WebApi.Controllers
             return false;
         }
 
-        public SetPowerEvent CreateSetPowerEvent(Guid id, object value)
+        public SetPowerEvent CreateSetPowerEvent(SwitchId id, object value)
         {
-            return new SetPowerEvent(new SwitchId(id), (bool)value ? SetPowerEvent.MaxPower : SetPowerEvent.MinPower);
+            return new SetPowerEvent(id, (bool)value ? SetPowerEvent.MaxPower : SetPowerEvent.MinPower);
         }
 
-        public AbstractSwitchEvent CreateControlEvent(Guid id, object value)
+        public AbstractSwitchEvent CreateControlEvent(SwitchId id, object value)
         {
             var b = (bool)value;
             return b
-                ? (AbstractSwitchEvent)new TurnOnEvent(new SwitchId(id)) 
-                : (AbstractSwitchEvent)new TurnOffEvent(new SwitchId(id));
+                ? (AbstractSwitchEvent)new TurnOnEvent(id) 
+                : (AbstractSwitchEvent)new TurnOffEvent(id);
         }
     }
 }
