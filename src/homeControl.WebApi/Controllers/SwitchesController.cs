@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
-using homeControl.Configuration.Switches;
 using homeControl.Core;
+using homeControl.Events.Sensors;
 using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Dto;
@@ -110,15 +109,43 @@ namespace homeControl.WebApi.Controllers
         }
 
         [HttpPut]
-        public HttpResponseMessage EnableAutomation(Guid id)
+        public IActionResult EnableAutomation(Guid id)
         {
-            throw new NotImplementedException();
+            SwitchApiConfig config;
+            if (!Configruration.TryGetValue(id, out config))
+            {
+                return BadRequest();
+            }
+
+            var automatedConfig = config as AutomatedSwitchApiConfig;
+            if (automatedConfig == null)
+            {
+                return BadRequest();
+            }
+
+            _eventPublisher.PublishEvent(new EnableSensorAutomationEvent(automatedConfig.SensorId));
+
+            return Ok();
         }
 
         [HttpPut]
-        public HttpResponseMessage DisableAutomation(Guid id)
+        public IActionResult DisableAutomation(Guid id)
         {
-            throw new NotImplementedException();
+            SwitchApiConfig config;
+            if (!Configruration.TryGetValue(id, out config))
+            {
+                return BadRequest();
+            }
+
+            var automatedConfig = config as AutomatedSwitchApiConfig;
+            if (automatedConfig == null)
+            {
+                return BadRequest();
+            }
+
+            _eventPublisher.PublishEvent(new DisableSensorAutomationEvent(automatedConfig.SensorId));
+
+            return Ok();
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using homeControl.Core;
+using homeControl.Events.Sensors;
 using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Controllers;
@@ -276,6 +278,146 @@ namespace homeControl.WebApi.Tests
 
             Assert.IsType<OkResult>(result);
             publisherMock.Verify(m => m.PublishEvent(It.IsAny<TurnOffEvent>()), Times.Once);
+        }
+
+        [Fact]
+        public void TestEnableAutomation_ReturnsBadRequest_WhenRequestedInvalidId()
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new AutomatedSwitchApiConfig
+                {
+                    ConfigId = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId(),
+                    SensorId = SensorId.NewId()
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new SwitchApiConfig[] { config });
+            var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.EnableAutomation(Guid.NewGuid());
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public void TestEnableAutomation_ReturnsBadRequest_WhenSwitchIsNotAutomated()
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new SwitchApiConfig
+                {
+                    ConfigId = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId(),
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new [] { config });
+            var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.EnableAutomation(config.ConfigId);
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Theory]
+        [InlineData(SwitchKind.GradientSwitch)]
+        [InlineData(SwitchKind.ToggleSwitch)]
+        public void TestEnableAutomation_PublishedEnableAutomationEvent(SwitchKind switchKind)
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new AutomatedSwitchApiConfig
+                {
+                    ConfigId = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = switchKind,
+                    SwitchId = SwitchId.NewId(),
+                    SensorId = SensorId.NewId()
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new SwitchApiConfig[] { config });
+            var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
+            publisherMock.Setup(m => m.PublishEvent(It.Is<EnableSensorAutomationEvent>(e => e.SensorId == config.SensorId)));
+            var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.EnableAutomation(config.ConfigId);
+
+            Assert.IsType<OkResult>(result);
+            publisherMock.Verify(m => m.PublishEvent(It.IsAny<EnableSensorAutomationEvent>()), Times.Once);
+        }
+
+        [Fact]
+        public void TestDisableAutomation_ReturnsBadRequest_WhenRequestedInvalidId()
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new AutomatedSwitchApiConfig
+                {
+                    ConfigId = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId(),
+                    SensorId = SensorId.NewId()
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new SwitchApiConfig[] { config });
+            var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.DisableAutomation(Guid.NewGuid());
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public void TestDisableAutomation_ReturnsBadRequest_WhenSwitchIsNotAutomated()
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new SwitchApiConfig
+                {
+                    ConfigId = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = SwitchKind.ToggleSwitch,
+                    SwitchId = SwitchId.NewId(),
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
+            var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.DisableAutomation(config.ConfigId);
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Theory]
+        [InlineData(SwitchKind.GradientSwitch)]
+        [InlineData(SwitchKind.ToggleSwitch)]
+        public void TestDisableAutomation_PublishedEnableAutomationEvent(SwitchKind switchKind)
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new AutomatedSwitchApiConfig
+                {
+                    ConfigId = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = switchKind,
+                    SwitchId = SwitchId.NewId(),
+                    SensorId = SensorId.NewId()
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new SwitchApiConfig[] { config });
+            var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
+            publisherMock.Setup(m => m.PublishEvent(It.Is<DisableSensorAutomationEvent>(e => e.SensorId == config.SensorId)));
+            var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.DisableAutomation(config.ConfigId);
+
+            Assert.IsType<OkResult>(result);
+            publisherMock.Verify(m => m.PublishEvent(It.IsAny<DisableSensorAutomationEvent>()), Times.Once);
         }
     }
 }
