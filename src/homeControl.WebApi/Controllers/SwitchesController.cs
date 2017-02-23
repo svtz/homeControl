@@ -2,7 +2,9 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using homeControl.Configuration.Switches;
 using homeControl.Core;
+using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +38,6 @@ namespace homeControl.WebApi.Controllers
         }
 
 
-        // GET api/switches
         [HttpGet]
         public SwitchDto[] GetDescriptions()
         {
@@ -57,7 +58,6 @@ namespace homeControl.WebApi.Controllers
             };
         }
 
-        // PUT api/switches
         [HttpPut]
         public IActionResult SetValue(Guid id, object value)
         {
@@ -81,14 +81,40 @@ namespace homeControl.WebApi.Controllers
             return Ok();
         }
 
-        // PUT api/switches
+        [HttpPut]
+        public IActionResult TurnOn(Guid id)
+        {
+            SwitchApiConfig config;
+            if (!Configruration.TryGetValue(id, out config))
+            {
+                return BadRequest();
+            }
+
+            _eventPublisher.PublishEvent(new TurnOnEvent(new SwitchId(id)));
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public IActionResult TurnOff(Guid id)
+        {
+            SwitchApiConfig config;
+            if (!Configruration.TryGetValue(id, out config))
+            {
+                return BadRequest();
+            }
+
+            _eventPublisher.PublishEvent(new TurnOffEvent(new SwitchId(id)));
+
+            return Ok();
+        }
+
         [HttpPut]
         public HttpResponseMessage EnableAutomation(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        // PUT api/switches
         [HttpPut]
         public HttpResponseMessage DisableAutomation(Guid id)
         {

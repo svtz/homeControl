@@ -94,7 +94,7 @@ namespace homeControl.WebApi.Tests
         [InlineData(SwitchKind.GradientSwitch, false)]
         [InlineData(SwitchKind.GradientSwitch, 1.1d)]
         [InlineData(SwitchKind.GradientSwitch, -0.1d)]
-        public void TestSetValue_ReturnsBadRequest_WhenValueTypeDoesNotMatchConfiguration(SwitchKind switchKind, object value)
+        public void TestSetValue_ReturnsBadRequest_WhenValueTypeDoesNotSwitchKind(SwitchKind switchKind, object value)
         {
             var configMock = new Mock<IClientApiConfigurationRepository>();
             var config =
@@ -174,6 +174,96 @@ namespace homeControl.WebApi.Tests
         private static bool AreEqual(double a, double b)
         {
             return Math.Abs(a - b) < double.Epsilon;
+        }
+
+        [Fact]
+        public void TestTurnOn_ReturnsBadRequest_WhenRequestedInvalidId()
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new SwitchApiConfig
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = SwitchKind.GradientSwitch
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
+            var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.TurnOn(Guid.NewGuid());
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Theory]
+        [InlineData(SwitchKind.GradientSwitch)]
+        [InlineData(SwitchKind.ToggleSwitch)]
+        public void TestTurnOn_PublishesTurnOnEvent(SwitchKind switchKind)
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new SwitchApiConfig
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = switchKind
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
+            var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
+            publisherMock.Setup(m => m.PublishEvent(It.Is<TurnOnEvent>(e => e.SwitchId.Id == config.Id)));
+            var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.TurnOn(config.Id);
+
+            Assert.IsType<OkResult>(result);
+            publisherMock.Verify(m => m.PublishEvent(It.IsAny<TurnOnEvent>()), Times.Once);
+        }
+
+        [Fact]
+        public void TestTurnOff_ReturnsBadRequest_WhenRequestedInvalidId()
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new SwitchApiConfig
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = SwitchKind.ToggleSwitch
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
+            var controller = new SwitchesController(Mock.Of<IEventPublisher>(), configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.TurnOff(Guid.NewGuid());
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Theory]
+        [InlineData(SwitchKind.GradientSwitch)]
+        [InlineData(SwitchKind.ToggleSwitch)]
+        public void TestTurnOff_PublishesTurnOffEvent(SwitchKind switchKind)
+        {
+            var configMock = new Mock<IClientApiConfigurationRepository>();
+            var config =
+                new SwitchApiConfig
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Switch1",
+                    Description = "Description1",
+                    Kind = switchKind
+                };
+            configMock.Setup(m => m.GetClientApiConfig()).Returns(new[] { config });
+            var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
+            publisherMock.Setup(m => m.PublishEvent(It.Is<TurnOffEvent>(e => e.SwitchId.Id == config.Id)));
+            var controller = new SwitchesController(publisherMock.Object, configMock.Object, _setSwitchValueStrategies);
+
+            var result = controller.TurnOff(config.Id);
+
+            Assert.IsType<OkResult>(result);
+            publisherMock.Verify(m => m.PublishEvent(It.IsAny<TurnOffEvent>()), Times.Once);
         }
     }
 }
