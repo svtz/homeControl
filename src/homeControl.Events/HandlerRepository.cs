@@ -39,9 +39,9 @@ namespace homeControl.Events
         private IHandler[] CreateHandlers()
         {
             var switchHandlers = _switchConfigurationRepository.GetAll()
-                .Select(id => new SwitchEventHandler(_switchController)
+                .Select(@switch => new SwitchEventHandler(_switchController)
                 {
-                    SwitchId = id
+                    SwitchId = @switch.SwitchId
                 });
 
             var bindings = _switchToSensorBindingsRepository.GetAll()

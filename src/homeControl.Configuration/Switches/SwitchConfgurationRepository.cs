@@ -6,7 +6,7 @@ namespace homeControl.Configuration.Switches
 {
     internal sealed class SwitchConfgurationRepository : ISwitchConfigurationRepository
     {
-        private readonly IDictionary<SwitchId, ISwitchConfiguration> _configurations;
+        private readonly Dictionary<SwitchId, ISwitchConfiguration> _configurations;
 
         public SwitchConfgurationRepository(ISwitchConfiguration[] configurations)
         {
@@ -35,9 +35,9 @@ namespace homeControl.Configuration.Switches
             return (TConfig)_configurations[switchId];
         }
 
-        public SwitchId[] GetAll()
+        public IReadOnlyCollection<ISwitchConfiguration> GetAll()
         {
-            return _configurations.Keys.ToArray();
+            return _configurations.Values;
         }
     }
 }
