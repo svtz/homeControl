@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using homeControl.Core;
@@ -37,6 +40,7 @@ namespace homeControl.WebApi
             return new[]
                 {
                     typeof(IEventPublisher),
+                    typeof(WebApiEntryPoint),
                 }
                 .Select(type => type.GetAssembly())
                 .ToArray();
@@ -54,9 +58,29 @@ namespace homeControl.WebApi
                     continue;
                 }
 
-                var serviceDescription = ServiceDescriptor.Transient(pluginType, s => _container.GetInstance(pluginType));
-                services.Add(serviceDescription);
+                if (plugin.Instances.Count() > 1)
+                {
+                    var arrayType = pluginType.MakeArrayType();
+                    var arrayDescription = ServiceDescriptor.Transient(arrayType, s => GetAllInstancesAsArray(pluginType));
+                    services.Add(arrayDescription);
+                }
+
+                if (plugin.Default != null)
+                {
+                    var serviceDescription = ServiceDescriptor.Transient(pluginType, s => _container.GetInstance(pluginType));
+                    services.Add(serviceDescription);
+                }
             }
+        }
+
+        private Array GetAllInstancesAsArray(Type pluginType)
+        {
+            var param = Expression.Parameter(typeof(IEnumerable), "instance");
+            var cast = Expression.Call(typeof(Enumerable), nameof(Enumerable.Cast), new[] { pluginType }, param);
+            var toArray = Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] { pluginType }, cast);
+            var lambda = Expression.Lambda<Func<IEnumerable, Array>>(toArray, param).Compile();
+
+            return lambda(_container.GetAllInstances(pluginType));
         }
     }
 }

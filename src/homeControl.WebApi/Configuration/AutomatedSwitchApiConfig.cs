@@ -1,7 +1,6 @@
 ﻿using homeControl.Configuration.Sensors;
-using homeControl.WebApi.Configuration;
 
-namespace homeControl.WebApi.Controllers
+namespace homeControl.WebApi.Configuration
 {
     public sealed class AutomatedSwitchApiConfig : SwitchApiConfig
     {

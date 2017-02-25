@@ -13,6 +13,7 @@
         "homeControl.Configuration": "1.0.0-*",
         "homeControl.Events": "1.0.0-*",
         "homeControl.Noolite": "1.0.0-*",
+        "homeControl.WebApi": "1.0.0-*",
         "Microsoft.NETCore.App": {
             "type": "platform",
             "version": "1.1.0"
