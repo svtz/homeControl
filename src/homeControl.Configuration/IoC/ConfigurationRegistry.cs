@@ -7,13 +7,13 @@ namespace homeControl.Configuration.IoC
 {
     public sealed class ConfigurationRegistry : Registry
     {
-        public ConfigurationRegistry(string configPath)
+        public ConfigurationRegistry(string configFolderPath)
         {
-            var config = JsonConfigurationStore.Load(configPath);
-
-            For<ISensorConfigurationRepository>().Use(new SensorConfgurationRepository(config.SensorConfigurations));
-            For<ISwitchConfigurationRepository>().Use(new SwitchConfgurationRepository(config.SwitchConfigurations));
-            For<ISwitchToSensorBindingsRepository>().Use(new SwitchToSensorBindingsRepository(config.Bindings));
+            For(typeof(IConfigurationLoader<>)).Use(typeof(JsonConfigurationLoader<>)).Singleton()
+                                               .Ctor<string>().Is(configFolderPath);
+            For<ISensorConfigurationRepository>().Use<SensorConfgurationRepository>();
+            For<ISwitchConfigurationRepository>().Use<SwitchConfgurationRepository>();
+            For<ISwitchToSensorBindingsRepository>().Use<SwitchToSensorBindingsRepository>();
         }
     }
 }

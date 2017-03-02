@@ -1,23 +1,32 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace homeControl.Configuration.Sensors
 {
-    internal sealed class SensorConfgurationRepository : ISensorConfigurationRepository
+    internal sealed class SensorConfgurationRepository : 
+        AbstractConfigurationRepository<ISensorConfiguration[], ISensorConfiguration[]>,
+        ISensorConfigurationRepository
     {
-        private readonly ISensorConfiguration[] _configurations;
+        public SensorConfgurationRepository(IConfigurationLoader<ISensorConfiguration[]> configLoader)
+            : base(configLoader, PrepareConfiguration, "sensors.json")
+        {
+        }
 
-        public SensorConfgurationRepository(ISensorConfiguration[] configurations)
+        private static ISensorConfiguration[] PrepareConfiguration(ISensorConfiguration[] configurations)
         {
             Guard.DebugAssertArgumentNotNull(configurations, nameof(configurations));
+            
             if (configurations.Any(cfg => cfg == null))
                 throw new InvalidConfigurationException("Found null-configuration for sensor.");
+            if (configurations.Any(cfg => cfg.SensorId?.Id == Guid.Empty))
+                throw new InvalidConfigurationException("Found zero identifier in the sensor config.");
 
-            _configurations = configurations;
+            return configurations;
         }
 
         public TSensorConfig[] GetAllConfigs<TSensorConfig>() where TSensorConfig : ISensorConfiguration
         {
-            return _configurations.OfType<TSensorConfig>().ToArray();
+            return Configuration.OfType<TSensorConfig>().ToArray();
         }
     }
 }

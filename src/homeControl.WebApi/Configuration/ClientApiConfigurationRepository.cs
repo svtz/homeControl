@@ -1,46 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using homeControl.Configuration;
-using Newtonsoft.Json;
 
 namespace homeControl.WebApi.Configuration
 {
-    internal sealed class JsonClientApiConfigurationRepository : IClientApiConfigurationRepository
+    internal sealed class ClientApiConfigurationRepository :
+        AbstractConfigurationRepository<SwitchApiConfig[], Dictionary<Guid, SwitchApiConfig>>,
+        IClientApiConfigurationRepository
     {
-        private readonly Lazy<Dictionary<Guid, SwitchApiConfig>> _config;
-
-        public JsonClientApiConfigurationRepository()
+        public ClientApiConfigurationRepository(IConfigurationLoader<SwitchApiConfig[]> configLoader)
+            : base(configLoader, PrepareConfiguration, "client-api.json")
         {
-            _config = new Lazy<Dictionary<Guid, SwitchApiConfig>>(LoadConfiguration);
         }
 
-        private static Dictionary<Guid, SwitchApiConfig> LoadConfiguration()
+        private static Dictionary<Guid, SwitchApiConfig> PrepareConfiguration(SwitchApiConfig[] configurations)
         {
+            Guard.DebugAssertArgumentNotNull(configurations, nameof(configurations));
+
+            if (configurations.Any(cfg => cfg == null))
+                throw new InvalidConfigurationException($"Found null-configuration for client-api.");
+            if (configurations.Any(cfg => cfg.ConfigId == Guid.Empty))
+                throw new InvalidConfigurationException("Found zero identifier in the client-api config.");
+            if (configurations.Any(cfg => cfg.SwitchId.Id == Guid.Empty))
+                throw new InvalidConfigurationException("Found zero switch identifier in the client-api config.");
+            if (configurations.OfType<AutomatedSwitchApiConfig>().Any(cfg => cfg.SensorId.Id == Guid.Empty))
+                throw new InvalidConfigurationException("Found zero sensor identifier in the client-api config.");
+            if (configurations.Any(cfg => string.IsNullOrWhiteSpace(cfg.Name)))
+                throw new InvalidConfigurationException("Found empty name in the client-api config.");
+            if (configurations.Any(cfg => string.IsNullOrWhiteSpace(cfg.Description)))
+                throw new InvalidConfigurationException("Found empty description in the client-api config.");
+
             try
             {
-                var configText = File.ReadAllText("client-api.json");
-                var config = JsonConvert.DeserializeObject<SwitchApiConfig[]>(configText);
-                return config.ToDictionary(c => c.ConfigId);
+                return configurations.ToDictionary(c => c.ConfigId);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 throw new InvalidConfigurationException(ex, "Error while clientApi configuration loading.");
             }
         }
 
-        public SwitchApiConfig[] GetAll()
+        public IReadOnlyCollection<SwitchApiConfig> GetAll()
         {
-            return _config.Value.Values.ToArray();
+            return Configuration.Values;
         }
 
         public SwitchApiConfig TryGetById(Guid id)
         {
-            var configurationDictionary = _config.Value;
-
             SwitchApiConfig config;
-            return configurationDictionary.TryGetValue(id, out config) ? config : null;
+            return Configuration.TryGetValue(id, out config) ? config : null;
         }
     }
 }

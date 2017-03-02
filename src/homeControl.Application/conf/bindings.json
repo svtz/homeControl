@@ -1,0 +1,7 @@
+[
+    {
+        "$type": "homeControl.Events.Configuration.SwitchToSensorBinding, homeControl.Events",
+        "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c",
+        "SensorId": "1f94da1e-6fc8-4977-ab9a-96654adcacb8"
+    }
+]

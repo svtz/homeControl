@@ -60,9 +60,9 @@ namespace homeControl.Experiments
                 return configurationDictionary;
             }
 
-            public SwitchApiConfig[] GetAll()
+            public IReadOnlyCollection<SwitchApiConfig> GetAll()
             {
-                return _config.Value.Values.ToArray();
+                return _config.Value.Values;
             }
 
             public SwitchApiConfig TryGetById(Guid id)
@@ -78,11 +78,10 @@ namespace homeControl.Experiments
         {
             var configPath = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "..\\homeControl.Application\\config.json");
-            var configStore = JsonConfigurationStore.Load(configPath);
+                "..\\homeControl.Application\\conf");
             var config = new SampleClientApiConfigurationRepository(
-                new SwitchConfgurationRepository(configStore.SwitchConfigurations),
-                new SwitchToSensorBindingsRepository(configStore.Bindings));
+                new SwitchConfgurationRepository(new JsonConfigurationLoader<ISwitchConfiguration[]>(configPath)),
+                new SwitchToSensorBindingsRepository(new JsonConfigurationLoader<ISwitchToSensorBinding[]>(configPath)));
 
             var configString = JsonConvert.SerializeObject(config.GetAll(), new JsonSerializerSettings
             {

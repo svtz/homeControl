@@ -15,7 +15,7 @@ namespace homeControl.Application.IoC
         public ApplicationRegistry()
         {
             var workdir = Directory.GetCurrentDirectory();
-            var configPath = Path.Combine(workdir, "config.json");
+            var configPath = Path.Combine(workdir, "conf");
 
             IncludeRegistry<CoreRegistry>();
             IncludeRegistry<EventsRegistry>();

@@ -4,19 +4,27 @@ using System.Linq;
 
 namespace homeControl.Configuration.Switches
 {
-    internal sealed class SwitchConfgurationRepository : ISwitchConfigurationRepository
+    internal sealed class SwitchConfgurationRepository :
+        AbstractConfigurationRepository<ISwitchConfiguration[], Dictionary<SwitchId, ISwitchConfiguration>>,
+        ISwitchConfigurationRepository
     {
-        private readonly Dictionary<SwitchId, ISwitchConfiguration> _configurations;
+        public SwitchConfgurationRepository(IConfigurationLoader<ISwitchConfiguration[]> configLoader)
+            : base(configLoader, PrepareConfiguration, "switches.json")
+        {
+        }
 
-        public SwitchConfgurationRepository(ISwitchConfiguration[] configurations)
+        private static Dictionary<SwitchId, ISwitchConfiguration> PrepareConfiguration(ISwitchConfiguration[] configurations)
         {
             Guard.DebugAssertArgumentNotNull(configurations, nameof(configurations));
+
             if (configurations.Any(cfg => cfg == null))
                 throw new InvalidConfigurationException($"Found null-configuration for switch.");
+            if (configurations.Any(cfg => cfg.SwitchId?.Id == Guid.Empty))
+                throw new InvalidConfigurationException("Found zero identifier in the switch config.");
 
             try
             {
-                _configurations = configurations.ToDictionary(cfg => cfg.SwitchId);
+                return configurations.ToDictionary(cfg => cfg.SwitchId);
             }
             catch (ArgumentException ex)
             {
@@ -27,17 +35,17 @@ namespace homeControl.Configuration.Switches
         public bool ContainsConfig<TConfig>(SwitchId switchId) where TConfig : ISwitchConfiguration
         {
             ISwitchConfiguration config;
-            return _configurations.TryGetValue(switchId, out config) && config is TConfig;
+            return Configuration.TryGetValue(switchId, out config) && config is TConfig;
         }
 
         public TConfig GetConfig<TConfig>(SwitchId switchId) where TConfig : ISwitchConfiguration
         {
-            return (TConfig)_configurations[switchId];
+            return (TConfig)Configuration[switchId];
         }
 
         public IReadOnlyCollection<ISwitchConfiguration> GetAll()
         {
-            return _configurations.Values;
+            return Configuration.Values;
         }
     }
 }

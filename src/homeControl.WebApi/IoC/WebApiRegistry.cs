@@ -8,7 +8,7 @@ namespace homeControl.WebApi.IoC
     {
         public WebApiRegistry()
         {
-            For<IClientApiConfigurationRepository>().Use<JsonClientApiConfigurationRepository>().Singleton();
+            For<IClientApiConfigurationRepository>().Use<ClientApiConfigurationRepository>().Singleton();
             For<ISetSwitchValueStrategy>().Add<SetGradientSwitchValueStrategy>().Singleton();
             For<ISetSwitchValueStrategy>().Add<SetToggleSwitchValueStrategy>().Singleton();
         }
