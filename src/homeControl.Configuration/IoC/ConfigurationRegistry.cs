@@ -1,6 +1,7 @@
 ﻿using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
+using Newtonsoft.Json;
 using StructureMap;
 
 namespace homeControl.Configuration.IoC
@@ -14,6 +15,9 @@ namespace homeControl.Configuration.IoC
             For<ISensorConfigurationRepository>().Use<SensorConfgurationRepository>();
             For<ISwitchConfigurationRepository>().Use<SwitchConfgurationRepository>();
             For<ISwitchToSensorBindingsRepository>().Use<SwitchToSensorBindingsRepository>();
+
+            For<JsonConverter>().Add<SwitchIdSerializer>();
+            For<JsonConverter>().Add<SensorIdSerializer>();
         }
     }
 }

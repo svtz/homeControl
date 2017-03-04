@@ -6,12 +6,14 @@ namespace homeControl.Configuration
     internal sealed class JsonConfigurationLoader<TConfiguration> : IConfigurationLoader<TConfiguration>
     {
         private readonly string _configDirectory;
+        private readonly JsonConverter[] _converters;
 
-        public JsonConfigurationLoader(string configDirectory)
+        public JsonConfigurationLoader(string configDirectory, JsonConverter[] converters)
         {
             Guard.DebugAssertArgumentNotNull(configDirectory, nameof(configDirectory));
 
             _configDirectory = configDirectory;
+            _converters = converters;
         }
 
         public TConfiguration Load(string fileName)
@@ -35,6 +37,7 @@ namespace homeControl.Configuration
             var serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
+                Converters = _converters
             };
 
             try

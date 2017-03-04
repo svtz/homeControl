@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using homeControl.Configuration;
 using homeControl.Configuration.Bindings;
+using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
+using homeControl.Events.Bindings.Configuration;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Dto;
 using Newtonsoft.Json;
@@ -79,9 +81,15 @@ namespace homeControl.Experiments
             var configPath = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "..\\homeControl.Application\\conf");
+            var converters = new JsonConverter[]
+            {
+                new SwitchIdSerializer(),
+                new SensorIdSerializer(),
+                new SwitchToSensorBindingSerializer()
+            };
             var config = new SampleClientApiConfigurationRepository(
-                new SwitchConfgurationRepository(new JsonConfigurationLoader<ISwitchConfiguration[]>(configPath)),
-                new SwitchToSensorBindingsRepository(new JsonConfigurationLoader<ISwitchToSensorBinding[]>(configPath)));
+                new SwitchConfgurationRepository(new JsonConfigurationLoader<ISwitchConfiguration[]>(configPath, converters)),
+                new SwitchToSensorBindingsRepository(new JsonConfigurationLoader<ISwitchToSensorBinding[]>(configPath, converters)));
 
             var configString = JsonConvert.SerializeObject(config.GetAll(), new JsonSerializerSettings
             {

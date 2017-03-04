@@ -3,6 +3,7 @@ using System.Linq;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using homeControl.Core;
+using homeControl.Events.Bindings;
 using homeControl.Events.Sensors;
 using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
@@ -239,18 +240,18 @@ namespace homeControl.WebApi.Tests
         [Theory]
         [InlineData(SwitchKind.GradientSwitch)]
         [InlineData(SwitchKind.ToggleSwitch)]
-        public void TestEnableAutomation_PublishedEnableAutomationEvent(SwitchKind switchKind)
+        public void TestEnableAutomation_PublishesEnableBindingEvent(SwitchKind switchKind)
         {
             var config = CreateRandomConfig<AutomatedSwitchApiConfig>(switchKind);
             var configRepo = CreateConfigRepository(config);
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            publisherMock.Setup(m => m.PublishEvent(It.Is<EnableSensorAutomationEvent>(e => e.SensorId == config.SensorId)));
+            publisherMock.Setup(m => m.PublishEvent(It.Is<EnableBindingEvent>(e => e.SensorId == config.SensorId && e.SwitchId == config.SwitchId)));
             var controller = new SwitchesController(publisherMock.Object, configRepo, _setSwitchValueStrategies);
 
             var result = controller.EnableAutomation(config.ConfigId);
 
             Assert.IsType<OkResult>(result);
-            publisherMock.Verify(m => m.PublishEvent(It.IsAny<EnableSensorAutomationEvent>()), Times.Once);
+            publisherMock.Verify(m => m.PublishEvent(It.IsAny<EnableBindingEvent>()), Times.Once);
         }
 
         [Fact]
@@ -280,18 +281,18 @@ namespace homeControl.WebApi.Tests
         [Theory]
         [InlineData(SwitchKind.GradientSwitch)]
         [InlineData(SwitchKind.ToggleSwitch)]
-        public void TestDisableAutomation_PublishedEnableAutomationEvent(SwitchKind switchKind)
+        public void TestDisableAutomation_PublishedDisableBindingEvent(SwitchKind switchKind)
         {
             var config = CreateRandomConfig<AutomatedSwitchApiConfig>(switchKind);
             var configRepo = CreateConfigRepository(config);
             var publisherMock = new Mock<IEventPublisher>(MockBehavior.Strict);
-            publisherMock.Setup(m => m.PublishEvent(It.Is<DisableSensorAutomationEvent>(e => e.SensorId == config.SensorId)));
+            publisherMock.Setup(m => m.PublishEvent(It.Is<DisableBindingEvent>(e => e.SensorId == config.SensorId && e.SwitchId == config.SwitchId)));
             var controller = new SwitchesController(publisherMock.Object, configRepo, _setSwitchValueStrategies);
 
             var result = controller.DisableAutomation(config.ConfigId);
 
             Assert.IsType<OkResult>(result);
-            publisherMock.Verify(m => m.PublishEvent(It.IsAny<DisableSensorAutomationEvent>()), Times.Once);
+            publisherMock.Verify(m => m.PublishEvent(It.IsAny<DisableBindingEvent>()), Times.Once);
         }
     }
 }

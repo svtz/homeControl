@@ -1,5 +1,4 @@
 ﻿using System;
-using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Peripherals;
 
@@ -8,17 +7,6 @@ namespace homeControl.Events.Switches
     internal sealed class SwitchEventHandler : IHandler
     {
         private readonly ISwitchController _switchController;
-        private SwitchId _switchId;
-
-        public SwitchId SwitchId
-        {
-            get { return _switchId; }
-            set
-            {
-                Guard.DebugAssertArgumentNotNull(value, nameof(value));
-                _switchId = value;
-            }
-        }
 
         public SwitchEventHandler(ISwitchController switchController)
         {
@@ -32,7 +20,7 @@ namespace homeControl.Events.Switches
             Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
 
             var switchEvent = @event as AbstractSwitchEvent;
-            return switchEvent != null && switchEvent.SwitchId == SwitchId && _switchController.CanHandleSwitch(switchEvent.SwitchId);
+            return switchEvent != null && _switchController.CanHandleSwitch(switchEvent.SwitchId);
         }
 
         public void Handle(IEvent @event)
@@ -40,18 +28,19 @@ namespace homeControl.Events.Switches
             Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
             Guard.DebugAssertArgument(CanHandle(@event), nameof(@event));
 
+            var switchEvent = @event as AbstractSwitchEvent;
             if (@event is TurnOnEvent)
             {
-                _switchController.TurnOn(SwitchId);
+                _switchController.TurnOn(switchEvent.SwitchId);
             }
             else if (@event is TurnOffEvent)
             {
-                _switchController.TurnOff(SwitchId);
+                _switchController.TurnOff(switchEvent.SwitchId);
             }
             else if (@event is SetPowerEvent)
             {
                 var setPower = (SetPowerEvent)@event;
-                _switchController.SetPower(SwitchId, setPower.Power);
+                _switchController.SetPower(switchEvent.SwitchId, setPower.Power);
             }
             else
             {

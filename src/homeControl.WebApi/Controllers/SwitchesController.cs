@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using homeControl.Core;
-using homeControl.Events.Sensors;
+using homeControl.Events.Bindings;
 using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Dto;
@@ -109,7 +109,7 @@ namespace homeControl.WebApi.Controllers
                 return BadRequest();
             }
 
-            _eventPublisher.PublishEvent(new EnableSensorAutomationEvent(config.SensorId));
+            _eventPublisher.PublishEvent(new EnableBindingEvent(config.SwitchId, config.SensorId));
 
             return Ok();
         }
@@ -123,7 +123,7 @@ namespace homeControl.WebApi.Controllers
                 return BadRequest();
             }
 
-            _eventPublisher.PublishEvent(new DisableSensorAutomationEvent(config.SensorId));
+            _eventPublisher.PublishEvent(new DisableBindingEvent(config.SwitchId, config.SensorId));
 
             return Ok();
         }

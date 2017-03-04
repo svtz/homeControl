@@ -1,6 +1,8 @@
 ﻿using homeControl.Core;
+using homeControl.Events.Bindings.Configuration;
 using homeControl.Events.Sensors;
 using homeControl.Peripherals;
+using Newtonsoft.Json;
 using StructureMap;
 
 namespace homeControl.Events.IoC
@@ -11,7 +13,8 @@ namespace homeControl.Events.IoC
         {
             For<ISensorGate>().Use<SensorGate>().Singleton();
             For<IHandlerRepository>().Use<HandlerRepository>().Singleton();
-            ForSingletonOf<EventPublisherAccessor>();
+
+            For<JsonConverter>().Add<SwitchToSensorBindingSerializer>();
         }
     }
 }

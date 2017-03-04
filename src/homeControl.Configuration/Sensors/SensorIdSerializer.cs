@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace homeControl.Configuration.Sensors
 {
-    internal class SensorIdSerializer : JsonConverter
+    internal sealed class SensorIdSerializer : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

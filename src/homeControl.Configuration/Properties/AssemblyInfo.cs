@@ -10,3 +10,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("63f17db5-e64a-4ecc-bb00-87826e9d5a34")]
 
 [assembly: InternalsVisibleTo("homeControl.Experiments")]
+[assembly: InternalsVisibleTo("homeControl.Events.Tests")]
