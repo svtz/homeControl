@@ -4,7 +4,7 @@ using homeControl.WebApi.Dto;
 
 namespace homeControl.WebApi.Configuration
 {
-    public class SwitchApiConfig
+    internal class SwitchApiConfig
     {
         public Guid ConfigId { get; set; }
         public string Name { get; set; }

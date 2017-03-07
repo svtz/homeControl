@@ -5,3 +5,4 @@ obj
 project.lock.json
 /src/homeControl.Experiments/config.json
 /src/homeControl.Experiments/client-api.json
+/packages

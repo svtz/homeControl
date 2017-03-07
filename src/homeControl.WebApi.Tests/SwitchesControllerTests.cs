@@ -4,7 +4,6 @@ using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Events.Bindings;
-using homeControl.Events.Sensors;
 using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Controllers;

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Linq;
+using homeControl.ClientServerShared;
 using homeControl.Core;
 using homeControl.Events.Bindings;
 using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Dto;
-using Microsoft.AspNetCore.Mvc;
 
 namespace homeControl.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    public class SwitchesController : Controller
+    internal sealed class SwitchesController : ISwitchesApi
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly IClientApiConfigurationRepository _configuration;
@@ -29,7 +28,6 @@ namespace homeControl.WebApi.Controllers
             _setValueStrategies = setSwitchValueStrategies;
         }
 
-        [HttpGet]
         public SwitchDto[] GetDescriptions()
         {
             return _configuration.GetAll().Select(CreateSwitchDto).ToArray();
@@ -49,18 +47,17 @@ namespace homeControl.WebApi.Controllers
             };
         }
 
-        [HttpPut]
-        public IActionResult SetValue(Guid id, object value)
+        public bool SetValue(Guid id, object value)
         {
             var config = _configuration.TryGetById(id);
             if (config == null)
             {
-                return BadRequest();
+                return false;
             }
             var strategy = _setValueStrategies.SingleOrDefault(s => s.CanHandle(config.Kind, value));
             if (strategy == null)
             {
-                return BadRequest();
+                return false;
             }
 
             var e1 = strategy.CreateControlEvent(config.SwitchId, value);
@@ -69,63 +66,59 @@ namespace homeControl.WebApi.Controllers
             _eventPublisher.PublishEvent(e1);
             _eventPublisher.PublishEvent(e2);
 
-            return Ok();
+            return true;
         }
 
-        [HttpPut]
-        public IActionResult TurnOn(Guid id)
+        public bool TurnOn(Guid id)
         {
             var config = _configuration.TryGetById(id);
             if (config == null)
             {
-                return BadRequest();
+                return false;
             }
 
             _eventPublisher.PublishEvent(new TurnOnEvent(config.SwitchId));
 
-            return Ok();
+            return true;
         }
 
-        [HttpPut]
-        public IActionResult TurnOff(Guid id)
+        public bool TurnOff(Guid id)
         {
             var config = _configuration.TryGetById(id);
             if (config == null)
             {
-                return BadRequest();
+                return false;
             }
 
             _eventPublisher.PublishEvent(new TurnOffEvent(config.SwitchId));
 
-            return Ok();
+            return true;
         }
 
-        [HttpPut]
-        public IActionResult EnableAutomation(Guid id)
+        public bool EnableAutomation(Guid id)
         {
             var config = _configuration.TryGetById(id) as AutomatedSwitchApiConfig;
             if (config == null)
             {
-                return BadRequest();
+                return false;
             }
 
             _eventPublisher.PublishEvent(new EnableBindingEvent(config.SwitchId, config.SensorId));
 
-            return Ok();
+            return true;
         }
 
-        [HttpPut]
-        public IActionResult DisableAutomation(Guid id)
+        public bool DisableAutomation(Guid id)
         {
             var config = _configuration.TryGetById(id) as AutomatedSwitchApiConfig;
             if (config == null)
             {
-                return BadRequest();
+                return false;
             }
 
             _eventPublisher.PublishEvent(new DisableBindingEvent(config.SwitchId, config.SensorId));
 
-            return Ok();
+            return true;
         }
     }
 }

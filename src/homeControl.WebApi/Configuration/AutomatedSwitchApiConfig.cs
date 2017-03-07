@@ -2,7 +2,7 @@
 
 namespace homeControl.WebApi.Configuration
 {
-    public sealed class AutomatedSwitchApiConfig : SwitchApiConfig
+    internal sealed class AutomatedSwitchApiConfig : SwitchApiConfig
     {
         public SensorId SensorId { get; set; }
     }
