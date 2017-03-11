@@ -1,8 +1,8 @@
 using System.Net.Sockets;
-using homeControl.WebApi.Server;
+using homeControl.ClientApi.Server;
 using Moq;
 
-namespace homeControl.WebApi.Tests.Mocks
+namespace homeControl.ClientApi.Tests.Mocks
 {
     internal sealed class ClientProcessorFactoryMock : Mock<IClientProcessorFactory>
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace homeControl.WebApi.Server
+namespace homeControl.ClientApi.Server
 {
     internal sealed class ClientsPool : IClientsPool
     {

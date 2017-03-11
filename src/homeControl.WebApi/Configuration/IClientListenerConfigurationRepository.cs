@@ -1,4 +1,4 @@
-﻿namespace homeControl.WebApi.Configuration
+﻿namespace homeControl.ClientApi.Configuration
 {
     internal interface IClientListenerConfigurationRepository
     {

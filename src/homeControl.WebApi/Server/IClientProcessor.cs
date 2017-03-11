@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.WebApi.Server
+namespace homeControl.ClientApi.Server
 {
     internal interface IClientProcessor: IDisposable
     {

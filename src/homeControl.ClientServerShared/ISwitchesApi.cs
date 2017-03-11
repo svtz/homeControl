@@ -1,5 +1,5 @@
 ﻿using System;
-using homeControl.WebApi.Dto;
+using homeControl.ClientServerShared.Dto;
 
 namespace homeControl.ClientServerShared
 {

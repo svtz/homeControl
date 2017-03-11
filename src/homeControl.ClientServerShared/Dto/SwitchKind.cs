@@ -1,4 +1,4 @@
-namespace homeControl.WebApi.Dto
+namespace homeControl.ClientServerShared.Dto
 {
     public enum SwitchKind
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using homeControl.Configuration;
 
-namespace homeControl.WebApi.Configuration
+namespace homeControl.ClientApi.Configuration
 {
     internal sealed class ClientApiConfigurationRepository :
         AbstractConfigurationRepository<SwitchApiConfig[], Dictionary<Guid, SwitchApiConfig>>,

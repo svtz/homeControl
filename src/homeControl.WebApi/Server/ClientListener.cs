@@ -3,10 +3,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using homeControl.ClientApi.Configuration;
 using homeControl.Configuration;
-using homeControl.WebApi.Configuration;
 
-namespace homeControl.WebApi.Server
+namespace homeControl.ClientApi.Server
 {
     internal sealed class ClientListener : IClientListener
     {

@@ -1,8 +1,8 @@
 using System;
+using homeControl.ClientServerShared.Dto;
 using homeControl.Configuration.Switches;
-using homeControl.WebApi.Dto;
 
-namespace homeControl.WebApi.Configuration
+namespace homeControl.ClientApi.Configuration
 {
     internal class SwitchApiConfig
     {

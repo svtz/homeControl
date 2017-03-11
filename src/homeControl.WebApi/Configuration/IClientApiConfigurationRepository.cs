@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace homeControl.WebApi.Configuration
+namespace homeControl.ClientApi.Configuration
 {
     internal interface IClientApiConfigurationRepository
     {

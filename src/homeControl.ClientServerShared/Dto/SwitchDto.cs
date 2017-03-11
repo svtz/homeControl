@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.WebApi.Dto
+namespace homeControl.ClientServerShared.Dto
 {
     public sealed class SwitchDto
     {

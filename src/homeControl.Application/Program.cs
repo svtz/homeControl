@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Application.IoC;
+using homeControl.ClientApi.Server;
 using homeControl.Configuration;
 using homeControl.Core;
-using homeControl.WebApi.Server;
 using StructureMap;
 
 namespace homeControl.Application

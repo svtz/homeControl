@@ -1,6 +1,6 @@
 using System.Net.Sockets;
 
-namespace homeControl.WebApi.Server
+namespace homeControl.ClientApi.Server
 {
     internal sealed class ClientProcessorFactory : IClientProcessorFactory
     {

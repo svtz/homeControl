@@ -1,13 +1,13 @@
-﻿using homeControl.WebApi.Configuration;
-using homeControl.WebApi.Controllers;
-using homeControl.WebApi.Server;
+﻿using homeControl.ClientApi.Configuration;
+using homeControl.ClientApi.Controllers;
+using homeControl.ClientApi.Server;
 using StructureMap;
 
-namespace homeControl.WebApi.IoC
+namespace homeControl.ClientApi.IoC
 {
-    public class WebApiRegistry : Registry
+    public class ClientApiRegistry : Registry
     {
-        public WebApiRegistry()
+        public ClientApiRegistry()
         {
             For<IClientApiConfigurationRepository>().Use<ClientApiConfigurationRepository>().Singleton();
             For<ISetSwitchValueStrategy>().Add<SetGradientSwitchValueStrategy>().Singleton();

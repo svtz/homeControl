@@ -1,8 +1,8 @@
 using System;
-using homeControl.WebApi.Server;
+using homeControl.ClientApi.Server;
 using Moq;
 
-namespace homeControl.WebApi.Tests.Mocks
+namespace homeControl.ClientApi.Tests.Mocks
 {
     internal sealed class ClientsPoolMock : Mock<IClientsPool>
     {

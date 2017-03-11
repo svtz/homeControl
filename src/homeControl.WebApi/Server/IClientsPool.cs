@@ -1,4 +1,4 @@
-﻿namespace homeControl.WebApi.Server
+﻿namespace homeControl.ClientApi.Server
 {
     internal interface IClientsPool
     {

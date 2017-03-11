@@ -1,4 +1,4 @@
-﻿namespace homeControl.WebApi.Tests
+﻿namespace homeControl.ClientApi.Tests
 {
     internal static class TcpTestsHelper
     {

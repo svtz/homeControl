@@ -1,11 +1,11 @@
 ﻿using System.IO;
+using homeControl.ClientApi.IoC;
 using homeControl.Configuration.IoC;
 using homeControl.Core.IoC;
 using homeControl.Events.IoC;
 using homeControl.Noolite.IoC;
 using homeControl.Peripherals;
 using homeControl.Peripherals.IoC;
-using homeControl.WebApi.IoC;
 using StructureMap;
 
 namespace homeControl.Application.IoC
@@ -22,7 +22,7 @@ namespace homeControl.Application.IoC
             IncludeRegistry(new ConfigurationRegistry(configPath));
             IncludeRegistry<NooliteRegistry>();
             IncludeRegistry<PeripheralsRegistry>();
-            IncludeRegistry<WebApiRegistry>();
+            IncludeRegistry<ClientApiRegistry>();
 
             For<ISwitchController>().Add<SwitchControllerConsoleEmulator>().Singleton();
         }

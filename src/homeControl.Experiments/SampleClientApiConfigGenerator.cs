@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using homeControl.ClientApi.Configuration;
+using homeControl.ClientServerShared.Dto;
 using homeControl.Configuration;
 using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using homeControl.Events.Bindings.Configuration;
-using homeControl.WebApi.Configuration;
-using homeControl.WebApi.Dto;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

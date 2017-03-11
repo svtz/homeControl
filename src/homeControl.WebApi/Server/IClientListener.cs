@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.WebApi.Server
+namespace homeControl.ClientApi.Server
 {
     public interface IClientListener : IDisposable
     {

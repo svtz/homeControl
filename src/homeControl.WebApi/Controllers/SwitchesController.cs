@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
+using homeControl.ClientApi.Configuration;
 using homeControl.ClientServerShared;
+using homeControl.ClientServerShared.Dto;
 using homeControl.Core;
 using homeControl.Events.Bindings;
 using homeControl.Events.Switches;
-using homeControl.WebApi.Configuration;
-using homeControl.WebApi.Dto;
 
-namespace homeControl.WebApi.Controllers
+namespace homeControl.ClientApi.Controllers
 {
     internal sealed class SwitchesController : ISwitchesApi
     {

@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using homeControl.WebApi.Configuration;
+using homeControl.ClientApi.Configuration;
 
-namespace homeControl.WebApi.Tests
+namespace homeControl.ClientApi.Tests
 {
     internal sealed class TestListenerConfigurationRepository : IClientListenerConfigurationRepository
     {

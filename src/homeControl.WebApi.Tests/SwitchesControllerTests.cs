@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
+using homeControl.ClientApi.Configuration;
+using homeControl.ClientApi.Controllers;
+using homeControl.ClientServerShared.Dto;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using homeControl.Core;
 using homeControl.Events.Bindings;
 using homeControl.Events.Switches;
-using homeControl.WebApi.Configuration;
-using homeControl.WebApi.Controllers;
-using homeControl.WebApi.Dto;
 using Moq;
 using Xunit;
 
-namespace homeControl.WebApi.Tests
+namespace homeControl.ClientApi.Tests
 {
     public class SwitchesControllerTests
     {

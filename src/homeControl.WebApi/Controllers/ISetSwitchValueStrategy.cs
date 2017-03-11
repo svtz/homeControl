@@ -1,9 +1,8 @@
-using System;
+using homeControl.ClientServerShared.Dto;
 using homeControl.Configuration.Switches;
 using homeControl.Events.Switches;
-using homeControl.WebApi.Dto;
 
-namespace homeControl.WebApi.Controllers
+namespace homeControl.ClientApi.Controllers
 {
     public interface ISetSwitchValueStrategy
     {

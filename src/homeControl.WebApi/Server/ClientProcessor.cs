@@ -1,9 +1,8 @@
 using System;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks.Dataflow;
 
-namespace homeControl.WebApi.Server
+namespace homeControl.ClientApi.Server
 {
     internal sealed class ClientProcessor : IClientProcessor
     {
@@ -41,7 +40,8 @@ namespace homeControl.WebApi.Server
         {
             if (_disposed)
                 return;
-            
+
+            Stop();
             _client.Dispose();
             _disposed = true;
         }

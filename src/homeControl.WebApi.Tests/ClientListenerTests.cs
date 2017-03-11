@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
-using homeControl.WebApi.Server;
-using homeControl.WebApi.Tests.Mocks;
+using homeControl.ClientApi.Server;
+using homeControl.ClientApi.Tests.Mocks;
 using Moq;
 using Xunit;
 
-namespace homeControl.WebApi.Tests
+namespace homeControl.ClientApi.Tests
 {
     public class ClientListenerTests
     {
