@@ -14,6 +14,8 @@ namespace homeControl.WebApi.IoC
             For<ISetSwitchValueStrategy>().Add<SetToggleSwitchValueStrategy>().Singleton();
 
             For<IClientListener>().Use<ClientListener>().Singleton();
+            For<IClientsPool>().Use<ClientsPool>().Singleton();
+            For<IClientProcessorFactory>().Use<ClientProcessorFactory>().Singleton();
         }
     }
 }

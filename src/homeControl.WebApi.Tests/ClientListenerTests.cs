@@ -127,6 +127,8 @@ namespace homeControl.WebApi.Tests
 
                 Assert.True(clientDisconnectedEvent.WaitOne(_timeout));
                 clientsPoolMock.Verify(p => p.Remove(processorMock.Object), Times.Once());
+                processorMock.Verify(m => m.Stop(), Times.Once);
+                processorMock.Verify(m => m.Dispose(), Times.Once);
             }
         }
     }
