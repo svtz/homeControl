@@ -10,3 +10,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("8B5A1567-560D-4BFF-8649-3D2000A2B375")]
 
 [assembly: InternalsVisibleTo("homeControl.WebApi.Tests")]
+[assembly: InternalsVisibleTo("homeControl.Experiments")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
