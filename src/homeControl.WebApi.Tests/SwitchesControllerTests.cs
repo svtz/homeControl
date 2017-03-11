@@ -8,7 +8,6 @@ using homeControl.Events.Switches;
 using homeControl.WebApi.Configuration;
 using homeControl.WebApi.Controllers;
 using homeControl.WebApi.Dto;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
@@ -93,7 +92,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.SetValue(Guid.NewGuid(), new object());
             
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Theory]
@@ -109,7 +108,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.SetValue(config.ConfigId, value);
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Theory]
@@ -130,7 +129,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.SetValue(config.ConfigId, value);
 
-            Assert.IsType<OkResult>(result);
+            Assert.True(result);
             publisherMock.VerifyAll();
         }
 
@@ -150,7 +149,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.SetValue(config.ConfigId, value);
 
-            Assert.IsType<OkResult>(result);
+            Assert.True(result);
             publisherMock.VerifyAll();
         }
 
@@ -163,7 +162,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.TurnOn(Guid.NewGuid());
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Theory]
@@ -179,7 +178,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.TurnOn(config.ConfigId);
 
-            Assert.IsType<OkResult>(result);
+            Assert.True(result);
             publisherMock.Verify(m => m.PublishEvent(It.IsAny<TurnOnEvent>()), Times.Once);
         }
 
@@ -192,7 +191,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.TurnOff(Guid.NewGuid());
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Theory]
@@ -208,7 +207,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.TurnOff(config.ConfigId);
 
-            Assert.IsType<OkResult>(result);
+            Assert.True(result);
             publisherMock.Verify(m => m.PublishEvent(It.IsAny<TurnOffEvent>()), Times.Once);
         }
 
@@ -221,7 +220,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.EnableAutomation(Guid.NewGuid());
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Fact]
@@ -233,7 +232,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.EnableAutomation(config.ConfigId);
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Theory]
@@ -249,7 +248,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.EnableAutomation(config.ConfigId);
 
-            Assert.IsType<OkResult>(result);
+            Assert.True(result);
             publisherMock.Verify(m => m.PublishEvent(It.IsAny<EnableBindingEvent>()), Times.Once);
         }
 
@@ -262,7 +261,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.DisableAutomation(Guid.NewGuid());
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Fact]
@@ -274,7 +273,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.DisableAutomation(config.ConfigId);
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.False(result);
         }
 
         [Theory]
@@ -290,7 +289,7 @@ namespace homeControl.WebApi.Tests
 
             var result = controller.DisableAutomation(config.ConfigId);
 
-            Assert.IsType<OkResult>(result);
+            Assert.True(result);
             publisherMock.Verify(m => m.PublishEvent(It.IsAny<DisableBindingEvent>()), Times.Once);
         }
     }
