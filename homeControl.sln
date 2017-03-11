@@ -43,9 +43,9 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Application", "
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.Peripherals.Tests", "src\homeControl.Peripherals.Tests\homeControl.Peripherals.Tests.xproj", "{CA66C50F-1740-41E6-B1AB-0A038C32CF11}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.ClientApi", "src\homeControl.WebApi\homeControl.ClientApi.xproj", "{17B4FFE5-5559-4F3F-8635-0CBC0D118F2A}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.ClientApi", "src\homeControl.ClientApi\homeControl.ClientApi.xproj", "{17B4FFE5-5559-4F3F-8635-0CBC0D118F2A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.ClientApi.Tests", "src\homeControl.WebApi.Tests\homeControl.ClientApi.Tests.xproj", "{DA1B150C-00EF-4740-85FE-9D251C675452}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "homeControl.ClientApi.Tests", "src\homeControl.ClientApi.Tests\homeControl.ClientApi.Tests.xproj", "{DA1B150C-00EF-4740-85FE-9D251C675452}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{19A6CE8E-511A-41C8-A4B2-24E05CF1DB08}"
 EndProject

@@ -2,11 +2,11 @@
     "version": "1.0.0-*",
 
     "dependencies": {
+        "homeControl.ClientApi": "1.0.0-*",
         "homeControl.Core": "1.0.0-*",
         "homeControl.Events": "1.0.0-*",
         "homeControl.Guard": "1.0.0-*",
         "homeControl.Noolite": "1.0.0-*",
-        "homeControl.WebApi": "1.0.0-*",
         "Microsoft.NETCore.App": {
             "type": "platform",
             "version": "1.1.0"
