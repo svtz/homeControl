@@ -18,6 +18,7 @@ namespace homeControl.ClientApi.Server
 
         public void Start()
         {
+            CheckNotDisposed();
             if (_running)
             {
                 return;
@@ -28,6 +29,7 @@ namespace homeControl.ClientApi.Server
 
         public void Stop()
         {
+            CheckNotDisposed();
             if (!_running)
                 return;
 
@@ -44,6 +46,12 @@ namespace homeControl.ClientApi.Server
             Stop();
             _client.Dispose();
             _disposed = true;
+        }
+
+        private void CheckNotDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
         }
 
         public event EventHandler Disconnected;
