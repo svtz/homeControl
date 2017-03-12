@@ -26,7 +26,7 @@ namespace homeControl.ClientApi.Tests
             var expectedData = BitConverter.GetBytes(serializedMessage.Length).Concat(serializedMessage).ToArray();
             var writtenData = new List<byte>(expectedData.Length);
             var writerComplete = new ManualResetEvent(false);
-            var writerMock = new Mock<IClientsWriter>(MockBehavior.Strict);
+            var writerMock = new Mock<IClientWriter>(MockBehavior.Strict);
             writerMock.Setup(m => m.WriteAsync(It.IsAny<byte[]>()))
                 .Returns((byte[] data) => Task.Factory.StartNew(() =>
                 {
@@ -55,7 +55,7 @@ namespace homeControl.ClientApi.Tests
             var expectedData = BitConverter.GetBytes(serializedMessage.Length).Concat(serializedMessage).ToArray();
             var writtenData = new List<byte>(expectedData.Length);
             var writerComplete = new ManualResetEvent(false);
-            var writerMock = new Mock<IClientsWriter>(MockBehavior.Strict);
+            var writerMock = new Mock<IClientWriter>(MockBehavior.Strict);
             writerMock.Setup(m => m.WriteAsync(It.IsAny<byte[]>()))
                 .Returns((byte[] data) => Task.Factory.StartNew(() =>
                 {
@@ -83,7 +83,7 @@ namespace homeControl.ClientApi.Tests
             var expectedData = BitConverter.GetBytes(serializedMessage.Length).Concat(serializedMessage).ToArray();
             var writtenData = new List<byte>(expectedData.Length);
             var writerComplete = new ManualResetEvent(false);
-            var writerMock = new Mock<IClientsWriter>(MockBehavior.Strict);
+            var writerMock = new Mock<IClientWriter>(MockBehavior.Strict);
             writerMock.Setup(m => m.WriteAsync(It.IsAny<byte[]>()))
                 .Returns((byte[] data) => Task.Factory.StartNew(() =>
                 {

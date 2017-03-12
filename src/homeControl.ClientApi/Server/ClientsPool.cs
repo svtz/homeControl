@@ -24,5 +24,11 @@ namespace homeControl.ClientApi.Server
                 _clients.Remove(client);
             }
         }
+
+        public IReadOnlyCollection<IClientProcessor> GetAll()
+        {
+            lock (_clients)
+                return _clients.ToArray();
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace homeControl.ClientApi.IoC
             For<IClientsPool>().Use<ClientsPool>().Singleton();
             For<IClientProcessorFactory>().Use<ClientProcessorFactory>().Singleton();
             For<IMessageWriterPipeline>().Use<MessageWriterPipeline>().Singleton();
+            For<IClientWriter>().Use<ClientsBroadcaster>().Singleton();
         }
     }
 }

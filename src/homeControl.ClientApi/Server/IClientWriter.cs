@@ -2,7 +2,7 @@
 
 namespace homeControl.ClientApi.Server
 {
-    internal interface IClientsWriter
+    internal interface IClientWriter
     {
         Task WriteAsync(byte[] data);
     }

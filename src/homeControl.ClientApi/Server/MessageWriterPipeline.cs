@@ -9,12 +9,12 @@ namespace homeControl.ClientApi.Server
 {
     internal sealed class MessageWriterPipeline : IDisposable, IMessageWriterPipeline
     {
-        private readonly IClientsWriter _writer;
+        private readonly IClientWriter _writer;
         private readonly IClientMessageSerializer _serializer;
         private readonly ITargetBlock<IClientMessage> _pipeline;
         private readonly CancellationTokenSource _cts;
 
-        public MessageWriterPipeline(IClientsWriter writer, IClientMessageSerializer serializer)
+        public MessageWriterPipeline(IClientWriter writer, IClientMessageSerializer serializer)
         {
             Guard.DebugAssertArgumentNotNull(writer, nameof(writer));
             Guard.DebugAssertArgumentNotNull(serializer, nameof(serializer));

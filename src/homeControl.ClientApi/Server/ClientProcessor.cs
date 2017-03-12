@@ -1,10 +1,11 @@
 using System;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace homeControl.ClientApi.Server
 {
-    internal sealed class ClientProcessor : IClientProcessor
+    internal sealed class ClientProcessor : IClientProcessor, IClientWriter
     {
         private readonly TcpClient _client;
 
@@ -60,5 +61,43 @@ namespace homeControl.ClientApi.Server
             var handler = Interlocked.CompareExchange(ref Disconnected, null, null);
             handler?.Invoke(this, EventArgs.Empty);
         }
+
+        
+        #region IClientWriter
+
+        private bool _disconnected = false;
+        private readonly object _disconnectionLock = new object();
+        private void HandleDisconnection()
+        {
+            if (_disconnected)
+                return;
+
+            lock (_disconnectionLock)
+            {
+                if (_disconnected)
+                    return;
+
+                Stop();
+                OnDisconnected();
+                _disconnected = true;
+            }
+        }
+
+        public async Task WriteAsync(byte[] data)
+        {
+            if (_disposed || !_running)
+                return;
+
+            try
+            {
+                await _client.GetStream().WriteAsync(data, 0, data.Length);
+            }
+            catch (SocketException)
+            {
+                HandleDisconnection();
+            }
+        }
+
+        #endregion
     }
 }
