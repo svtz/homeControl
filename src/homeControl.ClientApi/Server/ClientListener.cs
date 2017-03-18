@@ -96,8 +96,6 @@ namespace homeControl.ClientApi.Server
             client.Disconnected -= ProcessorDisconnected;
 
             _clientsPool.Remove(client);
-            client.Stop();
-            client.Dispose();
         }
 
         private bool _disposed = false;

@@ -8,18 +8,22 @@ namespace homeControl.ClientApi.Server
     internal sealed class ClientProcessor : IClientProcessor, IClientWriter
     {
         private readonly TcpClient _client;
+        private readonly MessageWriterPipeline _writerPipeline;
 
         private bool _running = false;
+        
 
-        public ClientProcessor(TcpClient client)
+        public ClientProcessor(TcpClient client, IClientMessageSerializer messageSerializer)
         {
             Guard.DebugAssertArgumentNotNull(client, nameof(client));
             _client = client;
+
+            _writerPipeline = new MessageWriterPipeline(this, messageSerializer);
         }
 
         public void Start()
         {
-            CheckNotDisposed();
+            CheckNotDisconnected();
             if (_running)
             {
                 return;
@@ -30,7 +34,7 @@ namespace homeControl.ClientApi.Server
 
         public void Stop()
         {
-            CheckNotDisposed();
+            CheckNotDisconnected();
             if (!_running)
                 return;
 
@@ -38,21 +42,15 @@ namespace homeControl.ClientApi.Server
         }
 
 
-        private bool _disposed = false;
-        public void Dispose()
-        {
-            if (_disposed)
-                return;
+        #region Disconnection
 
-            Stop();
-            _client.Dispose();
-            _disposed = true;
-        }
+        private bool _disconnected = false;
+        private readonly object _disconnectionLock = new object();
 
-        private void CheckNotDisposed()
+        private void CheckNotDisconnected()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
+            if (_disconnected)
+                throw new InvalidOperationException("Client disconnected");
         }
 
         public event EventHandler Disconnected;
@@ -62,11 +60,6 @@ namespace homeControl.ClientApi.Server
             handler?.Invoke(this, EventArgs.Empty);
         }
 
-        
-        #region IClientWriter
-
-        private bool _disconnected = false;
-        private readonly object _disconnectionLock = new object();
         private void HandleDisconnection()
         {
             if (_disconnected)
@@ -77,15 +70,29 @@ namespace homeControl.ClientApi.Server
                 if (_disconnected)
                     return;
 
-                Stop();
-                OnDisconnected();
+                try
+                {
+                    Stop();
+                    OnDisconnected();
+                }
+                finally
+                {
+                    _writerPipeline.Dispose();
+                    _client.Dispose();
+                }
+                
                 _disconnected = true;
             }
         }
 
-        public async Task WriteAsync(byte[] data)
+        #endregion
+
+
+        #region IClientWriter
+
+        async Task IClientWriter.WriteAsync(byte[] data)
         {
-            if (_disposed || !_running)
+            if (_disconnected || !_running)
                 return;
 
             try
@@ -95,6 +102,10 @@ namespace homeControl.ClientApi.Server
             catch (SocketException)
             {
                 HandleDisconnection();
+            }
+            catch (ObjectDisposedException)
+            {
+                Guard.DebugAssert(_disconnected, "Disconnection error");
             }
         }
 

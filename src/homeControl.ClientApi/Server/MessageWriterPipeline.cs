@@ -7,7 +7,7 @@ using homeControl.ClientServerShared;
 
 namespace homeControl.ClientApi.Server
 {
-    internal sealed class MessageWriterPipeline : IDisposable, IMessageWriterPipeline
+    internal sealed class MessageWriterPipeline : IDisposable
     {
         private readonly IClientWriter _writer;
         private readonly IClientMessageSerializer _serializer;
