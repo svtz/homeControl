@@ -8,23 +8,28 @@ using homeControl.Configuration;
 
 namespace homeControl.ClientApi.Server
 {
-    internal sealed class ClientListener : IClientListener
+    internal sealed class ClientListener : IInitializer, IDisposable
     {
         private readonly IClientListenerConfigurationRepository _configurationRepository;
         private readonly IClientsPool _clientsPool;
         private readonly IClientProcessorFactory _clientProcessorFactory;
-        private readonly Lazy<TcpListener> _listener;
-        private CancellationTokenSource _cts;
+        private readonly CancellationToken _ct;
+        private readonly TcpListener _listener;
 
         public ClientListener(IClientListenerConfigurationRepository configurationRepository,
             IClientsPool clientsPool,
-            IClientProcessorFactory clientProcessorFactory)
+            IClientProcessorFactory clientProcessorFactory,
+            CancellationToken ct)
         {
             Guard.DebugAssertArgumentNotNull(configurationRepository, nameof(configurationRepository));
+            ct.ThrowIfCancellationRequested();
+            
             _configurationRepository = configurationRepository;
             _clientsPool = clientsPool;
             _clientProcessorFactory = clientProcessorFactory;
-            _listener = new Lazy<TcpListener>(CreateListener);
+            _ct = ct;
+            _listener = CreateListener();
+            Task.Factory.StartNew(ListeningLoop, _ct);
         }
 
         private TcpListener CreateListener()
@@ -39,52 +44,20 @@ namespace homeControl.ClientApi.Server
             return new TcpListener(address, configuration.Port);
         }
 
-        private bool _running = false;
-        public void StartListening()
+        private void ListeningLoop()
         {
-            CheckNotDisposed();
-            if (_running)
+            _listener.Start();
+
+            while (true)
             {
-                return;
-            }
-
-            _running = true;
-            _cts = new CancellationTokenSource();
-            _listener.Value.Start();
-            Task.Factory.StartNew(() => ListeningLoop(_cts.Token), _cts.Token);
-        }
-
-        /// <remarks>this does not disconnect clients already connected</remarks>
-        public void StopListening()
-        {
-            CheckNotDisposed();
-            if (!_running)
-            {
-                return;
-            }
-
-            _listener.Value.Stop();
-            _cts.Cancel();
-
-            _cts.Dispose();
-            _cts = null;
-            _running = false;
-        }
-
-        private void ListeningLoop(CancellationToken ct)
-        {
-            while (!ct.IsCancellationRequested)
-            {
-                var connectionTask = _listener.Value.AcceptTcpClientAsync();
-                connectionTask.Wait(ct);
+                var connectionTask = _listener.AcceptTcpClientAsync();
+                connectionTask.Wait(_ct);
                 
                 var processor = _clientProcessorFactory.Create(connectionTask.Result);
                 processor.Disconnected += ProcessorDisconnected;
                 _clientsPool.Add(processor);
                 processor.Start();
             }
-
-            ct.ThrowIfCancellationRequested();
         }
 
         private void ProcessorDisconnected(object sender, EventArgs eventArgs)
@@ -101,17 +74,14 @@ namespace homeControl.ClientApi.Server
         private bool _disposed = false;
         public void Dispose()
         {
-            if (!_disposed)
-            {
-                StopListening();
-                _disposed = true;
-            }
+            if (_disposed) return;
+
+            _listener.Stop();
+            _disposed = true;
         }
 
-        private void CheckNotDisposed()
+        public void Init()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
         }
     }
 }

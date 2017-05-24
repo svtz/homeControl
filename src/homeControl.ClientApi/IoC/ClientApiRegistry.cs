@@ -13,7 +13,7 @@ namespace homeControl.ClientApi.IoC
             For<ISetSwitchValueStrategy>().Add<SetGradientSwitchValueStrategy>().Singleton();
             For<ISetSwitchValueStrategy>().Add<SetToggleSwitchValueStrategy>().Singleton();
 
-            For<IClientListener>().Use<ClientListener>().Singleton();
+            ForSingletonOf<ClientListener>();
             For<IClientsPool>().Use<ClientsPool>().Singleton();
             For<IClientProcessorFactory>().Use<ClientProcessorFactory>().Singleton();
         }

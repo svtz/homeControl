@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Application.IoC;
-using homeControl.ClientApi.Server;
 using homeControl.Configuration;
 using homeControl.Core;
 using StructureMap;
@@ -15,12 +14,17 @@ namespace homeControl.Application
         {
             var container = new Container(c => c.AddRegistry<ApplicationRegistry>());
             using (var child = container.GetNestedContainer())
+            using (var cts = new CancellationTokenSource())
             {
-                Run(child);
+                child.Configure(c => c.For<CancellationToken>().Use(() => cts.Token));
+
+                Console.CancelKeyPress += (s, e) => cts.Cancel();
+
+                Run(child, cts.Token);
             }
         }
 
-        private static void Run(IContainer child)
+        private static void Run(IContainer child, CancellationToken ct)
         {
             var initializers = child.GetAllInstances<IInitializer>();
             foreach (var initializer in initializers)
@@ -31,18 +35,8 @@ namespace homeControl.Application
             var loop = child.GetInstance<EventProcessingLoop>();
             loop.ThrottleTime = TimeSpan.FromMilliseconds(100);
 
-            var entryPoint = child.GetInstance<IClientListener>();
-            using (var cts = new CancellationTokenSource())
-            {
-                Console.CancelKeyPress += (s, e) => cts.Cancel();
-
-                var token = cts.Token;
-                var loopTask = Task.Factory.StartNew(() => loop.Run(token), token);
-                entryPoint.StartListening();
-
-                Task.WaitAll(loopTask);
-                entryPoint.StopListening();
-            }
+            var loopTask = Task.Factory.StartNew(() => loop.Run(ct), ct);
+            Task.WaitAll(loopTask);
         }
     }
 }

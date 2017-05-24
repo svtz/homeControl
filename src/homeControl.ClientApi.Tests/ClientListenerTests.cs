@@ -19,51 +19,39 @@ namespace homeControl.ClientApi.Tests
             var processor = Mock.Of<IClientProcessor>();
             var clientsPoolMock = new ClientsPoolMock().CanAdd(processor, () => clientConnectedEvent.Set());
             var factoryMock = new ClientProcessorFactoryMock().CanCreate(processor);
-            using (var listener = new ClientListener(new TestListenerConfigurationRepository(), clientsPoolMock.Object, factoryMock.Object))
+            using (var cts = new CancellationTokenSource())
+            using (new ClientListener(new TestListenerConfigurationRepository(), clientsPoolMock.Object, factoryMock.Object, cts.Token))
             {
-                listener.StartListening();
+                cts.CancelAfter(_timeout);
 
                 using (var client = new TcpClient())
                 {
                     client.ConnectAsync(
                             TestListenerConfigurationRepository.IPAddress,
                             TestListenerConfigurationRepository.PortNumber)
-                        .Wait();
+                        .Wait(cts.Token);
 
                     Assert.Equal(true, client.Connected);
                     Assert.True(clientConnectedEvent.WaitOne(_timeout));
                     clientsPoolMock.Verify(p => p.Add(processor), Times.Once());
                 }
 
+                cts.Cancel();
             }
         }
 
         [Fact]
-        public void Test_CannotConnectWhenListenerNotStarted()
+        public void Test_CannotConnectWhenListenerDisposed()
         {
-            using (new ClientListener(new TestListenerConfigurationRepository(), Mock.Of<IClientsPool>(), Mock.Of<IClientProcessorFactory>()))
-            {
-                using (var client = new TcpClient())
-                {
-                    Assert.ThrowsAnyAsync<SocketException>(
-                            () => client.ConnectAsync(
-                                TestListenerConfigurationRepository.IPAddress,
-                                TestListenerConfigurationRepository.PortNumber))
-                        .Wait();
-                }
-            }
-        }
-
-        [Fact]
-        public void Test_CannotConnectWhenListenerStopped()
-        {
+            using (var cts = new CancellationTokenSource())
             using (var listener = new ClientListener(
-                new TestListenerConfigurationRepository(),
+                new TestListenerConfigurationRepository(), 
                 Mock.Of<IClientsPool>(),
-                Mock.Of<IClientProcessorFactory>()))
+                Mock.Of<IClientProcessorFactory>(), 
+                cts.Token))
             {
-                listener.StartListening();
-                listener.StopListening();
+                listener.Dispose();
+                cts.CancelAfter(_timeout);
 
                 using (var client = new TcpClient())
                 {
@@ -71,36 +59,10 @@ namespace homeControl.ClientApi.Tests
                             () => client.ConnectAsync(
                                 TestListenerConfigurationRepository.IPAddress,
                                 TestListenerConfigurationRepository.PortNumber))
-                        .Wait();
+                        .Wait(cts.Token);
                 }
-            }
-        }
 
-        [Fact]
-        public void Test_ConnectAfterListenerRestarted()
-        {
-            var clientConnectedEvent = new ManualResetEvent(false);
-            var processor = Mock.Of<IClientProcessor>();
-            var clientsPoolMock = new ClientsPoolMock().CanAdd(processor, () => clientConnectedEvent.Set());
-            var factoryMock = new ClientProcessorFactoryMock().CanCreate(processor);
-
-            using (var listener = new ClientListener(new TestListenerConfigurationRepository(), clientsPoolMock.Object, factoryMock.Object))
-            {
-                listener.StartListening();
-                listener.StopListening();
-                listener.StartListening();
-
-                using (var client = new TcpClient())
-                {
-                    client.ConnectAsync(
-                            TestListenerConfigurationRepository.IPAddress,
-                            TestListenerConfigurationRepository.PortNumber)
-                        .Wait();
-
-                    Assert.Equal(true, client.Connected);
-                    Assert.True(clientConnectedEvent.WaitOne(_timeout));
-                    clientsPoolMock.Verify(p => p.Add(processor), Times.Once());
-                }
+                cts.Cancel();
             }
         }
 
@@ -112,23 +74,22 @@ namespace homeControl.ClientApi.Tests
             var clientsPoolMock = new ClientsPoolMock().CanRemove(processorMock.Object, () => clientDisconnectedEvent.Set());
             var factoryMock = new ClientProcessorFactoryMock().CanCreate(processorMock.Object);
 
-            using (var listener = new ClientListener(new TestListenerConfigurationRepository(), clientsPoolMock.Object, factoryMock.Object))
+            using (var cts = new CancellationTokenSource())
+            using (new ClientListener(new TestListenerConfigurationRepository(), clientsPoolMock.Object, factoryMock.Object, cts.Token))
             {
-                listener.StartListening();
+                cts.CancelAfter(_timeout);
 
                 using (var client = new TcpClient())
                 {
                     client.ConnectAsync(
                             TestListenerConfigurationRepository.IPAddress,
                             TestListenerConfigurationRepository.PortNumber)
-                        .Wait();
+                        .Wait(cts.Token);
                 }
                 processorMock.Raise(p => p.Disconnected += null, processorMock.Object, null);
 
                 Assert.True(clientDisconnectedEvent.WaitOne(_timeout));
                 clientsPoolMock.Verify(p => p.Remove(processorMock.Object), Times.Once());
-                processorMock.Verify(m => m.Stop(), Times.Once);
-                processorMock.Verify(m => m.Dispose(), Times.Once);
             }
         }
     }

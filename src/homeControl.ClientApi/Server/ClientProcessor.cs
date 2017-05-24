@@ -2,56 +2,49 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using StructureMap.Pipeline;
 
 namespace homeControl.ClientApi.Server
 {
-    internal sealed class ClientProcessor : IClientProcessor, IClientWriter
+    internal sealed class ClientProcessor : IClientProcessor, IClientWriter, IClientReader
     {
         private readonly TcpClient _client;
-        private readonly MessageWriterPipeline _writerPipeline;
+        private readonly IClientMessageSerializer _messageSerializer;
+        private MessageWriterPipeline _writerPipeline;
+        private MessageReaderPipeline _readerPipeline;
 
-        private bool _running = false;
-        
+        private readonly CancellationTokenSource _cts;
+        private readonly object _stateLock = new object();
+            
 
-        public ClientProcessor(TcpClient client, IClientMessageSerializer messageSerializer)
+        public ClientProcessor(TcpClient client, IClientMessageSerializer messageSerializer, CancellationToken ct)
         {
             Guard.DebugAssertArgumentNotNull(client, nameof(client));
-            _client = client;
+            Guard.DebugAssertArgumentNotNull(messageSerializer, nameof(messageSerializer));
 
-            _writerPipeline = new MessageWriterPipeline(this, messageSerializer);
+            _client = client;
+            _messageSerializer = messageSerializer;
+
+            _cts = new CancellationTokenSource();
+            ct.Register(HandleDisconnection);
         }
 
+        private bool _canStart = true;
         public void Start()
         {
-            CheckNotDisconnected();
-            if (_running)
+            if (!_canStart) return;
+            lock (_stateLock)
             {
-                return;
+                if (!_canStart) return;
+                _canStart = false;
+
+                _writerPipeline = new MessageWriterPipeline(this, _messageSerializer, _cts.Token);
+                _readerPipeline = new MessageReaderPipeline(this, _messageSerializer, _cts.Token);
             }
-
-            _running = true;
-        }
-
-        public void Stop()
-        {
-            CheckNotDisconnected();
-            if (!_running)
-                return;
-
-            _running = false;
         }
 
 
         #region Disconnection
-
-        private bool _disconnected = false;
-        private readonly object _disconnectionLock = new object();
-
-        private void CheckNotDisconnected()
-        {
-            if (_disconnected)
-                throw new InvalidOperationException("Client disconnected");
-        }
 
         public event EventHandler Disconnected;
         private void OnDisconnected()
@@ -60,28 +53,30 @@ namespace homeControl.ClientApi.Server
             handler?.Invoke(this, EventArgs.Empty);
         }
 
+        private bool _disconnected = false;
         private void HandleDisconnection()
         {
             if (_disconnected)
                 return;
 
-            lock (_disconnectionLock)
+            lock (_stateLock)
             {
                 if (_disconnected)
                     return;
 
+                _disconnected = true;
+                _canStart = false;
+
                 try
                 {
-                    Stop();
                     OnDisconnected();
                 }
                 finally
                 {
-                    _writerPipeline.Dispose();
+                    _cts.Cancel();
+                    _cts.Dispose();
                     _client.Dispose();
                 }
-                
-                _disconnected = true;
             }
         }
 
@@ -90,23 +85,45 @@ namespace homeControl.ClientApi.Server
 
         #region IClientWriter
 
-        async Task IClientWriter.WriteAsync(byte[] data)
+        async Task IClientWriter.WriteAsync(byte[] data, CancellationToken ct)
         {
-            if (_disconnected || !_running)
+            if (_disconnected)
                 return;
 
             try
             {
-                await _client.GetStream().WriteAsync(data, 0, data.Length);
+                await _client.GetStream().WriteAsync(data, 0, data.Length, ct);
             }
             catch (SocketException)
             {
                 HandleDisconnection();
             }
-            catch (ObjectDisposedException)
+        }
+
+        #endregion
+
+
+        #region IClientReader
+
+        async Task<int> IClientReader.ReceiveDataAsync(byte[] buffer, int offset, int count, CancellationToken ct)
+        {
+            Guard.DebugAssertArgumentNotNull(buffer, nameof(buffer));
+            Guard.DebugAssertArgument(offset >= 0, nameof(offset));
+            Guard.DebugAssertArgument(count >= 0, nameof(count));
+
+            if (_disconnected)
+                return 0;
+
+            try
             {
-                Guard.DebugAssert(_disconnected, "Disconnection error");
+                return await _client.GetStream().ReadAsync(buffer, offset, count, ct);
             }
+            catch (SocketException)
+            {
+                HandleDisconnection();
+            }
+
+            return 0;
         }
 
         #endregion

@@ -5,5 +5,6 @@ namespace homeControl.ClientApi.Server
     internal interface IClientMessageSerializer
     {
         byte[] Serialize(IClientMessage message);
+        IClientMessage Deserialize(byte[] message);
     }
 }

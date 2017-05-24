@@ -7,39 +7,37 @@ using homeControl.ClientServerShared;
 
 namespace homeControl.ClientApi.Server
 {
-    internal sealed class MessageWriterPipeline : IDisposable
+    internal sealed class MessageWriterPipeline
     {
         private readonly IClientWriter _writer;
         private readonly IClientMessageSerializer _serializer;
         private readonly ITargetBlock<IClientMessage> _pipeline;
-        private readonly CancellationTokenSource _cts;
+        private readonly CancellationToken _ct;
 
-        public MessageWriterPipeline(IClientWriter writer, IClientMessageSerializer serializer)
+        public MessageWriterPipeline(IClientWriter writer, IClientMessageSerializer serializer, CancellationToken ct)
         {
             Guard.DebugAssertArgumentNotNull(writer, nameof(writer));
             Guard.DebugAssertArgumentNotNull(serializer, nameof(serializer));
 
             _writer = writer;
             _serializer = serializer;
-            _cts = new CancellationTokenSource();
+            _ct = ct;
             _pipeline = BuildPipeline();
         }
 
         private ITargetBlock<IClientMessage> BuildPipeline()
         {
-            const int capacity = 10;
             var bufferOptions = new DataflowBlockOptions
             {
                 EnsureOrdered = false,
-                CancellationToken = _cts.Token,
-                BoundedCapacity = capacity
+                CancellationToken = _ct,
             };
             var executionOptions = new ExecutionDataflowBlockOptions
             {
-                CancellationToken = _cts.Token,
-                BoundedCapacity = capacity,
-                EnsureOrdered = false,
-                MaxDegreeOfParallelism = 1
+                CancellationToken = _ct,
+                EnsureOrdered = true,
+                MaxDegreeOfParallelism = 1,
+                SingleProducerConstrained = true
             };
 
             var input = new BufferBlock<IClientMessage>(bufferOptions);
@@ -58,7 +56,7 @@ namespace homeControl.ClientApi.Server
         {
             Guard.DebugAssertArgumentNotNull(data, nameof(data));
 
-            return _writer.WriteAsync(data);
+            return _writer.WriteAsync(data, _ct);
         }
 
         private byte[] AddLength(byte[] data)
@@ -79,28 +77,8 @@ namespace homeControl.ClientApi.Server
         public void PostMessage(IClientMessage message)
         {
             Guard.DebugAssertArgumentNotNull(message, nameof(message));
-            CheckNotDisposed();
 
             _pipeline.Post(message);
-        }
-
-        private bool _disposed = false;
-        private void CheckNotDisposed()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
-        }
-
-
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-            _cts.Cancel();
-            _cts.Dispose();
-            _disposed = true;
         }
     }
 }
