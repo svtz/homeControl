@@ -45,9 +45,10 @@ namespace homeControl.ClientApi.Server
             var weighterBlock = new TransformBlock<byte[], byte[]>(m => AddLength(m), executionOptions);
             var writerBlock = new ActionBlock<byte[]>(WriteMessage, executionOptions);
 
-            input.LinkTo(serializerBlock);
-            serializerBlock.LinkTo(weighterBlock);
-            weighterBlock.LinkTo(writerBlock);
+            var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
+            input.LinkTo(serializerBlock, linkOptions);
+            serializerBlock.LinkTo(weighterBlock, linkOptions);
+            weighterBlock.LinkTo(writerBlock, linkOptions);
 
             return input;
         }
@@ -78,7 +79,7 @@ namespace homeControl.ClientApi.Server
         {
             Guard.DebugAssertArgumentNotNull(message, nameof(message));
 
-            _pipeline.Post(message);
+            _pipeline.SendAsync(message);
         }
     }
 }
