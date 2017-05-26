@@ -3,7 +3,7 @@ using homeControl.ClientServerShared.Dto;
 
 namespace homeControl.ClientServerShared
 {
-    public interface ISwitchesApi
+    public interface ISwitchesApiV1
     {
         SwitchDto[] GetDescriptions();
         bool SetValue(Guid id, object value);
