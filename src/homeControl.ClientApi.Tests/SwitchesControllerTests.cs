@@ -2,7 +2,7 @@
 using System.Linq;
 using homeControl.ClientApi.Configuration;
 using homeControl.ClientApi.Controllers;
-using homeControl.ClientServerShared.Dto;
+using homeControl.ClientServerShared.Switches;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using homeControl.Core;

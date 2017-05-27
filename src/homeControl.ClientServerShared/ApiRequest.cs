@@ -8,24 +8,28 @@ namespace homeControl.ClientServerShared
     {
         public string ApiName { get; }
         public string MethodName { get; }
-        public ApiRequestParameter[] Parameters { get; set; }
+        public ApiRequestParameter[] Parameters { get; }
 
         private ApiRequest(
             string apiName, string methodName, 
             ApiRequestParameter[] parameters)
             : base(Guid.NewGuid())
         {
+            if (apiName == null) throw new ArgumentNullException(nameof(apiName));
+            if (methodName == null) throw new ArgumentNullException(nameof(methodName));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
             ApiName = apiName;
             MethodName = methodName;
             Parameters = parameters;
         }
 
-        public void Create<TApi>(Expression<Func<TApi, object>> apiCall)
+        public static ApiRequest Create<TApi>(Expression<Func<TApi, object>> apiCall)
         {
-            if (apiCall == null)
-                throw new ArgumentNullException(nameof(apiCall));
-
-            var callExpression = apiCall.Body as MethodCallExpression;
+            if (apiCall == null) throw new ArgumentNullException(nameof(apiCall));
+            
+            var convertExpression = apiCall.Body as UnaryExpression;
+            var callExpression = (convertExpression?.Operand ?? apiCall.Body) as MethodCallExpression;
             if (callExpression == null)
                 throw new ArgumentOutOfRangeException(nameof(apiCall));
 
@@ -33,8 +37,13 @@ namespace homeControl.ClientServerShared
             foreach (var arg in callExpression.Arguments)
             {
                 var parameterType = arg.Type;
-                var parameterValue = Expression.Lambda<object>(arg).Compile();
+                var cast = Expression.Convert(arg, typeof(object));
+                var valueAccessor = Expression.Lambda<Func<object>>(cast).Compile();
+
+                parameters.Add(new ApiRequestParameter(TypeSerializer.Serialize(parameterType), valueAccessor()));
             }
+
+            return new ApiRequest(TypeSerializer.Serialize<TApi>(), callExpression.Method.Name, parameters.ToArray());
         }
     }
 }

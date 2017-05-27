@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using homeControl.ClientApi.Configuration;
-using homeControl.ClientServerShared.Dto;
+using homeControl.ClientServerShared.Switches;
 using homeControl.Configuration;
 using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;

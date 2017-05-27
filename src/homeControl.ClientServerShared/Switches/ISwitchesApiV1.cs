@@ -1,7 +1,6 @@
 ﻿using System;
-using homeControl.ClientServerShared.Dto;
 
-namespace homeControl.ClientServerShared
+namespace homeControl.ClientServerShared.Switches
 {
     public interface ISwitchesApiV1
     {

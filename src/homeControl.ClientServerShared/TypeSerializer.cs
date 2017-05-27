@@ -7,25 +7,24 @@ namespace homeControl.ClientServerShared
 {
     internal sealed class TypeSerializer
     {
-        private static readonly IDictionary<string, Type> SharedAssemblyTypes =
+        private static readonly IDictionary<string, Type> _typesCache =
             typeof(TypeSerializer)
                 .GetTypeInfo()
                 .Assembly
                 .GetExportedTypes()
                 .ToDictionary(t => t.FullName);
 
+        public static string Serialize<T>()
+        {
+            return Serialize(typeof(T));
+        }
 
         public static string Serialize(Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            var typeKey = type.FullName;
-
-            if (!SharedAssemblyTypes.ContainsKey(typeKey))
-                throw new NotSupportedException("Only types from ClientServerShared assembly are supported");
-
-            return typeKey;
+            return type.FullName;
         }
 
         public static Type Deserialize(string typeName)
@@ -34,8 +33,10 @@ namespace homeControl.ClientServerShared
                 throw new ArgumentNullException(nameof(typeName));
 
             Type type;
-            if (!SharedAssemblyTypes.TryGetValue(typeName, out type))
-                throw new ArgumentOutOfRangeException(nameof(typeName));
+            if (!_typesCache.TryGetValue(typeName, out type))
+            {
+                type = _typesCache[typeName] = Type.GetType(typeName, true);
+            }
 
             return type;
         }

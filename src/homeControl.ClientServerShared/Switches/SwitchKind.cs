@@ -1,4 +1,4 @@
-namespace homeControl.ClientServerShared.Dto
+namespace homeControl.ClientServerShared.Switches
 {
     public enum SwitchKind
     {

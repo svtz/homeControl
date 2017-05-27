@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.ClientServerShared.Dto
+namespace homeControl.ClientServerShared.Switches
 {
     public sealed class SwitchDto
     {

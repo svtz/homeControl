@@ -1,5 +1,5 @@
 ﻿using System;
-using homeControl.ClientServerShared.Dto;
+using homeControl.ClientServerShared.Switches;
 using homeControl.Configuration.Switches;
 using homeControl.Events.Switches;
 
