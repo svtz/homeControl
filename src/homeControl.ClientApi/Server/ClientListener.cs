@@ -29,6 +29,7 @@ namespace homeControl.ClientApi.Server
             _clientProcessorFactory = clientProcessorFactory;
             _ct = ct;
             _listener = CreateListener();
+            _listener.Start();
             Task.Factory.StartNew(ListeningLoop, _ct);
         }
 
@@ -46,9 +47,7 @@ namespace homeControl.ClientApi.Server
 
         private void ListeningLoop()
         {
-            _listener.Start();
-
-            while (true)
+            while (!_disposed)
             {
                 var connectionTask = _listener.AcceptTcpClientAsync();
                 connectionTask.Wait(_ct);

@@ -6,20 +6,24 @@ using homeControl.ClientServerShared;
 
 namespace homeControl.ClientApi.Server
 {
-    internal sealed class MessageReaderPipeline
+    internal sealed class MessageReaderPipeline : IDisposable
     {
         private readonly IClientReader _reader;
         private readonly IClientMessageSerializer _serializer;
+        private readonly IClientRequestRouter _clientRequestRouter;
         private readonly BufferBlock<byte[]> _input;
         private readonly CancellationToken _ct;
 
-        public MessageReaderPipeline(IClientReader reader, IClientMessageSerializer serializer, CancellationToken ct)
+        public MessageReaderPipeline(IClientReader reader, IClientMessageSerializer serializer, 
+            IClientRequestRouter clientRequestRouter, CancellationToken ct)
         {
             Guard.DebugAssertArgumentNotNull(reader, nameof(reader));
             Guard.DebugAssertArgumentNotNull(serializer, nameof(serializer));
+            Guard.DebugAssertArgumentNotNull(clientRequestRouter, nameof(clientRequestRouter));
 
             _reader = reader;
             _serializer = serializer;
+            _clientRequestRouter = clientRequestRouter;
 
             _ct = ct;
             _input = CreatePipeline();
@@ -75,7 +79,7 @@ namespace homeControl.ClientApi.Server
 
         private async void ReaderLoop()
         {
-            while (!_ct.IsCancellationRequested)
+            while (!_disposed && !_ct.IsCancellationRequested)
             {
                 var lengthBytes = await ReadBytes(sizeof(int));
                 var length = BitConverter.ToInt32(lengthBytes, 0);
@@ -85,13 +89,19 @@ namespace homeControl.ClientApi.Server
             }
         }
 
-        public event EventHandler<IClientMessage> MessageReceived;
         private void OnMessageReceived(IClientMessage msg)
         {
             Guard.DebugAssertArgumentNotNull(msg, nameof(msg));
+            _clientRequestRouter.Process(msg);
+        }
 
-            var handler = Interlocked.CompareExchange(ref MessageReceived, null, null);
-            handler?.Invoke(this, msg);
+        private bool _disposed = false;
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            _input.Complete();
+            _disposed = true;
         }
     }
 }

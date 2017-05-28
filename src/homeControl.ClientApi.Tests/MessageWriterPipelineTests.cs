@@ -46,17 +46,14 @@ namespace homeControl.ClientApi.Tests
                     }
                 }, ct));
 
-            using (var cts = new CancellationTokenSource())
+            using (var writer = new MessageWriterPipeline(writerMock.Object, serializerMock.Object, CancellationToken.None))
             {
-                new MessageWriterPipeline(writerMock.Object, serializerMock.Object, cts.Token).PostMessage(message);
-                writerComplete.WaitOne(_timeout);
+                writer.PostMessage(message);
 
-                serializerMock.Verify(m => m.Serialize(message), Times.AtLeastOnce);
+                Assert.True(writerComplete.WaitOne(_timeout));
                 Assert.True(expectedData.SequenceEqual(writtenData));
-
-                cts.Cancel();
+                serializerMock.Verify(m => m.Serialize(message), Times.AtLeastOnce);
             }
-            
         }
     }
 }

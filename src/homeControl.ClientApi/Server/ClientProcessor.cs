@@ -2,7 +2,6 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using StructureMap.Pipeline;
 
 namespace homeControl.ClientApi.Server
 {
@@ -10,6 +9,7 @@ namespace homeControl.ClientApi.Server
     {
         private readonly TcpClient _client;
         private readonly IClientMessageSerializer _messageSerializer;
+        private readonly IClientRequestRouter _requestRouter;
         private MessageWriterPipeline _writerPipeline;
         private MessageReaderPipeline _readerPipeline;
 
@@ -17,13 +17,18 @@ namespace homeControl.ClientApi.Server
         private readonly object _stateLock = new object();
             
 
-        public ClientProcessor(TcpClient client, IClientMessageSerializer messageSerializer, CancellationToken ct)
+        public ClientProcessor(TcpClient client, IClientMessageSerializer messageSerializer, IClientRequestRouter requestRouter, 
+            CancellationToken ct)
         {
             Guard.DebugAssertArgumentNotNull(client, nameof(client));
             Guard.DebugAssertArgumentNotNull(messageSerializer, nameof(messageSerializer));
+            Guard.DebugAssertArgumentNotNull(requestRouter, nameof(requestRouter));
+
+            ct.ThrowIfCancellationRequested();
 
             _client = client;
             _messageSerializer = messageSerializer;
+            _requestRouter = requestRouter;
 
             _cts = new CancellationTokenSource();
             ct.Register(HandleDisconnection);
@@ -39,7 +44,7 @@ namespace homeControl.ClientApi.Server
                 _canStart = false;
 
                 _writerPipeline = new MessageWriterPipeline(this, _messageSerializer, _cts.Token);
-                _readerPipeline = new MessageReaderPipeline(this, _messageSerializer, _cts.Token);
+                _readerPipeline = new MessageReaderPipeline(this, _messageSerializer, _requestRouter, _cts.Token);
             }
         }
 
@@ -73,6 +78,9 @@ namespace homeControl.ClientApi.Server
                 }
                 finally
                 {
+                    _writerPipeline?.Dispose();
+                    _readerPipeline?.Dispose();
+
                     _cts.Cancel();
                     _cts.Dispose();
                     _client.Dispose();

@@ -37,35 +37,35 @@ namespace homeControl.ClientServerShared.Tests
             {
                 (Expression<Func<ISwitchesApiV1, object>>)(api => api.SetValue(_guid, 32765)),
                 nameof(ISwitchesApiV1.SetValue),
-                new[] {typeof(Guid), typeof(int)},
+                new[] {typeof(Guid), typeof(object)},
                 new object[] {_guid, 32765}
             },
             new object[]
             {
                 (Expression<Func<ISwitchesApiV1, object>>)(api => api.SetValue(_guid, GetDouble())),
                 nameof(ISwitchesApiV1.SetValue),
-                new[] {typeof(Guid), typeof(double)},
+                new[] {typeof(Guid), typeof(object)},
                 new object[] {_guid, GetDouble()}
             },
             new object[]
             {
                 (Expression<Func<ISwitchesApiV1, object>>)(api => api.SetValue(_guid, "string")),
                 nameof(ISwitchesApiV1.SetValue),
-                new[] {typeof(Guid), typeof(string)},
+                new[] {typeof(Guid), typeof(object)},
                 new object[] {_guid, "string"}
             },
             new object[]
             {
                 (Expression<Func<ISwitchesApiV1, object>>)(api => api.SetValue(_guid, true)),
                 nameof(ISwitchesApiV1.SetValue),
-                new[] {typeof(Guid), typeof(bool)},
+                new[] {typeof(Guid), typeof(object)},
                 new object[] {_guid, true}
             },
             new object[]
             {
                 (Expression<Func<ISwitchesApiV1, object>>)(api => api.SetValue(_guid, Tuple.Create(323, false))),
                 nameof(ISwitchesApiV1.SetValue),
-                new[] {typeof(Guid), typeof(Tuple<int, bool>)},
+                new[] {typeof(Guid), typeof(object)},
                 new object[] {_guid, Tuple.Create(323, false)}
             },
             new object[]
@@ -97,7 +97,6 @@ namespace homeControl.ClientServerShared.Tests
             string expectedMethod, Type[] expectedTypes, object[] expectedParameters)
         {
             Assert.Equal(expectedTypes.Length, expectedParameters.Length);
-
 
             var request = ApiRequest.Create(call);
 

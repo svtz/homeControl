@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using homeControl.ClientServerShared;
 
-namespace homeControl.ClientApi.Server
+namespace homeControl.ClientServerShared
 {
-    internal sealed class ApiCaller<TApi> where TApi: class
+    public sealed class ApiCaller<TApi> where TApi: class
     {
         private readonly TApi _api;
 
@@ -32,6 +31,7 @@ namespace homeControl.ClientApi.Server
 
         private static readonly MethodInfo[] _apiMethods
             = typeof(TApi)
+                .GetTypeInfo()
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .ToArray();
 
@@ -61,11 +61,16 @@ namespace homeControl.ClientApi.Server
             if (methodParameters.Length != requestParameters.Length)
                 return false;
 
-            var notMatched = methodParameters
-                .PairWith(requestParameters)
-                .FirstOrDefault(p => p.Item1.ParameterType != p.Item2.GetActualType());
+            for (var idx = 0; idx < methodParameters.Length; idx++)
+            {
+                var methodParam = methodParameters[idx];
+                var requestParam = requestParameters[idx];
 
-            return notMatched == null;
+                if (methodParam.ParameterType != requestParam.GetActualType())
+                    return false;
+            }
+
+            return true;
         }
     }
 }

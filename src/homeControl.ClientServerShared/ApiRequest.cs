@@ -33,11 +33,17 @@ namespace homeControl.ClientServerShared
             if (callExpression == null)
                 throw new ArgumentOutOfRangeException(nameof(apiCall));
 
+            var methodArgs = callExpression.Method.GetParameters();
+            Guard.DebugAssert(methodArgs.Length == callExpression.Arguments.Count, "methodArgs.Length == callExpression.Arguments.Count");
+
             var parameters = new List<ApiRequestParameter>(callExpression.Arguments.Count);
-            foreach (var arg in callExpression.Arguments)
+            for (var idx = 0; idx < callExpression.Arguments.Count; idx++)
             {
-                var parameterType = arg.Type;
-                var cast = Expression.Convert(arg, typeof(object));
+                var expressionArg = callExpression.Arguments[idx];
+                var methodArg = methodArgs[idx];
+
+                var parameterType = methodArg.ParameterType;
+                var cast = Expression.Convert(expressionArg, typeof(object));
                 var valueAccessor = Expression.Lambda<Func<object>>(cast).Compile();
 
                 parameters.Add(new ApiRequestParameter(TypeSerializer.Serialize(parameterType), valueAccessor()));

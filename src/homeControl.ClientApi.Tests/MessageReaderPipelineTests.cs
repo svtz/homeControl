@@ -36,7 +36,7 @@ namespace homeControl.ClientApi.Tests
             }
 
             private int _position = 0;
-            public async Task<int> ReceiveDataAsync(byte[] buffer, int offset, int count, CancellationToken ct)
+            public Task<int> ReceiveDataAsync(byte[] buffer, int offset, int count, CancellationToken ct)
             {
                 Guard.DebugAssertArgumentNotNull(buffer, nameof(buffer));
                 Guard.DebugAssertArgument(offset >= 0, nameof(offset));
@@ -51,10 +51,10 @@ namespace homeControl.ClientApi.Tests
 
                     _position += countToCopy;
 
-                    return countToCopy;
+                    return Task.FromResult(countToCopy);
                 }
 
-                return 0;
+                return Task.FromResult(0);
             }
         }
 
@@ -76,30 +76,25 @@ namespace homeControl.ClientApi.Tests
             var sourceData = BitConverter.GetBytes(serializedMessage.Length).Concat(serializedMessage).ToArray();
             var reader = new ReaderMock(sourceData);
             var messageReceived = new ManualResetEvent(false);
+            var requestRounterMock = new Mock<IClientRequestRouter>(MockBehavior.Strict);
+            requestRounterMock.Setup(m => m.Process(sourceMessage))
+                .Callback(() => messageReceived.Set());
 
-            using (var cts = new CancellationTokenSource())
+            using (new MessageReaderPipeline(reader, serializerMock.Object, requestRounterMock.Object, CancellationToken.None))
             {
-                var readerPipeline = new MessageReaderPipeline(reader, serializerMock.Object, cts.Token);
-                readerPipeline.MessageReceived += (sender, receivedMessage) =>
-                {
-                    Assert.Equal(sourceMessage, receivedMessage);
-
-                    messageReceived.Set();
-                };
-
                 reader.Start();
+
                 Assert.True(messageReceived.WaitOne(_timeout));
                 serializerMock.Verify(m => m.Deserialize(It.IsAny<byte[]>()), Times.AtLeastOnce);
-
-                cts.Cancel();
+                requestRounterMock.Verify(m => m.Process(sourceMessage), Times.Once);
             }
         }
 
         [Theory]
         [InlineData(1)]
         [InlineData(sizeof(int))]
-        [InlineData(sizeof(int)-1)]
-        [InlineData(sizeof(int)+1)]
+        [InlineData(sizeof(int) - 1)]
+        [InlineData(sizeof(int) + 1)]
         [InlineData(100)]
         [InlineData(int.MaxValue)]
         public void TestReceiveMessageByPieces(int bytesPerCall)
@@ -109,23 +104,19 @@ namespace homeControl.ClientApi.Tests
             var serializerMock = new Mock<IClientMessageSerializer>(MockBehavior.Strict);
             serializerMock.Setup(m => m.Deserialize(serializedMessage)).Returns(sourceMessage);
             var sourceData = BitConverter.GetBytes(serializedMessage.Length).Concat(serializedMessage).ToArray();
-            var reader = new ReaderMock(sourceData) { BytesPerCall = bytesPerCall };
+            var reader = new ReaderMock(sourceData) {BytesPerCall = bytesPerCall};
             var messageReceived = new ManualResetEvent(false);
+            var requestRounterMock = new Mock<IClientRequestRouter>(MockBehavior.Strict);
+            requestRounterMock.Setup(m => m.Process(sourceMessage))
+                .Callback(() => messageReceived.Set());
 
-            using (var cts = new CancellationTokenSource())
+            using (new MessageReaderPipeline(reader, serializerMock.Object, requestRounterMock.Object, CancellationToken.None))
             {
-                var readerPipeline = new MessageReaderPipeline(reader, serializerMock.Object, cts.Token);
-                readerPipeline.MessageReceived += (sender, receivedMessage) =>
-                {
-                    Assert.Equal(sourceMessage, receivedMessage);
-                    messageReceived.Set();
-                };
-
                 reader.Start();
+
                 Assert.True(messageReceived.WaitOne(_timeout));
                 serializerMock.Verify(m => m.Deserialize(It.IsAny<byte[]>()), Times.AtLeastOnce);
-
-                cts.Cancel();
+                requestRounterMock.Verify(m => m.Process(sourceMessage), Times.Once);
             }
         }
     }

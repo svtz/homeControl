@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using homeControl.ClientApi.Server;
 using homeControl.ClientApi.Tests.Mocks;
@@ -43,26 +44,24 @@ namespace homeControl.ClientApi.Tests
         [Fact]
         public void Test_CannotConnectWhenListenerDisposed()
         {
-            using (var cts = new CancellationTokenSource())
             using (var listener = new ClientListener(
                 new TestListenerConfigurationRepository(), 
                 Mock.Of<IClientsPool>(),
                 Mock.Of<IClientProcessorFactory>(), 
-                cts.Token))
+                CancellationToken.None))
             {
                 listener.Dispose();
-                cts.CancelAfter(_timeout);
 
                 using (var client = new TcpClient())
                 {
-                    Assert.ThrowsAnyAsync<SocketException>(
-                            () => client.ConnectAsync(
-                                TestListenerConfigurationRepository.IPAddress,
-                                TestListenerConfigurationRepository.PortNumber))
-                        .Wait(cts.Token);
+                    var result =
+                        Assert.ThrowsAnyAsync<SocketException>(
+                                () => client.ConnectAsync(
+                                    TestListenerConfigurationRepository.IPAddress,
+                                    TestListenerConfigurationRepository.PortNumber))
+                            .Wait(_timeout);
+                    Assert.True(result);
                 }
-
-                cts.Cancel();
             }
         }
 
@@ -74,17 +73,17 @@ namespace homeControl.ClientApi.Tests
             var clientsPoolMock = new ClientsPoolMock().CanRemove(processorMock.Object, () => clientDisconnectedEvent.Set());
             var factoryMock = new ClientProcessorFactoryMock().CanCreate(processorMock.Object);
 
-            using (var cts = new CancellationTokenSource())
-            using (new ClientListener(new TestListenerConfigurationRepository(), clientsPoolMock.Object, factoryMock.Object, cts.Token))
+            using (new ClientListener(new TestListenerConfigurationRepository(), clientsPoolMock.Object, factoryMock.Object, CancellationToken.None))
             {
-                cts.CancelAfter(_timeout);
 
                 using (var client = new TcpClient())
                 {
-                    client.ConnectAsync(
+                    var result = client.ConnectAsync(
                             TestListenerConfigurationRepository.IPAddress,
                             TestListenerConfigurationRepository.PortNumber)
-                        .Wait(cts.Token);
+                        .Wait(_timeout);
+
+                    Assert.True(result);
                 }
                 processorMock.Raise(p => p.Disconnected += null, processorMock.Object, null);
 

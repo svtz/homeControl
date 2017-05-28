@@ -7,7 +7,7 @@ using homeControl.ClientServerShared;
 
 namespace homeControl.ClientApi.Server
 {
-    internal sealed class MessageWriterPipeline
+    internal sealed class MessageWriterPipeline : IDisposable
     {
         private readonly IClientWriter _writer;
         private readonly IClientMessageSerializer _serializer;
@@ -57,7 +57,9 @@ namespace homeControl.ClientApi.Server
         {
             Guard.DebugAssertArgumentNotNull(data, nameof(data));
 
-            return _writer.WriteAsync(data, _ct);
+            return _ct.IsCancellationRequested 
+                ? Task.CompletedTask 
+                : _writer.WriteAsync(data, _ct);
         }
 
         private byte[] AddLength(byte[] data)
@@ -79,7 +81,17 @@ namespace homeControl.ClientApi.Server
         {
             Guard.DebugAssertArgumentNotNull(message, nameof(message));
 
-            _pipeline.SendAsync(message);
+            if (!_ct.IsCancellationRequested)
+                _pipeline.SendAsync(message, _ct);
+        }
+
+        private bool _disposed = false;
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            _pipeline.Complete();
+            _disposed = true;
         }
     }
 }
