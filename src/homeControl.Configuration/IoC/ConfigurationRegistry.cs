@@ -1,4 +1,5 @@
-﻿using homeControl.Configuration.Bindings;
+﻿using System;
+using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 using Newtonsoft.Json;
@@ -8,16 +9,18 @@ namespace homeControl.Configuration.IoC
 {
     public sealed class ConfigurationRegistry : Registry
     {
-        public ConfigurationRegistry(string configFolderPath)
+        public ConfigurationRegistry(string serviceName)
         {
-            For(typeof(IConfigurationLoader<>)).Use(typeof(JsonConfigurationLoader<>)).Singleton()
-                                               .Ctor<string>().Is(configFolderPath);
-            For<ISensorConfigurationRepository>().Use<SensorConfgurationRepository>();
-            For<ISwitchConfigurationRepository>().Use<SwitchConfgurationRepository>();
-            For<ISwitchToSensorBindingsRepository>().Use<SwitchToSensorBindingsRepository>();
+            Guard.DebugAssertArgumentNotNull(serviceName, nameof(serviceName));
 
-            For<JsonConverter>().Add<SwitchIdSerializer>();
-            For<JsonConverter>().Add<SensorIdSerializer>();
+            For<ISensorConfigurationRepository>().Use<SensorConfgurationRepository>().Transient();
+            For<ISwitchConfigurationRepository>().Use<SwitchConfgurationRepository>().Transient();
+            For<ISwitchToSensorBindingsRepository>().Use<SwitchToSensorBindingsRepository>().Transient();
+
+            For<JsonConverter>().Add<SwitchIdSerializer>().Singleton();
+            For<JsonConverter>().Add<SensorIdSerializer>().Singleton();
+
+            For(typeof(IConfigurationLoader<>)).Use(typeof(JsonConfigurationLoader<>));
         }
     }
 }

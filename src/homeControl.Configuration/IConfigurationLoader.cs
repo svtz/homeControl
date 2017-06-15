@@ -1,7 +1,9 @@
-﻿namespace homeControl.Configuration
+﻿using System.Threading.Tasks;
+
+namespace homeControl.Configuration
 {
-    public interface IConfigurationLoader<out TConfiguration>
+    public interface IConfigurationLoader<TConfiguration>
     {
-        TConfiguration Load(string fileName);
+        Task<TConfiguration> Load(string configKey);
     }
 }

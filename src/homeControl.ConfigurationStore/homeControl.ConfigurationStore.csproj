@@ -1,16 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="StructureMap" Version="4.5.1" />
     <PackageReference Include="System.Reactive" Version="4.0.0-preview00001" />
   </ItemGroup>
@@ -18,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\homeControl.Domain\homeControl.Domain.csproj" />
     <ProjectReference Include="..\homeControl.Guard\homeControl.Guard.csproj" />
+    <ProjectReference Include="..\homeControl.Interop.Rabbit\homeControl.Interop.Rabbit.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,13 +8,15 @@ namespace homeControl.Configuration
         protected TConfigurationStore Configuration => _configuration.Value;
 
         protected AbstractConfigurationRepository(
+            string configKey,
             IConfigurationLoader<TConfigurationSource> configLoader, 
-            Func<TConfigurationSource, TConfigurationStore> configurationPreprocessor,
-            string configFileName)
+            Func<TConfigurationSource, TConfigurationStore> configurationPreprocessor)
         {
             Guard.DebugAssertArgumentNotNull(configLoader, nameof(configLoader));
+            Guard.DebugAssertArgumentNotNull(configurationPreprocessor, nameof(configurationPreprocessor));
+            Guard.DebugAssertArgumentNotNull(configKey, nameof(configKey));
 
-            _configuration = new Lazy<TConfigurationStore>(() => configurationPreprocessor(configLoader.Load(configFileName)));
+            _configuration = new Lazy<TConfigurationStore>(() => configurationPreprocessor(configLoader.Load(configKey).Result));
         }
     }
 }

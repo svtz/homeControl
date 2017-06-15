@@ -1,39 +1,50 @@
 ﻿using System.IO;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using homeControl.Domain.Events;
+using homeControl.Events.System;
 using Newtonsoft.Json;
 
 namespace homeControl.Configuration
 {
     internal sealed class JsonConfigurationLoader<TConfiguration> : IConfigurationLoader<TConfiguration>
     {
-        private readonly string _configDirectory;
         private readonly JsonConverter[] _converters;
+        private readonly IEventSender _sender;
+        private readonly IEventSource _source;
+        private readonly string _serviceName;
 
-        public JsonConfigurationLoader(string configDirectory, JsonConverter[] converters)
+        public JsonConfigurationLoader(
+            JsonConverter[] converters,
+            IEventSender sender,
+            IEventSource source,
+            string serviceName)
         {
-            Guard.DebugAssertArgumentNotNull(configDirectory, nameof(configDirectory));
+            Guard.DebugAssertArgumentNotNull(converters, nameof(converters));
+            Guard.DebugAssertArgumentNotNull(sender, nameof(sender));
+            Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(serviceName, nameof(serviceName));
 
-            _configDirectory = configDirectory;
             _converters = converters;
+            _sender = sender;
+            _source = source;
+            _serviceName = serviceName;
         }
 
-        public TConfiguration Load(string fileName)
+        public async Task<TConfiguration> Load(string configKey)
         {
-            Guard.DebugAssertArgumentNotNull(fileName, nameof(fileName));
-            var configFile = new FileInfo(Path.Combine(_configDirectory, fileName));
+            Guard.DebugAssertArgumentNotNull(configKey, nameof(configKey));
 
-            if (!configFile.Exists)
-                throw new InvalidConfigurationException($"Config file \"{configFile.FullName}\" does not exist.");
-
-            string content;
-            try
+            var request = new ConfigurationRequestEvent()
             {
-                content = File.ReadAllText(configFile.FullName);
-            }
-            catch (IOException ex)
-            {
-                throw new InvalidConfigurationException(ex, "Unable to read config file.");
-            }
+                ConfigurationKey = configKey,
+                ReplyAddress = _serviceName
+            };
+            var response = _source.GetMessages<ConfigurationResponseEvent>().FirstAsync();
+            _sender.SendEvent(request);
+            
 
+            var config = (await response).Configuration;
             var serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
@@ -42,11 +53,11 @@ namespace homeControl.Configuration
 
             try
             {
-                return JsonConvert.DeserializeObject<TConfiguration>(content, serializerSettings);
+                return JsonConvert.DeserializeObject<TConfiguration>(config, serializerSettings);
             }
             catch (JsonException ex)
             {
-                throw new InvalidConfigurationException(ex, $"Error reading json from \"{configFile.FullName}\"");
+                throw new InvalidConfigurationException(ex, $"Error reading json from response.");
             }
         }
     }

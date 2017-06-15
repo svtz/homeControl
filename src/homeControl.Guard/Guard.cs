@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
 namespace homeControl
 {
@@ -24,7 +25,10 @@ at {memberName},
         }
 
         [Conditional("DEBUG")]
-        public static void DebugAssertArgument(bool assertion, string argName,
+        [AssertionMethod]
+        public static void DebugAssertArgument(
+            [AssertionCondition(AssertionConditionType.IS_TRUE)]bool assertion,
+            [InvokerParameterName]string argName,
             [CallerMemberName]string memberName = null,
             [CallerFilePath]string filePath = null,
             [CallerLineNumber]int lineNumber = 0)
@@ -36,7 +40,10 @@ at {memberName},
         }
 
         [Conditional("DEBUG")]
-        public static void DebugAssertArgumentNotNull<T>(T argument, string argName,
+        [AssertionMethod]
+        public static void DebugAssertArgumentNotNull<T>(
+            [NoEnumeration]T argument,
+            [InvokerParameterName]string argName,
             [CallerMemberName] string memberName = null,
             [CallerFilePath] string filePath = null,
             [CallerLineNumber] int lineNumber = 0)
@@ -45,12 +52,14 @@ at {memberName},
             if (argument == null)
             {
                 throw new AssertFailedException($"argument {argName} should not be null", memberName, filePath, lineNumber);
-
             }
         }
 
         [Conditional("DEBUG")]
-        public static void DebugAssertArgumentNotDefault<T>(T argument, string argName,
+        [AssertionMethod]
+        public static void DebugAssertArgumentNotDefault<T>(
+            T argument,
+            [InvokerParameterName]string argName,
             [CallerMemberName] string memberName = null,
             [CallerFilePath] string filePath = null,
             [CallerLineNumber] int lineNumber = 0)
@@ -59,16 +68,20 @@ at {memberName},
             if (default(T).Equals(argument))
             {
                 throw new AssertFailedException($"argument {argName} should not have default value", memberName, filePath, lineNumber);
-
             }
         }
 
         [Conditional("DEBUG")]
-        public static void DebugAssert(bool assertion, string message,
+        [AssertionMethod]
+        public static void DebugAssert(
+            [AssertionCondition(AssertionConditionType.IS_TRUE)]bool assertion,
+            [NotNull]string message,
             [CallerMemberName]string memberName = null,
             [CallerFilePath]string filePath = null,
             [CallerLineNumber]int lineNumber = 0)
         {
+            DebugAssertArgument(!string.IsNullOrEmpty(message), nameof(message));
+
             if (!assertion)
             {
                 throw new AssertFailedException(message, memberName, filePath, lineNumber);

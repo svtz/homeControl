@@ -19,10 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\homeControl.ClientApi\homeControl.ClientApi.csproj" />
     <ProjectReference Include="..\homeControl.Configuration\homeControl.Configuration.csproj" />
-    <ProjectReference Include="..\homeControl.Events\homeControl.Events.csproj" />
-    <ProjectReference Include="..\homeControl.Noolite\homeControl.Noolite.csproj" />
     <ProjectReference Include="..\ThinkingHome.NooLite.NetCore\ThinkingHome.NooLite.NetCore.csproj" />
   </ItemGroup>
 

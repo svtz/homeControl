@@ -4,9 +4,8 @@
     {
         public static void Main(string[] args)
         {
-            //new AdapterTest().Run();
+            new AdapterTest().Run();
             //new SampleConfigGenerator().Run();
-            new SampleClientApiConfigGenerator().Run();
         }
 
 
