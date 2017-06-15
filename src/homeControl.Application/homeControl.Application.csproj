@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <AssemblyName>homeControl.Application</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>homeControl.Application</PackageId>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\homeControl.ClientApi\homeControl.ClientApi.csproj" />
+    <ProjectReference Include="..\homeControl.Core\homeControl.Core.csproj" />
+    <ProjectReference Include="..\homeControl.Events\homeControl.Events.csproj" />
+    <ProjectReference Include="..\homeControl.Guard\homeControl.Guard.csproj" />
+    <ProjectReference Include="..\homeControl.Noolite\homeControl.Noolite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StructureMap" Version="4.4.2" />
+  </ItemGroup>
+
+</Project>
