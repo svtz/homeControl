@@ -5,6 +5,7 @@ using homeControl.Domain;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Bindings;
 using Moq;
+using Serilog;
 using Xunit;
 
 namespace homeControl.Tests.Controller
@@ -19,7 +20,7 @@ namespace homeControl.Tests.Controller
             stateManagerMock.Setup(manager => manager.EnableBinding(@event.SwitchId, @event.SensorId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
             eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractBindingEvent>()).Returns(Observable.Repeat(@event, 1));
-            var handler = new BindingEventsProcessor(stateManagerMock.Object, eventsSourceMock.Object);
+            var handler = new BindingEventsProcessor(stateManagerMock.Object, eventsSourceMock.Object, Mock.Of<ILogger>());
 
             handler.Run(CancellationToken.None);
 
@@ -34,7 +35,7 @@ namespace homeControl.Tests.Controller
             stateManagerMock.Setup(manager => manager.DisableBinding(@event.SwitchId, @event.SensorId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
             eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractBindingEvent>()).Returns(Observable.Repeat(@event, 1));
-            var handler = new BindingEventsProcessor(stateManagerMock.Object, eventsSourceMock.Object);
+            var handler = new BindingEventsProcessor(stateManagerMock.Object, eventsSourceMock.Object, Mock.Of<ILogger>());
 
             handler.Run(CancellationToken.None);
 

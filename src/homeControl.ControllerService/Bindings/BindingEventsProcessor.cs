@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Bindings;
 using JetBrains.Annotations;
+using Serilog;
 
 namespace homeControl.ControllerService.Bindings
 {
@@ -13,14 +14,18 @@ namespace homeControl.ControllerService.Bindings
     {
         private readonly IBindingStateManager _bindingStateManager;
         private readonly IEventSource _source;
+        private readonly ILogger _log;
 
-        public BindingEventsProcessor(IBindingStateManager bindingStateManager, IEventSource source)
+        public BindingEventsProcessor(IBindingStateManager bindingStateManager, IEventSource source,
+            ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(bindingStateManager, nameof(bindingStateManager));
             Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
             _bindingStateManager = bindingStateManager;
             _source = source;
+            _log = log;
         }
         
         public Task Run(CancellationToken ct)
@@ -30,13 +35,17 @@ namespace homeControl.ControllerService.Bindings
 
         private void HandleEvent(AbstractBindingEvent bindingEvent)
         {
+            Guard.DebugAssertArgumentNotNull(bindingEvent, nameof(bindingEvent));
+
             if (bindingEvent is EnableBindingEvent)
             {
                 _bindingStateManager.EnableBinding(bindingEvent.SwitchId, bindingEvent.SensorId);
+                _log.Information("Binding enabled: {SwitchId}, {SensorId}", bindingEvent.SwitchId, bindingEvent.SensorId);
             }
             else if (bindingEvent is DisableBindingEvent)
             {
                 _bindingStateManager.DisableBinding(bindingEvent.SwitchId, bindingEvent.SensorId);
+                _log.Information("Binding disabled: {SwitchId}, {SensorId}", bindingEvent.SwitchId, bindingEvent.SensorId);
             }
             else
             {

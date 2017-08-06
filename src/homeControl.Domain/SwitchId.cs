@@ -49,5 +49,10 @@ namespace homeControl.Domain
         {
             return new SwitchId(Guid.NewGuid());
         }
+
+        public override string ToString()
+        {
+            return $"switch-{Id:D}";
+        }
     }
 }

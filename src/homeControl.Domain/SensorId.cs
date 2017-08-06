@@ -49,5 +49,10 @@ namespace homeControl.Domain
         {
             return new SensorId(Guid.NewGuid());
         }
+
+        public override string ToString()
+        {
+            return $"sensor-{Id:D}";
+        }
     }
 }
