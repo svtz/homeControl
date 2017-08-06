@@ -1,3 +1,4 @@
+using System;
 using homeControl.Domain.Events;
 using JetBrains.Annotations;
 using RabbitMQ.Client;
@@ -21,7 +22,7 @@ namespace homeControl.Interop.Rabbit
             Guard.DebugAssertArgumentNotNull(@event, nameof(@event));
             CheckNotDisposed();
 
-            var address = (@event as IEventWithAddress)?.Address;
+            var address = (@event as IEventWithAddress)?.Address ?? string.Empty;
             var messageBytes = EventSerializer.Serialize(@event);
 
             Channel.BasicPublish(ExchangeName, address, false, null, messageBytes);
