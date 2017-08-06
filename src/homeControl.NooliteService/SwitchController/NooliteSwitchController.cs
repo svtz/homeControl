@@ -1,12 +1,12 @@
 ﻿using System;
 using homeControl.Configuration;
-using homeControl.Configuration.Switches;
-using homeControl.Noolite.Adapters;
+using homeControl.Domain;
+using homeControl.Domain.Repositories;
+using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
-using homeControl.Peripherals;
 using ThinkingHome.NooLite;
 
-namespace homeControl.NooliteService
+namespace homeControl.NooliteService.SwitchController
 {
     internal sealed class NooliteSwitchController : ISwitchController
     {

@@ -1,6 +1,6 @@
 ﻿using ThinkingHome.NooLite;
 
-namespace homeControl.Noolite.Adapters
+namespace homeControl.NooliteService.Adapters
 {
     internal interface IPC11XXAdapter
     {

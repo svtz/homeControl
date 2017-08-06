@@ -1,11 +1,9 @@
 ﻿using System;
-using homeControl.Configuration.Bindings;
-using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
 using homeControl.ControllerService.Bindings;
+using homeControl.Domain;
 using homeControl.Domain.Events;
-using homeControl.Events.Bindings;
-using homeControl.Events.Switches;
+using homeControl.Domain.Events.Switches;
+using homeControl.Domain.Repositories;
 using Moq;
 using Xunit;
 

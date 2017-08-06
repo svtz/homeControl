@@ -2,11 +2,12 @@
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using homeControl.ControllerService.Bindings;
 using homeControl.Domain.Events;
-using homeControl.Events.Bindings;
+using homeControl.Domain.Events.Sensors;
 using JetBrains.Annotations;
 
-namespace homeControl.Events.Sensors
+namespace homeControl.ControllerService.Sensors
 {
     [UsedImplicitly]
     internal sealed class SensorEventsProcessor

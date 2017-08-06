@@ -3,8 +3,8 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Domain.Events;
-using homeControl.Events.Switches;
-using homeControl.Peripherals;
+using homeControl.Domain.Events.Switches;
+using homeControl.NooliteService.SwitchController;
 using JetBrains.Annotations;
 using Serilog;
 

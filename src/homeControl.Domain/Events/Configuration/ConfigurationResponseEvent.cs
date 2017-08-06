@@ -1,6 +1,4 @@
-﻿using homeControl.Domain.Events;
-
-namespace homeControl.Events.System
+﻿namespace homeControl.Domain.Events.Configuration
 {
     public class ConfigurationResponseEvent : IEvent, IEventWithAddress
     {

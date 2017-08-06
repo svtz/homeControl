@@ -1,7 +1,6 @@
-﻿using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
+﻿using homeControl.Domain;
 
-namespace homeControl.Events.Bindings
+namespace homeControl.ControllerService.Bindings
 {
     internal interface IBindingStateManager
     {

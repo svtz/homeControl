@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using homeControl.Configuration.Bindings;
-using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
+using homeControl.Domain;
 
 namespace homeControl.ControllerService.Bindings
 {

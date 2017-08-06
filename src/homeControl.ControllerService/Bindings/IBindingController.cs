@@ -1,6 +1,6 @@
-﻿using homeControl.Configuration.Sensors;
+﻿using homeControl.Domain;
 
-namespace homeControl.Events.Bindings
+namespace homeControl.ControllerService.Bindings
 {
     internal interface IBindingController
     {

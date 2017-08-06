@@ -1,7 +1,8 @@
 ﻿using System;
+using homeControl.Domain;
 using Newtonsoft.Json;
 
-namespace homeControl.Configuration.Sensors
+namespace homeControl.Configuration.Serializers
 {
     internal sealed class SensorIdSerializer : JsonConverter
     {

@@ -2,7 +2,7 @@
 using ThinkingHome.NooLite;
 using ThinkingHome.NooLite.ReceivedData;
 
-namespace homeControl.Noolite.Adapters
+namespace homeControl.NooliteService.Adapters
 {
     internal sealed class RX2164AdapterWrapper : AdapterWrapperBase<RX2164Adapter>, IRX2164Adapter
     {

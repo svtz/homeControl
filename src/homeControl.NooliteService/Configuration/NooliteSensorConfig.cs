@@ -1,4 +1,4 @@
-﻿using homeControl.Configuration.Sensors;
+﻿using homeControl.Domain;
 
 namespace homeControl.NooliteService.Configuration
 {

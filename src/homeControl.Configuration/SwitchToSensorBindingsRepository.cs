@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using homeControl.Domain;
+using homeControl.Domain.Repositories;
 
-namespace homeControl.Configuration.Bindings
+namespace homeControl.Configuration
 {
     internal sealed class SwitchToSensorBindingsRepository : 
         AbstractConfigurationRepository<ISwitchToSensorBinding[], ISwitchToSensorBinding[]>,

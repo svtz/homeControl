@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using homeControl.Events.System;
+using homeControl.Domain.Events.Configuration;
 using homeControl.Interop.Rabbit.IoC;
 using RabbitMQ.Client;
 using Serilog;

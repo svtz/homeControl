@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace homeControl.Configuration.Sensors
+namespace homeControl.Domain.Repositories
 {
     public interface ISensorConfigurationRepository
     {

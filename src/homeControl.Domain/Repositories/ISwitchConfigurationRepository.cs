@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace homeControl.Configuration.Switches
+namespace homeControl.Domain.Repositories
 {
     public interface ISwitchConfigurationRepository
     {

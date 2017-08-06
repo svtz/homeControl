@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace homeControl.Peripherals
+namespace homeControl.NooliteService.Diagnostics
 {
     public abstract class DeviceException : Exception
     {

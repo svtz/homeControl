@@ -1,6 +1,4 @@
-﻿using homeControl.Configuration.Switches;
-
-namespace homeControl.Events.Switches
+﻿namespace homeControl.Domain.Events.Switches
 {
     public class TurnOnEvent : AbstractSwitchEvent
     {

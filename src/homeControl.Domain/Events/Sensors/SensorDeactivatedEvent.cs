@@ -1,6 +1,4 @@
-﻿using homeControl.Configuration.Sensors;
-
-namespace homeControl.Events.Sensors
+﻿namespace homeControl.Domain.Events.Sensors
 {
     public class SensorDeactivatedEvent : AbstractSensorEvent
     {

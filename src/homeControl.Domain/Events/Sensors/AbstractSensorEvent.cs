@@ -1,7 +1,4 @@
-﻿using homeControl.Configuration.Sensors;
-using homeControl.Domain.Events;
-
-namespace homeControl.Events.Sensors
+﻿namespace homeControl.Domain.Events.Sensors
 {
     public abstract class AbstractSensorEvent : IEvent
     {

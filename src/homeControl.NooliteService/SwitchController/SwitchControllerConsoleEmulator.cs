@@ -1,8 +1,7 @@
 ﻿using System;
-using homeControl.Configuration.Switches;
-using homeControl.Peripherals;
+using homeControl.Domain;
 
-namespace homeControl.Application
+namespace homeControl.NooliteService.SwitchController
 {
     internal sealed class SwitchControllerConsoleEmulator : ISwitchController
     {

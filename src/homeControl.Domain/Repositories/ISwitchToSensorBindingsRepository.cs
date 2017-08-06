@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace homeControl.Configuration.Bindings
+namespace homeControl.Domain.Repositories
 {
     public interface ISwitchToSensorBindingsRepository
     {

@@ -3,9 +3,10 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Domain.Events;
+using homeControl.Domain.Events.Bindings;
 using JetBrains.Annotations;
 
-namespace homeControl.Events.Bindings
+namespace homeControl.ControllerService.Bindings
 {
     [UsedImplicitly]
     internal sealed class BindingEventsProcessor

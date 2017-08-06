@@ -1,9 +1,9 @@
 ﻿using System.Reactive.Linq;
 using System.Threading;
-using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
+using homeControl.ControllerService.Bindings;
+using homeControl.Domain;
 using homeControl.Domain.Events;
-using homeControl.Events.Bindings;
+using homeControl.Domain.Events.Bindings;
 using Moq;
 using Xunit;
 

@@ -1,7 +1,6 @@
 ﻿using System;
-using homeControl.Configuration.Bindings;
-using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
+using homeControl.Configuration.Serializers;
+using homeControl.Domain.Repositories;
 using Newtonsoft.Json;
 using StructureMap;
 

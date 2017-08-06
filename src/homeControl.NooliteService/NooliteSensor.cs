@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using homeControl.Configuration;
-using homeControl.Configuration.Sensors;
 using homeControl.Domain.Events;
-using homeControl.Events.Sensors;
-using homeControl.Noolite.Adapters;
+using homeControl.Domain.Events.Sensors;
+using homeControl.Domain.Repositories;
+using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using Serilog;
 using ThinkingHome.NooLite.ReceivedData;

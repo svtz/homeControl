@@ -1,6 +1,6 @@
-﻿using homeControl.Configuration.Switches;
+﻿using homeControl.Domain;
 
-namespace homeControl.Peripherals
+namespace homeControl.NooliteService.SwitchController
 {
     public interface ISwitchController
     {

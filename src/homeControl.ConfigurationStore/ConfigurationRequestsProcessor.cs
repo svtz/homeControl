@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Domain.Events;
-using homeControl.Events.System;
+using homeControl.Domain.Events.Configuration;
 using JetBrains.Annotations;
 using Serilog;
 

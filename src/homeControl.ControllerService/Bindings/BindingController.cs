@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using homeControl.Configuration.Bindings;
-using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
+using homeControl.Domain;
 using homeControl.Domain.Events;
-using homeControl.Events.Switches;
+using homeControl.Domain.Events.Switches;
+using homeControl.Domain.Repositories;
 
-namespace homeControl.Events.Bindings
+namespace homeControl.ControllerService.Bindings
 {
     internal sealed class BindingController : IBindingController, IBindingStateManager
     {

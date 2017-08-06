@@ -1,8 +1,8 @@
 ﻿using System;
-using homeControl.Peripherals;
+using homeControl.NooliteService.Diagnostics;
 using ThinkingHome.NooLite.Common;
 
-namespace homeControl.Noolite.Adapters
+namespace homeControl.NooliteService.Adapters
 {
     internal class AdapterWrapperBase<TAdapter> : IDisposable
         where TAdapter : BaseAdapter, IDisposable, new()

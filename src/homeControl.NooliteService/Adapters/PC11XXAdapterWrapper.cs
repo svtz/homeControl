@@ -1,8 +1,8 @@
 ﻿using System;
-using homeControl.Peripherals;
+using homeControl.NooliteService.Diagnostics;
 using ThinkingHome.NooLite;
 
-namespace homeControl.Noolite.Adapters
+namespace homeControl.NooliteService.Adapters
 {
     internal sealed class PC11XXAdapterWrapper : AdapterWrapperBase<PC11XXAdapter>, IPC11XXAdapter
     {

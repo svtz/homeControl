@@ -1,7 +1,7 @@
 ﻿using System;
 using ThinkingHome.NooLite.ReceivedData;
 
-namespace homeControl.Noolite.Adapters
+namespace homeControl.NooliteService.Adapters
 {
     internal interface IRX2164Adapter
     {

@@ -1,8 +1,4 @@
-using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
-using homeControl.Domain.Events;
-
-namespace homeControl.Events.Bindings
+namespace homeControl.Domain.Events.Bindings
 {
     public abstract class AbstractBindingEvent : IEvent
     {

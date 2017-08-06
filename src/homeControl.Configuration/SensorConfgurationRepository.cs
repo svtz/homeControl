@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using homeControl.Domain;
+using homeControl.Domain.Repositories;
 
-namespace homeControl.Configuration.Sensors
+namespace homeControl.Configuration
 {
     internal sealed class SensorConfgurationRepository : 
         AbstractConfigurationRepository<ISensorConfiguration[], ISensorConfiguration[]>,

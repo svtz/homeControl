@@ -1,7 +1,4 @@
-﻿using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
-
-namespace homeControl.Events.Bindings
+﻿namespace homeControl.Domain.Events.Bindings
 {
     public class DisableBindingEvent : AbstractBindingEvent
     {

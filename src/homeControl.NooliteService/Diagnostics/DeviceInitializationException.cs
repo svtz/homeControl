@@ -1,4 +1,4 @@
-﻿namespace homeControl.Peripherals
+﻿namespace homeControl.NooliteService.Diagnostics
 {
     public sealed class DeviceInitializationException : DeviceException
     {

@@ -1,7 +1,4 @@
-﻿using homeControl.Configuration.Sensors;
-using homeControl.Configuration.Switches;
-
-namespace homeControl.Configuration.Bindings
+﻿namespace homeControl.Domain
 {
     public interface ISwitchToSensorBinding
     {

@@ -1,12 +1,14 @@
 ﻿using System;
 using homeControl.Configuration;
-using homeControl.Configuration.Sensors;
+using homeControl.Domain;
 using homeControl.Domain.Events;
-using homeControl.Events.Sensors;
-using homeControl.Noolite.Adapters;
+using homeControl.Domain.Events.Sensors;
+using homeControl.Domain.Repositories;
 using homeControl.NooliteService;
+using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using Moq;
+using Serilog;
 using ThinkingHome.NooLite.ReceivedData;
 using Xunit;
 
@@ -37,7 +39,7 @@ namespace homeControl.Tests.Noolite
             gateMock.Setup(g => g.SendEvent(It.Is<SensorDeactivatedEvent>(e => e.SensorId == sensorConfig.SensorId)));
 
             var adapterMock = new Mock<IRX2164Adapter>();
-            var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object);
+            var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object, Mock.Of<ILogger>());
             sensor.Activate();
 
             adapterMock.Raise(ad => ad.CommandReceived += null, CreateCommandData(command, sensorConfig.Channel));
@@ -56,7 +58,7 @@ namespace homeControl.Tests.Noolite
             var adapterMock = new Mock<IRX2164Adapter>();
 
             var gateMock = new Mock<IEventSender>(MockBehavior.Strict);
-            var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object);
+            var sensor = new NooliteSensor(gateMock.Object, adapterMock.Object, configMock.Object, Mock.Of<ILogger>());
             sensor.Activate();
 
             void Act() => adapterMock.Raise(ad => ad.CommandReceived += null, CreateCommandData(command, 13));

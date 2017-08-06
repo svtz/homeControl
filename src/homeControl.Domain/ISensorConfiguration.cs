@@ -1,4 +1,4 @@
-﻿namespace homeControl.Configuration.Sensors
+﻿namespace homeControl.Domain
 {
     public interface ISensorConfiguration
     {

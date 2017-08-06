@@ -2,7 +2,7 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using homeControl.Domain.Events;
-using homeControl.Events.System;
+using homeControl.Domain.Events.Configuration;
 using Newtonsoft.Json;
 using Serilog;
 
