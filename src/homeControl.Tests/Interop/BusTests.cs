@@ -31,7 +31,7 @@ namespace homeControl.Tests.Interop
             var exchangeConfiguration = new ExchangeConfiguration();
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSource;
-            Assert.Throws<InvalidOperationException>(() => bus.GetMessages<TestEvent>());
+            Assert.Throws<InvalidOperationException>(() => bus.ReceiveEvents<TestEvent>());
         }
 
         [Fact]
@@ -63,16 +63,16 @@ namespace homeControl.Tests.Interop
 
             var @event = new TestEvent();
             var sourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            sourceMock.Setup(m => m.GetMessages<TestEvent>()).Returns(Observable.Return(@event));
+            sourceMock.Setup(m => m.ReceiveEvents<TestEvent>()).Returns(Observable.Return(@event));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
             factoryMock.Setup(m => m.CreateSource(exchangeName, exchangeType, routingKey)).Returns(sourceMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
             exchangeConfiguration.ConfigureEventSource(typeof(TestEvent), exchangeName, exchangeType, routingKey);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSource;
-            var receivedEvent = bus.GetMessages<TestEvent>().Wait();
+            var receivedEvent = bus.ReceiveEvents<TestEvent>().Wait();
 
-            sourceMock.Verify(m => m.GetMessages<TestEvent>(), Times.Once);
+            sourceMock.Verify(m => m.ReceiveEvents<TestEvent>(), Times.Once);
             Assert.Equal(@event, receivedEvent);
         }
 
@@ -104,8 +104,8 @@ namespace homeControl.Tests.Interop
             const string routingKey = "route";
 
             var sourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            sourceMock.Setup(m => m.GetMessages<TestEvent>()).Returns(Observable.Empty<TestEvent>());
-            sourceMock.Setup(m => m.GetMessages<AnotherTestEvent>()).Returns(Observable.Empty<AnotherTestEvent>());
+            sourceMock.Setup(m => m.ReceiveEvents<TestEvent>()).Returns(Observable.Empty<TestEvent>());
+            sourceMock.Setup(m => m.ReceiveEvents<AnotherTestEvent>()).Returns(Observable.Empty<AnotherTestEvent>());
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
             factoryMock.Setup(m => m.CreateSource(exchangeName, exchangeType, routingKey)).Returns(sourceMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
@@ -113,8 +113,8 @@ namespace homeControl.Tests.Interop
             exchangeConfiguration.ConfigureEventSource(typeof(AnotherTestEvent), exchangeName, exchangeType, routingKey);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSource;
-            bus.GetMessages<TestEvent>();
-            bus.GetMessages<AnotherTestEvent>();
+            bus.ReceiveEvents<TestEvent>();
+            bus.ReceiveEvents<AnotherTestEvent>();
 
             factoryMock.Verify(m => m.CreateSource(exchangeName, exchangeType, routingKey), Times.Once);
         }
@@ -162,9 +162,9 @@ namespace homeControl.Tests.Interop
             var @event = new TestEvent();
             var anotherEvent = new AnotherTestEvent();
             var sourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            sourceMock.Setup(m => m.GetMessages<TestEvent>()).Returns(Observable.Return(@event));
+            sourceMock.Setup(m => m.ReceiveEvents<TestEvent>()).Returns(Observable.Return(@event));
             var anotherSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            anotherSourceMock.Setup(m => m.GetMessages<AnotherTestEvent>()).Returns(Observable.Return(anotherEvent));
+            anotherSourceMock.Setup(m => m.ReceiveEvents<AnotherTestEvent>()).Returns(Observable.Return(anotherEvent));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
             factoryMock.Setup(m => m.CreateSource(exchangeName, exchangeType, routingKey)).Returns(sourceMock.Object);
             factoryMock.Setup(m => m.CreateSource(anotherExchangeName, anotherExchangeType, anotherRoutingKey)).Returns(anotherSourceMock.Object);
@@ -173,15 +173,15 @@ namespace homeControl.Tests.Interop
             exchangeConfiguration.ConfigureEventSource(typeof(AnotherTestEvent), anotherExchangeName, anotherExchangeType, anotherRoutingKey);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSource;
-            var receivedEvent = bus.GetMessages<TestEvent>().Wait();
-            var receivedAnotherEvent = bus.GetMessages<AnotherTestEvent>().Wait();
+            var receivedEvent = bus.ReceiveEvents<TestEvent>().Wait();
+            var receivedAnotherEvent = bus.ReceiveEvents<AnotherTestEvent>().Wait();
 
             Assert.Equal(receivedEvent, @event);
             Assert.Equal(receivedAnotherEvent, anotherEvent);
-            sourceMock.Verify(m => m.GetMessages<TestEvent>(), Times.Once);
-            sourceMock.Verify(m => m.GetMessages<AnotherTestEvent>(), Times.Never);
-            anotherSourceMock.Verify(m => m.GetMessages<TestEvent>(), Times.Never);
-            anotherSourceMock.Verify(m => m.GetMessages<AnotherTestEvent>(), Times.Once);
+            sourceMock.Verify(m => m.ReceiveEvents<TestEvent>(), Times.Once);
+            sourceMock.Verify(m => m.ReceiveEvents<AnotherTestEvent>(), Times.Never);
+            anotherSourceMock.Verify(m => m.ReceiveEvents<TestEvent>(), Times.Never);
+            anotherSourceMock.Verify(m => m.ReceiveEvents<AnotherTestEvent>(), Times.Once);
         }
 
         [Fact]
@@ -257,17 +257,17 @@ namespace homeControl.Tests.Interop
 
             var derivedTestEvent = new DerivedTestEvent();
             var sourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            sourceMock.Setup(m => m.GetMessages<DerivedTestEvent>()).Returns(Observable.Return(derivedTestEvent));
+            sourceMock.Setup(m => m.ReceiveEvents<DerivedTestEvent>()).Returns(Observable.Return(derivedTestEvent));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
             factoryMock.Setup(m => m.CreateSource(exchangeName, exchangeType, routingKey)).Returns(sourceMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
             exchangeConfiguration.ConfigureEventSource(typeof(TestEvent), exchangeName, exchangeType, routingKey);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSource;
-            var receivedEvent = bus.GetMessages<DerivedTestEvent>().Wait();
+            var receivedEvent = bus.ReceiveEvents<DerivedTestEvent>().Wait();
 
             Assert.Equal(derivedTestEvent, receivedEvent);
-            sourceMock.Verify(m => m.GetMessages<DerivedTestEvent>(), Times.Once);
+            sourceMock.Verify(m => m.ReceiveEvents<DerivedTestEvent>(), Times.Once);
         }
 
         [Fact]
@@ -283,9 +283,9 @@ namespace homeControl.Tests.Interop
             var derivedTestEvent = new DerivedTestEvent();
             var derivedTestEvent2 = new DerivedTestEvent();
             var sourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            sourceMock.Setup(m => m.GetMessages<DerivedTestEvent>()).Returns(Observable.Return(derivedTestEvent));
+            sourceMock.Setup(m => m.ReceiveEvents<DerivedTestEvent>()).Returns(Observable.Return(derivedTestEvent));
             var derivedSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            derivedSourceMock.Setup(m => m.GetMessages<DerivedTestEvent>()).Returns(Observable.Return(derivedTestEvent2));
+            derivedSourceMock.Setup(m => m.ReceiveEvents<DerivedTestEvent>()).Returns(Observable.Return(derivedTestEvent2));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
             factoryMock.Setup(m => m.CreateSource(exchangeName, exchangeType, routingKey)).Returns(sourceMock.Object);
             factoryMock.Setup(m => m.CreateSource(derivedExchangeName, derivedExchangeType, derivedRoutingKey)).Returns(derivedSourceMock.Object);
@@ -294,13 +294,13 @@ namespace homeControl.Tests.Interop
             exchangeConfiguration.ConfigureEventSource(typeof(DerivedTestEvent), derivedExchangeName, derivedExchangeType, derivedRoutingKey);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSource;
-            var receivedEvents = bus.GetMessages<DerivedTestEvent>().ToArray().Wait();
+            var receivedEvents = bus.ReceiveEvents<DerivedTestEvent>().ToArray().Wait();
 
             Assert.Equal(2, receivedEvents.Length);
             Assert.True(receivedEvents.Contains(derivedTestEvent));
             Assert.True(receivedEvents.Contains(derivedTestEvent2));
-            sourceMock.Verify(m => m.GetMessages<DerivedTestEvent>(), Times.Once);
-            derivedSourceMock.Verify(m => m.GetMessages<DerivedTestEvent>(), Times.Once);
+            sourceMock.Verify(m => m.ReceiveEvents<DerivedTestEvent>(), Times.Once);
+            derivedSourceMock.Verify(m => m.ReceiveEvents<DerivedTestEvent>(), Times.Once);
         }
 
         [Fact]
@@ -317,7 +317,7 @@ namespace homeControl.Tests.Interop
             exchangeConfiguration.ConfigureEventSource(typeof(DerivedTestEvent), exchangeName, exchangeType, routingKey);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSource;
-            Assert.Throws<InvalidOperationException>(() => bus.GetMessages<TestEvent>().Wait());
+            Assert.Throws<InvalidOperationException>(() => bus.ReceiveEvents<TestEvent>().Wait());
         }
     }
 }

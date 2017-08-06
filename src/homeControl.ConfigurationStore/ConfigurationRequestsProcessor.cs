@@ -29,7 +29,7 @@ namespace homeControl.ConfigurationStore
         public void Run()
         {
             _eventSource
-                .GetMessages<ConfigurationRequestEvent>()
+                .ReceiveEvents<ConfigurationRequestEvent>()
                 .ForEachAsync(ProcessRequest)
                 .Wait();
         }

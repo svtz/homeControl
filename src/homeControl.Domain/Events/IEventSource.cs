@@ -4,6 +4,6 @@ namespace homeControl.Domain.Events
 {
     public interface IEventSource
     {
-        IObservable<TEvent> GetMessages<TEvent>() where TEvent : IEvent;
+        IObservable<TEvent> ReceiveEvents<TEvent>() where TEvent : IEvent;
     }
 }

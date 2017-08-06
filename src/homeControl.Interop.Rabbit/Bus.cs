@@ -56,7 +56,7 @@ namespace homeControl.Interop.Rabbit
             }
         }
 
-        IObservable<TEvent> IEventSource.GetMessages<TEvent>()
+        IObservable<TEvent> IEventSource.ReceiveEvents<TEvent>()
         {
             CheckNotDisposed();
             EnsureInitialized();
@@ -72,7 +72,7 @@ namespace homeControl.Interop.Rabbit
 
             return suitableSources.Aggregate(
                 Observable.Empty<TEvent>(),
-                (current, suitableSource) => current.Merge(suitableSource.GetMessages<TEvent>()));
+                (current, suitableSource) => current.Merge(suitableSource.ReceiveEvents<TEvent>()));
         }
 
         private bool _disposed = false;

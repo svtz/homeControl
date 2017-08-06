@@ -40,7 +40,7 @@ namespace homeControl.Configuration
                 ConfigurationKey = configKey,
                 ReplyAddress = _serviceName
             };
-            var response = _source.GetMessages<ConfigurationResponseEvent>().FirstAsync();
+            var response = _source.ReceiveEvents<ConfigurationResponseEvent>().FirstAsync();
             _sender.SendEvent(request);
             
 

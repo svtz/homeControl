@@ -30,7 +30,7 @@ namespace homeControl.Tests.Noolite
             switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
             switchControllerMock.Setup(cntr => cntr.TurnOn(swicthId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractSwitchEvent>()).Returns(Observable.Repeat(onEvent, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(Observable.Repeat(onEvent, 1));
 
             var handler = new SwitchEventsProcessor(switchControllerMock.Object, eventsSourceMock.Object);
             handler.Run(CancellationToken.None);
@@ -48,7 +48,7 @@ namespace homeControl.Tests.Noolite
             switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
             switchControllerMock.Setup(cntr => cntr.TurnOff(swicthId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractSwitchEvent>()).Returns(Observable.Repeat(offEvent, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(Observable.Repeat(offEvent, 1));
 
             var handler = new SwitchEventsProcessor(switchControllerMock.Object, eventsSourceMock.Object);
             handler.Run(CancellationToken.None);
@@ -67,7 +67,7 @@ namespace homeControl.Tests.Noolite
             switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(swicthId)).Returns(true);
             switchControllerMock.Setup(cntr => cntr.SetPower(swicthId, power));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractSwitchEvent>()).Returns(Observable.Repeat(powerEvent, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(Observable.Repeat(powerEvent, 1));
 
             var handler = new SwitchEventsProcessor(switchControllerMock.Object, eventsSourceMock.Object);
             handler.Run(CancellationToken.None);
@@ -83,7 +83,7 @@ namespace homeControl.Tests.Noolite
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
             switchControllerMock.Setup(cntr => cntr.CanHandleSwitch(It.IsAny<SwitchId>())).Returns(false);
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractSwitchEvent>()).Returns(Observable.Repeat(@event, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(Observable.Repeat(@event, 1));
 
             var handler = new SwitchEventsProcessor(switchControllerMock.Object, eventsSourceMock.Object);
             handler.Run(CancellationToken.None);

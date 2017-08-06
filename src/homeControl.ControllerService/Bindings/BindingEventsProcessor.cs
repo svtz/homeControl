@@ -24,7 +24,7 @@ namespace homeControl.Events.Bindings
         
         public Task Run(CancellationToken ct)
         {
-            return _source.GetMessages<AbstractBindingEvent>().ForEachAsync(HandleEvent, ct);
+            return _source.ReceiveEvents<AbstractBindingEvent>().ForEachAsync(HandleEvent, ct);
         }
 
         private void HandleEvent(AbstractBindingEvent bindingEvent)

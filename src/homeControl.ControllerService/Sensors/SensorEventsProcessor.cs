@@ -26,7 +26,7 @@ namespace homeControl.Events.Sensors
         public Task Run(CancellationToken ct)
         {
             return _source
-                .GetMessages<AbstractSensorEvent>()
+                .ReceiveEvents<AbstractSensorEvent>()
                 .ForEachAsync(Handle, ct);
         }
 

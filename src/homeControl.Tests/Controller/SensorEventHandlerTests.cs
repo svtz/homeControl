@@ -19,7 +19,7 @@ namespace homeControl.Tests.Controller
             var controllerMock = new Mock<IBindingController>(MockBehavior.Strict);
             controllerMock.Setup(controller => controller.ProcessSensorActivation(sensorId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractSensorEvent>()).Returns(Observable.Repeat(sensorActivatedEvent, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSensorEvent>()).Returns(Observable.Repeat(sensorActivatedEvent, 1));
 
             var handler = new SensorEventsProcessor(controllerMock.Object, eventsSourceMock.Object);
             handler.Run(CancellationToken.None);
@@ -35,7 +35,7 @@ namespace homeControl.Tests.Controller
             var controllerMock = new Mock<IBindingController>(MockBehavior.Strict);
             controllerMock.Setup(controller => controller.ProcessSensorDeactivation(sensorId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractSensorEvent>()).Returns(Observable.Repeat(sensorDeactivatedEvent, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSensorEvent>()).Returns(Observable.Repeat(sensorDeactivatedEvent, 1));
 
             var handler = new SensorEventsProcessor(controllerMock.Object, eventsSourceMock.Object);
             handler.Run(CancellationToken.None);

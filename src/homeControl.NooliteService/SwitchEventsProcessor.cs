@@ -26,7 +26,7 @@ namespace homeControl.NooliteService
         
         public Task Run(CancellationToken ct)
         {
-            return _source.GetMessages<AbstractSwitchEvent>().ForEachAsync(HandleEvent, ct);
+            return _source.ReceiveEvents<AbstractSwitchEvent>().ForEachAsync(HandleEvent, ct);
         }
 
         private void HandleEvent(AbstractSwitchEvent switchEvent)

@@ -26,7 +26,7 @@ namespace homeControl.Interop.Rabbit
             Channel.QueueBind(queue.QueueName, exchangeName, routingKey);
         }
 
-        public IObservable<TEvent> GetMessages<TEvent>() where TEvent : IEvent
+        public IObservable<TEvent> ReceiveEvents<TEvent>() where TEvent : IEvent
         {
             CheckNotDisposed();
 

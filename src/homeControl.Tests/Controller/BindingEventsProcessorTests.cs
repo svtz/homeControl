@@ -18,7 +18,7 @@ namespace homeControl.Tests.Controller
             var stateManagerMock = new Mock<IBindingStateManager>(MockBehavior.Strict);
             stateManagerMock.Setup(manager => manager.EnableBinding(@event.SwitchId, @event.SensorId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractBindingEvent>()).Returns(Observable.Repeat(@event, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractBindingEvent>()).Returns(Observable.Repeat(@event, 1));
             var handler = new BindingEventsProcessor(stateManagerMock.Object, eventsSourceMock.Object);
 
             handler.Run(CancellationToken.None);
@@ -33,7 +33,7 @@ namespace homeControl.Tests.Controller
             var stateManagerMock = new Mock<IBindingStateManager>(MockBehavior.Strict);
             stateManagerMock.Setup(manager => manager.DisableBinding(@event.SwitchId, @event.SensorId));
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.GetMessages<AbstractBindingEvent>()).Returns(Observable.Repeat(@event, 1));
+            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractBindingEvent>()).Returns(Observable.Repeat(@event, 1));
             var handler = new BindingEventsProcessor(stateManagerMock.Object, eventsSourceMock.Object);
 
             handler.Run(CancellationToken.None);
