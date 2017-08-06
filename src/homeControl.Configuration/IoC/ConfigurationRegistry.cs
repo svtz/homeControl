@@ -20,7 +20,10 @@ namespace homeControl.Configuration.IoC
             For<JsonConverter>().Add<SwitchIdSerializer>().Singleton();
             For<JsonConverter>().Add<SensorIdSerializer>().Singleton();
 
-            For(typeof(IConfigurationLoader<>)).Use(typeof(JsonConfigurationLoader<>));
+            For(typeof(IConfigurationLoader<>))
+                .Use(typeof(JsonConfigurationLoader<>))
+                .Ctor<string>("serviceName").Is(serviceName)
+                .Transient();
         }
     }
 }
