@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.IO;
+using System.Text;
 using homeControl.Events.System;
 using homeControl.Interop.Rabbit.IoC;
 using RabbitMQ.Client;
@@ -13,7 +15,10 @@ namespace homeControl.ConfigurationStore
         {
             var container = new Container(cfg =>
             {
-                cfg.ForSingletonOf<ConfigurationProvider>();
+                var configPath = Path.Combine(Directory.GetCurrentDirectory(), "conf");
+                cfg.ForConcreteType<ConfigurationProvider>()
+                   .Configure
+                   .Ctor<string>("configurationsDirectory").Is(configPath);
                 cfg.ForConcreteType<ConfigurationRequestsProcessor>();
 
                 cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://configStore:configStore@192.168.1.17/debug")
