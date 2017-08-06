@@ -20,10 +20,13 @@ namespace homeControl.Interop.Rabbit
             string routingKey)
             : base(connection, eventSerializer, exchangeName, exchangeType)
         {
-            _consumer = new EventingBasicConsumer(Channel);
+            Guard.DebugAssertArgumentNotNull(routingKey, nameof(routingKey));
 
             var queue = Channel.QueueDeclare();
             Channel.QueueBind(queue.QueueName, exchangeName, routingKey);
+
+            _consumer = new EventingBasicConsumer(Channel);
+            Channel.BasicConsume(queue.QueueName, true, _consumer);
         }
 
         public IObservable<TEvent> ReceiveEvents<TEvent>() where TEvent : IEvent
