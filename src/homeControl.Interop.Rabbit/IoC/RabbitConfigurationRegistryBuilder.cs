@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using homeControl.Domain.Events;
 using RabbitMQ.Client;
 using StructureMap;
@@ -36,9 +37,13 @@ namespace homeControl.Interop.Rabbit.IoC
             });
         }
 
-        public RabbitConfigurationRegistryBuilder UseJsonSerialization()
+        public RabbitConfigurationRegistryBuilder UseJsonSerializationWithEncoding(Encoding encoding)
         {
-            _registryConfigActions.Add(cfg => cfg.For<IEventSerializer>().Use<JsonEventSerializer>().Singleton());
+            _registryConfigActions.Add(cfg => 
+                cfg.For<IEventSerializer>()
+                .Use<JsonEventSerializer>()
+                .Ctor<Encoding>("encoding").Is(encoding)
+                .Singleton());
 
             return this;
         }

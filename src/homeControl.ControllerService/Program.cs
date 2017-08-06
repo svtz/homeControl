@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Configuration.IoC;
@@ -21,8 +22,8 @@ namespace homeControl.ControllerService
 
             var container = new Container(cfg =>
             {
-                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("")
-                    .UseJsonSerialization()
+                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://controller:controller@192.168.1.17/debug")
+                    .UseJsonSerializationWithEncoding(Encoding.UTF8)
                     .SetupEventSender<ConfigurationRequestEvent>("configuration_requests", ExchangeType.Fanout)
                     .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
                     .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")

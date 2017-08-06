@@ -1,4 +1,5 @@
-﻿using homeControl.Events.System;
+﻿using System.Text;
+using homeControl.Events.System;
 using homeControl.Interop.Rabbit.IoC;
 using RabbitMQ.Client;
 using StructureMap;
@@ -15,8 +16,8 @@ namespace homeControl.ConfigurationStore
                 cfg.ForSingletonOf<ConfigurationProvider>();
                 cfg.ForConcreteType<ConfigurationRequestsProcessor>();
 
-                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("")
-                    .UseJsonSerialization()
+                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://configStore:configStore@192.168.1.17/debug")
+                    .UseJsonSerializationWithEncoding(Encoding.UTF8)
                     .SetupEventSource<ConfigurationRequestEvent>("configuration_requests", ExchangeType.Fanout, string.Empty)
                     .SetupEventSender<ConfigurationResponseEvent>("configuration", ExchangeType.Direct)
                     .Build());
