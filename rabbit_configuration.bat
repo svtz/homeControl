@@ -9,15 +9,15 @@ call rabbitmqctl add_vhost debug
 call rabbitmqctl add_vhost release
 
 
-call rabbitmqctl set_permissions -p debug configStore "$a" "^configuration$" "^configuration_requests$"
-call rabbitmqctl set_permissions -p debug controller "$a" "^(configuration_requests|main)$" "^(configuration|main)$"
-call rabbitmqctl set_permissions -p debug noolite "$a" "^(configuration_requests|main)$" "^(configuration|main)$"
-call rabbitmqctl set_permissions -p debug client "$a" "^(configuration_requests|main)$" "^(configuration|main)$"
+call rabbitmqctl set_permissions -p debug configStore ".*" ".*" ".*"
+call rabbitmqctl set_permissions -p debug controller ".*" ".*" ".*"
+call rabbitmqctl set_permissions -p debug noolite ".*" ".*" ".*"
+call rabbitmqctl set_permissions -p debug client ".*" ".*" ".*"
 
 
-call rabbitmqctl set_permissions -p release configStore "$a" "^configuration$" "^configuration_requests$"
-call rabbitmqctl set_permissions -p release controller "$a" "^(configuration_requests|main)$" "^(configuration|main)$"
-call rabbitmqctl set_permissions -p release noolite "$a" "^(configuration_requests|main)$" "^(configuration|main)$"
-call rabbitmqctl set_permissions -p release client "$a" "^(configuration_requests|main)$" "^(configuration|main)$"
+call rabbitmqctl set_permissions -p release configStore ".*" ".*" ".*"
+call rabbitmqctl set_permissions -p release controller ".*" ".*" ".*"
+call rabbitmqctl set_permissions -p release noolite ".*" ".*" ".*"
+call rabbitmqctl set_permissions -p release client ".*" ".*" ".*"
 
 pause
