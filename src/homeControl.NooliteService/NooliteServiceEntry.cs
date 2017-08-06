@@ -16,10 +16,10 @@ using StructureMap;
 
 namespace homeControl.NooliteService
 {
-    class Program
+    class NooliteServiceEntry
     {
         private static readonly ILogger _log;
-        static Program()
+        static NooliteServiceEntry()
         {
 #if DEBUG
             var level = LogEventLevel.Verbose;
@@ -30,7 +30,7 @@ namespace homeControl.NooliteService
                 .MinimumLevel.Is(level)
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
                 .CreateLogger()
-                .ForContext(typeof(Program));
+                .ForContext(typeof(NooliteServiceEntry));
             _log.Debug("Logging initialized.");
         }
 

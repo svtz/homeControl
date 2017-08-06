@@ -1,27 +1,21 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using homeControl.Configuration.IoC;
-using homeControl.ControllerService.Bindings;
-using homeControl.ControllerService.Sensors;
-using homeControl.Domain.Events.Bindings;
 using homeControl.Domain.Events.Configuration;
-using homeControl.Domain.Events.Sensors;
-using homeControl.Domain.Events.Switches;
 using homeControl.Interop.Rabbit.IoC;
 using RabbitMQ.Client;
 using Serilog;
 using Serilog.Events;
 using StructureMap;
 
-namespace homeControl.ControllerService
+namespace homeControl.ConfigurationStore
 {
-    internal sealed class Program
+    internal sealed class ConfigurationStoreEntry
     {
         private static readonly ILogger _log;
-        static Program()
+        static ConfigurationStoreEntry()
         {
 #if DEBUG
             var level = LogEventLevel.Verbose;
@@ -32,42 +26,32 @@ namespace homeControl.ControllerService
                 .MinimumLevel.Is(level)
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
                 .CreateLogger()
-                .ForContext(typeof(Program));
+                .ForContext(typeof(ConfigurationStoreEntry));
             _log.Debug("Logging initialized.");
         }
 
         private static readonly IContainer _rootContainer = BuildContainer();
         private static IContainer BuildContainer()
         {
-            var serviceName = "controller-" + Guid.NewGuid();
-
             var container = new Container(cfg =>
             {
-                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://controller:controller@192.168.1.17/debug")
+                var configPath = Path.Combine(Directory.GetCurrentDirectory(), "conf");
+                cfg.ForConcreteType<ConfigurationProvider>()
+                   .Configure
+                   .Ctor<string>("configurationsDirectory").Is(configPath);
+                cfg.ForConcreteType<ConfigurationRequestsProcessor>();
+
+                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://configStore:configStore@192.168.1.17/debug")
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                    .SetupEventSender<ConfigurationRequestEvent>("configuration_requests", ExchangeType.Fanout)
-                    .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
-                    .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
-                    .SetupEventSource<AbstractSensorEvent>("main", ExchangeType.Fanout, "")
-                    .SetupEventSender<AbstractSwitchEvent>("main", ExchangeType.Fanout)
+                    .SetupEventSource<ConfigurationRequestEvent>("configuration_requests", ExchangeType.Fanout, string.Empty)
+                    .SetupEventSender<ConfigurationResponseEvent>("configuration", ExchangeType.Direct)
                     .Build());
-
-                cfg.AddRegistry(new ConfigurationRegistry(serviceName));
-
-                cfg.ForConcreteType<BindingController>().Configure.Transient();
-
-                cfg.Forward<BindingController, IBindingController>();
-                cfg.Forward<BindingController, IBindingStateManager>();
-
-                cfg.ForConcreteType<BindingEventsProcessor>().Configure.Transient();
-                cfg.ForConcreteType<SensorEventsProcessor>().Configure.Transient();
 
                 cfg.For<ILogger>().Use(c => _log.ForContext(c.ParentType));
             });
 
             return container;
         }
-
 
         static void Main(string[] args)
         {
@@ -89,12 +73,7 @@ namespace homeControl.ControllerService
 
         private static void Run(IContainer workContainer, CancellationToken ct)
         {
-            var bindingsProcessor = workContainer.GetInstance<BindingEventsProcessor>();
-            var sensorsProcessor = workContainer.GetInstance<SensorEventsProcessor>();
-
-            Task.WaitAll(
-                bindingsProcessor.Run(ct),
-                sensorsProcessor.Run(ct));
+            workContainer.GetInstance<ConfigurationRequestsProcessor>().Run(ct).Wait(ct);
         }
     }
 }
