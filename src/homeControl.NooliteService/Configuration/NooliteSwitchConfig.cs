@@ -1,6 +1,6 @@
 ﻿using homeControl.Configuration.Switches;
 
-namespace homeControl.Noolite.Configuration
+namespace homeControl.NooliteService.Configuration
 {
     internal class NooliteSwitchConfig : ISwitchConfiguration
     {

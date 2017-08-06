@@ -1,8 +1,8 @@
 ﻿using homeControl.Configuration.Switches;
 using homeControl.Noolite;
 using homeControl.Noolite.Adapters;
-using homeControl.Noolite.Configuration;
 using homeControl.NooliteService;
+using homeControl.NooliteService.Configuration;
 using Moq;
 using ThinkingHome.NooLite;
 using Xunit;

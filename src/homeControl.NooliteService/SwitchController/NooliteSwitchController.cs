@@ -2,7 +2,7 @@
 using homeControl.Configuration;
 using homeControl.Configuration.Switches;
 using homeControl.Noolite.Adapters;
-using homeControl.Noolite.Configuration;
+using homeControl.NooliteService.Configuration;
 using homeControl.Peripherals;
 using ThinkingHome.NooLite;
 

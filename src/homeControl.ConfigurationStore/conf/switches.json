@@ -1,7 +1,7 @@
 [
-    {
-        "$type": "homeControl.Noolite.Configuration.NooliteSwitchConfig, homeControl.Noolite",
-        "Channel": 1,
-        "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c"
-    }
+  {
+    "$type": "homeControl.NooliteService.Configuration.NooliteSwitchConfig, homeControl.NooliteService",
+    "Channel": 1,
+    "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c"
+  }
 ]

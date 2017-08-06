@@ -1,6 +1,6 @@
 ﻿using homeControl.Configuration.Sensors;
 
-namespace homeControl.Noolite.Configuration
+namespace homeControl.NooliteService.Configuration
 {
     internal sealed class NooliteSensorConfig : ISensorConfiguration
     {

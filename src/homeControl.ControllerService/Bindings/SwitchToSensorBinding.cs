@@ -4,7 +4,7 @@ using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
 
-namespace homeControl.Events.Bindings.Configuration
+namespace homeControl.ControllerService.Bindings
 {
     [DebuggerDisplay("SwitchId::SensorId")]
     internal sealed class SwitchToSensorBinding : ISwitchToSensorBinding, IEquatable<SwitchToSensorBinding>

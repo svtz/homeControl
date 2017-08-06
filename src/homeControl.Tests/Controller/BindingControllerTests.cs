@@ -2,9 +2,9 @@
 using homeControl.Configuration.Bindings;
 using homeControl.Configuration.Sensors;
 using homeControl.Configuration.Switches;
+using homeControl.ControllerService.Bindings;
 using homeControl.Domain.Events;
 using homeControl.Events.Bindings;
-using homeControl.Events.Bindings.Configuration;
 using homeControl.Events.Switches;
 using Moq;
 using Xunit;
