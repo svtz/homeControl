@@ -7,6 +7,7 @@ using homeControl.Domain.Events;
 using homeControl.Events.Sensors;
 using homeControl.Noolite.Adapters;
 using homeControl.Noolite.Configuration;
+using Serilog;
 using ThinkingHome.NooLite.ReceivedData;
 
 namespace homeControl.NooliteService
@@ -18,12 +19,14 @@ namespace homeControl.NooliteService
 
         private readonly IEventSender _eventSender;
         private readonly IRX2164Adapter _adapter;
+        private readonly ILogger _log;
         private readonly Lazy<IDictionary<byte, NooliteSensorConfig>> _channelToConfig;
 
         public NooliteSensor(
             IEventSender eventSender,
             IRX2164Adapter adapter,
-            ISensorConfigurationRepository configuration)
+            ISensorConfigurationRepository configuration,
+            ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
             Guard.DebugAssertArgumentNotNull(adapter, nameof(adapter));
@@ -31,6 +34,7 @@ namespace homeControl.NooliteService
 
             _eventSender = eventSender;
             _adapter = adapter;
+            _log = log;
             _channelToConfig = new Lazy<IDictionary<byte, NooliteSensorConfig>>(() => LoadConfig(configuration));
         }
 
@@ -38,6 +42,7 @@ namespace homeControl.NooliteService
         {
             _adapter.CommandReceived += AdapterOnCommandReceived;
             _adapter.Activate();
+            _log.Debug("Noolite sensor started.");
         }
 
         private static Dictionary<byte, NooliteSensorConfig> LoadConfig(ISensorConfigurationRepository config)
@@ -66,9 +71,13 @@ namespace homeControl.NooliteService
             {
                 case CommandOn:
                     _eventSender.SendEvent(new SensorActivatedEvent(config.SensorId));
+                    _log.Information("Noolite sensor activated: {SensorId}", config.SensorId);
+
                     break;
                 case CommandOff:
                     _eventSender.SendEvent(new SensorDeactivatedEvent(config.SensorId));
+                    _log.Information("Noolite sensor deactivated: {SensorId}", config.SensorId);
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(receivedCommandData.Cmd));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,12 +10,30 @@ using homeControl.Events.Switches;
 using homeControl.Events.System;
 using homeControl.Interop.Rabbit.IoC;
 using RabbitMQ.Client;
+using Serilog;
+using Serilog.Events;
 using StructureMap;
 
 namespace homeControl.ControllerService
 {
     internal sealed class Program
     {
+        private static readonly ILogger _log;
+        static Program()
+        {
+#if DEBUG
+            var level = LogEventLevel.Verbose;
+#else
+            var level = LogEventLevel.Information;
+#endif
+            _log = new LoggerConfiguration()
+                .MinimumLevel.Is(level)
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
+                .CreateLogger()
+                .ForContext(typeof(Program));
+            _log.Debug("Logging initialized.");
+        }
+
         private static readonly IContainer _rootContainer = BuildContainer();
         private static IContainer BuildContainer()
         {
@@ -40,6 +59,8 @@ namespace homeControl.ControllerService
 
                 cfg.ForConcreteType<BindingEventsProcessor>().Configure.Transient();
                 cfg.ForConcreteType<SensorEventsProcessor>().Configure.Transient();
+
+                cfg.For<ILogger>().Use(c => _log.ForContext(c.ParentType));
             });
 
             return container;
@@ -48,6 +69,11 @@ namespace homeControl.ControllerService
 
         static void Main(string[] args)
         {
+            var asmName = Assembly.GetEntryAssembly().GetName();
+            Console.Title = $"{asmName.Name} v.{asmName.Version.ToString(3)}";
+
+            _log.Information($"Starting service: {Console.Title}");
+
             using (var workContainer = _rootContainer.GetNestedContainer())
             using (var cts = new CancellationTokenSource())
             {
@@ -61,12 +87,6 @@ namespace homeControl.ControllerService
 
         private static void Run(IContainer workContainer, CancellationToken ct)
         {
-            //var initializers = workContainer.GetAllInstances<IInitializer>();
-            //foreach (var initializer in initializers)
-            //{
-            //    initializer.Init();
-            //}
-
             var bindingsProcessor = workContainer.GetInstance<BindingEventsProcessor>();
             var sensorsProcessor = workContainer.GetInstance<SensorEventsProcessor>();
 

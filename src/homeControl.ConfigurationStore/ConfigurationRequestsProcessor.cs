@@ -1,7 +1,10 @@
 ﻿using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using homeControl.Domain.Events;
 using homeControl.Events.System;
 using JetBrains.Annotations;
+using Serilog;
 
 namespace homeControl.ConfigurationStore
 {
@@ -11,11 +14,13 @@ namespace homeControl.ConfigurationStore
         private readonly IEventSource _eventSource;
         private readonly IEventSender _eventSender;
         private readonly ConfigurationProvider _configurationProvider;
+        private readonly ILogger _log;
 
         public ConfigurationRequestsProcessor(
             IEventSource eventSource, 
             IEventSender eventSender,
-            ConfigurationProvider configurationProvider)
+            ConfigurationProvider configurationProvider,
+            ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(eventSource, nameof(eventSource));
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
@@ -24,22 +29,26 @@ namespace homeControl.ConfigurationStore
             _eventSource = eventSource;
             _eventSender = eventSender;
             _configurationProvider = configurationProvider;
+            _log = log;
         }
 
-        public void Run()
+        public Task Run(CancellationToken ct)
         {
-            _eventSource
+            _log.Debug("Starting configuration request processor.");
+            return _eventSource
                 .ReceiveEvents<ConfigurationRequestEvent>()
-                .ForEachAsync(ProcessRequest)
-                .Wait();
+                .ForEachAsync(ProcessRequest, ct);
         }
 
         private void ProcessRequest(ConfigurationRequestEvent request)
         {
             Guard.DebugAssertArgumentNotNull(request, nameof(request));
 
+            _log.Debug("Processing configuration request: {ConfigurationKey}, {ReplyAddress}", request.ConfigurationKey, request.ReplyAddress);
+
             if (string.IsNullOrEmpty(request.ConfigurationKey))
             {
+                _log.Debug("Invalid configuration key.");
                 return;
             }
 
@@ -47,6 +56,7 @@ namespace homeControl.ConfigurationStore
             var configuration = _configurationProvider.GetConfiguration(key);
             if (string.IsNullOrEmpty(configuration))
             {
+                _log.Warning("No configuration found for {ConfigurationKey}, requester: {ReplyAddress}", request.ConfigurationKey, request.ReplyAddress);
                 return;
             }
 
@@ -57,6 +67,7 @@ namespace homeControl.ConfigurationStore
             };
 
             _eventSender.SendEvent(reply);
+            _log.Debug("Configuration request processed.");
         }
     }
 }

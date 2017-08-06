@@ -3,9 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.5.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.0.1" />
     <PackageReference Include="StructureMap" Version="4.5.1" />
     <PackageReference Include="System.Reactive" Version="4.0.0-preview00001" />
   </ItemGroup>
@@ -16,6 +19,10 @@
     <ProjectReference Include="..\homeControl.Interop.Rabbit\homeControl.Interop.Rabbit.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  
   <ItemGroup>
     <None Update="conf\bindings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
