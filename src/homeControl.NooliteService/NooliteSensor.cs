@@ -51,7 +51,7 @@ namespace homeControl.NooliteService
 
             try
             {
-                return config.GetAll<NooliteSensorConfig>().ToDictionary(cfg => cfg.Channel);
+                return config.GetAll<NooliteSensorConfig>().Result.ToDictionary(cfg => cfg.Channel);
             }
             catch (ArgumentException ex)
             {

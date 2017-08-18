@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace homeControl.Domain.Repositories
 {
     public interface ISwitchToSensorBindingsRepository
     {
-        IReadOnlyCollection<ISwitchToSensorBinding> GetAll();
+        Task<IReadOnlyCollection<ISwitchToSensorBinding>> GetAll();
     }
 }

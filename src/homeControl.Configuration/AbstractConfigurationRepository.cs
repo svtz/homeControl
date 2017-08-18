@@ -1,11 +1,14 @@
 using System;
+using System.Threading.Tasks;
 
 namespace homeControl.Configuration
 {
     public abstract class AbstractConfigurationRepository<TConfigurationSource, TConfigurationStore>
     {
-        private readonly Lazy<TConfigurationStore> _configuration;
-        protected TConfigurationStore Configuration => _configuration.Value;
+        private readonly Task<TConfigurationStore> _configurationLoader;
+        private readonly object _lock = new object();
+
+        protected async Task<TConfigurationStore> GetConfiguration() => await _configurationLoader;
 
         protected AbstractConfigurationRepository(
             string configKey,
@@ -16,7 +19,11 @@ namespace homeControl.Configuration
             Guard.DebugAssertArgumentNotNull(configurationPreprocessor, nameof(configurationPreprocessor));
             Guard.DebugAssertArgumentNotNull(configKey, nameof(configKey));
 
-            _configuration = new Lazy<TConfigurationStore>(() => configurationPreprocessor(configLoader.Load(configKey).Result));
+            _configurationLoader = Task.Run(async () =>
+            {
+                var config = await configLoader.Load(configKey);
+                return configurationPreprocessor(config);
+            });
         }
     }
 }

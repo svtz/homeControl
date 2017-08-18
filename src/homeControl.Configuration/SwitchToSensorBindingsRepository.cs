@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using homeControl.Domain;
 using homeControl.Domain.Repositories;
 using JetBrains.Annotations;
@@ -31,9 +32,9 @@ namespace homeControl.Configuration
             return configurations;
         }
 
-        public IReadOnlyCollection<ISwitchToSensorBinding> GetAll()
+        public async Task<IReadOnlyCollection<ISwitchToSensorBinding>> GetAll()
         {
-            return Configuration;
+            return await GetConfiguration();
         }
     }
 }

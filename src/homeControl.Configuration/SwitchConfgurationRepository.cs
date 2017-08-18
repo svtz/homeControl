@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using homeControl.Domain;
 using homeControl.Domain.Repositories;
 using JetBrains.Annotations;
@@ -36,20 +37,20 @@ namespace homeControl.Configuration
             }
         }
 
-        public bool ContainsConfig<TConfig>(SwitchId switchId) where TConfig : ISwitchConfiguration
+        public async Task<bool> ContainsConfig<TConfig>(SwitchId switchId) where TConfig : ISwitchConfiguration
         {
             ISwitchConfiguration config;
-            return Configuration.TryGetValue(switchId, out config) && config is TConfig;
+            return (await GetConfiguration()).TryGetValue(switchId, out config) && config is TConfig;
         }
 
-        public TConfig GetConfig<TConfig>(SwitchId switchId) where TConfig : ISwitchConfiguration
+        public async Task<TConfig> GetConfig<TConfig>(SwitchId switchId) where TConfig : ISwitchConfiguration
         {
-            return (TConfig)Configuration[switchId];
+            return (TConfig)(await GetConfiguration())[switchId];
         }
 
-        public IReadOnlyCollection<ISwitchConfiguration> GetAll()
+        public async Task<IReadOnlyCollection<ISwitchConfiguration>> GetAll()
         {
-            return Configuration.Values;
+            return (await GetConfiguration()).Values;
         }
     }
 }

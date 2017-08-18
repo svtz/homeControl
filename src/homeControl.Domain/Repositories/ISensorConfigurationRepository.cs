@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace homeControl.Domain.Repositories
 {
     public interface ISensorConfigurationRepository
     {
-        IReadOnlyCollection<TConfig> GetAll<TConfig>() where TConfig : ISensorConfiguration;
+        Task<IReadOnlyCollection<TConfig>> GetAll<TConfig>() where TConfig : ISensorConfiguration;
     }
 }

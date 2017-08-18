@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using homeControl.Configuration;
 using homeControl.Domain;
 using homeControl.Domain.Events;
@@ -30,9 +32,8 @@ namespace homeControl.Tests.Noolite
         public void TestWhenAdapterReceivedCommand_ThenRaiseEvent(byte command, int expectedActivateCallCount, int expectedDeactivateCallCount)
         {
             var sensorConfig = new NooliteSensorConfig {SensorId = SensorId.NewId(), Channel = 17 };
-
             var configMock = new Mock<ISensorConfigurationRepository>();
-            configMock.Setup(cfg => cfg.GetAll<NooliteSensorConfig>()).Returns(new[] { sensorConfig });
+            configMock.Setup(cfg => cfg.GetAll<NooliteSensorConfig>()).Returns(Task.FromResult<IReadOnlyCollection<NooliteSensorConfig>>(new[] { sensorConfig }));
 
             var gateMock = new Mock<IEventSender>(MockBehavior.Strict);
             gateMock.Setup(g => g.SendEvent(It.Is<SensorActivatedEvent>(e => e.SensorId == sensorConfig.SensorId)));

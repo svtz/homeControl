@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using homeControl.Domain;
 using homeControl.Domain.Events;
 using homeControl.Domain.Repositories;
@@ -37,10 +38,10 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             _log = log;
         }
 
-        public SwitchViewModelBase[] CreateViewModels()
+        public async Task<SwitchViewModelBase[]> CreateViewModels()
         {
-            var switches = _switchesRepo.GetAll();
-            var bindings = _bindingsRepo.GetAll();
+            var bindings = await _bindingsRepo.GetAll();
+            var switches = await _switchesRepo.GetAll();
             var automatedSwitches = bindings.Select(b => b.SwitchId).Distinct().ToArray();
 
             foreach (var @switch in switches)

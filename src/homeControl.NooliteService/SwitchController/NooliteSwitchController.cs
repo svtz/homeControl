@@ -28,7 +28,7 @@ namespace homeControl.NooliteService.SwitchController
         {
             Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
 
-            return _configurationRepository.ContainsConfig<NooliteSwitchConfig>(switchId);
+            return _configurationRepository.ContainsConfig<NooliteSwitchConfig>(switchId).Result;
         }
 
         public void TurnOn(SwitchId switchId)
@@ -36,7 +36,7 @@ namespace homeControl.NooliteService.SwitchController
             Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
-            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);
+            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId).Result;
             _adapter.SendCommand(PC11XXCommand.On, config.Channel);
         }
 
@@ -45,7 +45,7 @@ namespace homeControl.NooliteService.SwitchController
             Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
-            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);
+            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId).Result;
             _adapter.SendCommand(PC11XXCommand.Off, config.Channel);
         }
 
@@ -55,7 +55,7 @@ namespace homeControl.NooliteService.SwitchController
             Guard.DebugAssertArgument(power >= 0 && power <= 1, nameof(switchId));
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
-            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId);
+            var config = _configurationRepository.GetConfig<NooliteSwitchConfig>(switchId).Result;
             if (config.FullPowerLevel <= config.ZeroPowerLevel)
             {
                 throw new InvalidConfigurationException($"Invalid configuration for switch {switchId}. FullPowerLevel should be greater then ZeroPowerLevel.");

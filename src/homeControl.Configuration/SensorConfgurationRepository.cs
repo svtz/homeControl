@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using homeControl.Domain;
 using homeControl.Domain.Repositories;
 using JetBrains.Annotations;
@@ -29,9 +30,9 @@ namespace homeControl.Configuration
             return configurations;
         }
 
-        public IReadOnlyCollection<TSensorConfig> GetAll<TSensorConfig>() where TSensorConfig : ISensorConfiguration
+        public async Task<IReadOnlyCollection<TSensorConfig>> GetAll<TSensorConfig>() where TSensorConfig : ISensorConfiguration
         {
-            return Configuration.OfType<TSensorConfig>().ToArray();
+            return (await GetConfiguration()).OfType<TSensorConfig>().ToArray();
         }
     }
 }

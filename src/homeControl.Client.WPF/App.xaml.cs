@@ -25,7 +25,7 @@ namespace homeControl.Client.WPF
         private static readonly IContainer _rootContainer = BuildContainer();
         private static IContainer BuildContainer()
         {
-            var serviceName = "client-wpf-" + Guid.NewGuid();
+            var serviceName = "wpf-" + Guid.NewGuid();
 
             var container = new Container(cfg =>
             {

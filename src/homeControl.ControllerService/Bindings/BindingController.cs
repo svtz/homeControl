@@ -91,7 +91,7 @@ namespace homeControl.ControllerService.Bindings
 
             _eventSender = eventSender;
 
-            _state = new Lazy<State>(() => new State(bindingsRepository.GetAll()));
+            _state = new Lazy<State>(() => new State(bindingsRepository.GetAll().Result));
         }
 
         public void EnableBinding(SwitchId switchId, SensorId sensorId)

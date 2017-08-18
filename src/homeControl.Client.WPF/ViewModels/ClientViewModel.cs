@@ -54,7 +54,7 @@ namespace homeControl.Client.WPF.ViewModels
             ExitClickCommand = new RelayCommand(Exit);
         }
 
-        private void DoReloadSwitches()
+        private async void DoReloadSwitches()
         {
             IsBusy = true;
             try
@@ -66,7 +66,7 @@ namespace homeControl.Client.WPF.ViewModels
                     (oldSwitch as IDisposable)?.Dispose();
                 }
 
-                foreach (var @switch in _switchViewModelsFactory.CreateViewModels())
+                foreach (var @switch in await _switchViewModelsFactory.CreateViewModels())
                 {
                     _switches.Add(@switch);
                 }

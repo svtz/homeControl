@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace homeControl.Domain.Repositories
 {
     public interface ISwitchConfigurationRepository
     {
-        bool ContainsConfig<TConfig>(SwitchId switchId) where TConfig: ISwitchConfiguration;
-        TConfig GetConfig<TConfig>(SwitchId switchId) where TConfig: ISwitchConfiguration;
-        IReadOnlyCollection<ISwitchConfiguration> GetAll();
+        Task<bool> ContainsConfig<TConfig>(SwitchId switchId) where TConfig: ISwitchConfiguration;
+        Task<TConfig> GetConfig<TConfig>(SwitchId switchId) where TConfig: ISwitchConfiguration;
+        Task<IReadOnlyCollection<ISwitchConfiguration>> GetAll();
     }
 }
