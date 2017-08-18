@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="homeControl.Client.WPF.Views.Switches.ToggleSwitchControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:switches="clr-namespace:homeControl.Client.WPF.Views.Switches"
+             xmlns:switches1="clr-namespace:homeControl.Client.WPF.ViewModels.Switches"
+             xmlns:mouseWheel="clr-namespace:homeControl.Client.WPF.Views.Switches.MouseWheel"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="100" d:DataContext="{d:DesignInstance switches1:ToggleSwitchViewModel}">
+    <UserControl.Resources>
+        <switches:BooleanToFontWeightConverter Inverse="False" x:Key="DirectFontWeightConverter"/>
+        <switches:BooleanToFontWeightConverter Inverse="True" x:Key="InversedFontWeightConverter"/>
+    </UserControl.Resources>
+    <UserControl.InputBindings>
+        <MouseBinding Gesture="{mouseWheel:MouseWheel Direction=Down}" Command="{Binding MouseWheelDown}" />
+        <MouseBinding Gesture="{mouseWheel:MouseWheel Direction=Up}" Command="{Binding MouseWheelUp}" />
+    </UserControl.InputBindings>
+    <GroupBox Header="{Binding Name}" 
+              ToolTip="{Binding Description}" 
+              Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+
+            <Image Source="pack://application:,,,/homeControl.Client.WPF;component/Resources/MainIcon.ico" 
+                   Grid.Column="1" 
+                   Grid.Row="1"
+                   VerticalAlignment="Center" 
+                   HorizontalAlignment="Center">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonUp">
+                        <i:InvokeCommandAction Command="{Binding SetMaximum}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
+            <Image Source="pack://application:,,,/homeControl.Client.WPF;component/Resources/LampOff.ico" 
+                   Grid.Column="1" 
+                   Grid.Row="5"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                   RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-180"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonUp">
+                        <i:InvokeCommandAction Command="{Binding SetMinimum}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
+
+            <TextBlock Text="ВКЛ" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                       FontWeight="{Binding Value, Converter={StaticResource DirectFontWeightConverter}}"/>
+            <Slider Name="Slider" 
+                    Orientation="Vertical" 
+                    Grid.Column="1" 
+                    Grid.Row="3" 
+                    Maximum="1" 
+                    Minimum="0" 
+                    Height="40"
+                    Value="{Binding Value}"
+                    HorizontalAlignment="Center"
+                    Margin="0,5,0,5">
+            </Slider>
+            <TextBlock Text="ВЫКЛ" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       FontWeight="{Binding Value, Converter={StaticResource InversedFontWeightConverter}}"/>
+
+        </Grid>
+    </GroupBox>
+</UserControl>

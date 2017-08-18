@@ -2,6 +2,7 @@
 using homeControl.Configuration.Serializers;
 using homeControl.Domain.Repositories;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using StructureMap;
 
 namespace homeControl.Configuration.IoC
@@ -18,6 +19,7 @@ namespace homeControl.Configuration.IoC
 
             For<JsonConverter>().Add<SwitchIdSerializer>().Singleton();
             For<JsonConverter>().Add<SensorIdSerializer>().Singleton();
+            For<JsonConverter>().Add<StringEnumConverter>().Singleton();
 
             For(typeof(IConfigurationLoader<>))
                 .Use(typeof(JsonConfigurationLoader<>))

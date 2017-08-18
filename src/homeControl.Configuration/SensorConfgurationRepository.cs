@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using homeControl.Domain;
 using homeControl.Domain.Repositories;
+using JetBrains.Annotations;
 
 namespace homeControl.Configuration
 {
+    [UsedImplicitly]
     internal sealed class SensorConfgurationRepository : 
         AbstractConfigurationRepository<ISensorConfiguration[], ISensorConfiguration[]>,
         ISensorConfigurationRepository
