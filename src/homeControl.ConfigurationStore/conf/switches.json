@@ -1,12 +1,9 @@
 [
   {
-    "$type": "homeControl.NooliteService.Configuration.NooliteSwitchConfig, homeControl.NooliteService",
-    "Channel": 1,
+    "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
     "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c",
     "SwitchKind": "Toggle",
     "Name": "Toggle Test",
     "Description": "Toggle Test Description",
-    "FullPowerLevel": "255",
-    "ZeroPowerLevel": "10"
   }
 ]

@@ -1,7 +1,6 @@
 [
   {
-    "$type": "homeControl.NooliteService.Configuration.NooliteSensorConfig, homeControl.NooliteService",
-    "Channel": 0,
+    "$type": "homeControl.Domain.SensorConfiguration, homeControl.Domain",
     "SensorId": "1f94da1e-6fc8-4977-ab9a-96654adcacb8"
   }
 ]

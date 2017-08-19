@@ -1,0 +1,9 @@
+[
+  {
+    "$type": "homeControl.NooliteService.Configuration.NooliteSwitchInfo, homeControl.NooliteService",
+    "Channel": 1,
+    "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c",
+    "FullPowerLevel": "255",
+    "ZeroPowerLevel": "10"
+  }
+]

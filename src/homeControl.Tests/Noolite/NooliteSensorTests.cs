@@ -5,7 +5,6 @@ using homeControl.Configuration;
 using homeControl.Domain;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Sensors;
-using homeControl.Domain.Repositories;
 using homeControl.NooliteService;
 using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
@@ -31,9 +30,9 @@ namespace homeControl.Tests.Noolite
         [InlineData(0, 0, 1)]
         public void TestWhenAdapterReceivedCommand_ThenRaiseEvent(byte command, int expectedActivateCallCount, int expectedDeactivateCallCount)
         {
-            var sensorConfig = new NooliteSensorConfig {SensorId = SensorId.NewId(), Channel = 17 };
-            var configMock = new Mock<ISensorConfigurationRepository>();
-            configMock.Setup(cfg => cfg.GetAll<NooliteSensorConfig>()).Returns(Task.FromResult<IReadOnlyCollection<NooliteSensorConfig>>(new[] { sensorConfig }));
+            var sensorConfig = new NooliteSensorInfo {SensorId = SensorId.NewId(), Channel = 17 };
+            var configMock = new Mock<INooliteSensorInfoRepository>();
+            configMock.Setup(cfg => cfg.GetAll()).Returns(Task.FromResult<IReadOnlyCollection<NooliteSensorInfo>>(new[] { sensorConfig }));
 
             var gateMock = new Mock<IEventSender>(MockBehavior.Strict);
             gateMock.Setup(g => g.SendEvent(It.Is<SensorActivatedEvent>(e => e.SensorId == sensorConfig.SensorId)));
@@ -54,7 +53,7 @@ namespace homeControl.Tests.Noolite
         [InlineData(2)]
         public void TestWhenAdapterReceivedCommandWithUnknownChannel_ThenError(byte command)
         {
-            var configMock = new Mock<ISensorConfigurationRepository>();
+            var configMock = new Mock<INooliteSensorInfoRepository>();
 
             var adapterMock = new Mock<IRX2164Adapter>();
 

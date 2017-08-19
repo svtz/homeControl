@@ -5,6 +5,6 @@ namespace homeControl.Domain.Repositories
 {
     public interface ISensorConfigurationRepository
     {
-        Task<IReadOnlyCollection<TConfig>> GetAll<TConfig>() where TConfig : ISensorConfiguration;
+        Task<IReadOnlyCollection<SensorConfiguration>> GetAll();
     }
 }

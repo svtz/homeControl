@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using homeControl.Domain;
-using homeControl.Domain.Repositories;
+using homeControl.NooliteService.Configuration;
 using JetBrains.Annotations;
 
 namespace homeControl.Configuration
 {
     [UsedImplicitly]
-    internal sealed class SensorConfgurationRepository : 
-        AbstractConfigurationRepository<SensorConfiguration[], SensorConfiguration[]>,
-        ISensorConfigurationRepository
+    internal sealed class NooliteSensorInfoRepository : 
+        AbstractConfigurationRepository<NooliteSensorInfo[], NooliteSensorInfo[]>, INooliteSensorInfoRepository
+
     {
-        public SensorConfgurationRepository(IConfigurationLoader<SensorConfiguration[]> configLoader)
-            : base("sensors", configLoader, PrepareConfiguration)
+        public NooliteSensorInfoRepository(IConfigurationLoader<NooliteSensorInfo[]> configLoader)
+            : base("sensors-noolite", configLoader, PrepareConfiguration)
         {
         }
 
-        private static SensorConfiguration[] PrepareConfiguration(SensorConfiguration[] configurations)
+        private static NooliteSensorInfo[] PrepareConfiguration(NooliteSensorInfo[] configurations)
         {
             Guard.DebugAssertArgumentNotNull(configurations, nameof(configurations));
             
@@ -30,7 +29,7 @@ namespace homeControl.Configuration
             return configurations;
         }
 
-        public async Task<IReadOnlyCollection<SensorConfiguration>> GetAll()
+        public async Task<IReadOnlyCollection<NooliteSensorInfo>> GetAll()
         {
             return await GetConfiguration();
         }

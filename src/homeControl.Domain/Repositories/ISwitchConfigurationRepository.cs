@@ -5,8 +5,8 @@ namespace homeControl.Domain.Repositories
 {
     public interface ISwitchConfigurationRepository
     {
-        Task<bool> ContainsConfig<TConfig>(SwitchId switchId) where TConfig: ISwitchConfiguration;
-        Task<TConfig> GetConfig<TConfig>(SwitchId switchId) where TConfig: ISwitchConfiguration;
-        Task<IReadOnlyCollection<ISwitchConfiguration>> GetAll();
+        Task<bool> ContainsConfig(SwitchId switchId);
+        Task<SwitchConfiguration> GetConfig(SwitchId switchId);
+        Task<IReadOnlyCollection<SwitchConfiguration>> GetAll();
     }
 }

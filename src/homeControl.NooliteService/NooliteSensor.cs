@@ -4,7 +4,6 @@ using System.Linq;
 using homeControl.Configuration;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Sensors;
-using homeControl.Domain.Repositories;
 using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using Serilog;
@@ -20,12 +19,12 @@ namespace homeControl.NooliteService
         private readonly IEventSender _eventSender;
         private readonly IRX2164Adapter _adapter;
         private readonly ILogger _log;
-        private readonly Lazy<IDictionary<byte, NooliteSensorConfig>> _channelToConfig;
+        private readonly Lazy<IDictionary<byte, NooliteSensorInfo>> _channelToConfig;
 
         public NooliteSensor(
             IEventSender eventSender,
             IRX2164Adapter adapter,
-            ISensorConfigurationRepository configuration,
+            INooliteSensorInfoRepository configuration,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
@@ -35,7 +34,7 @@ namespace homeControl.NooliteService
             _eventSender = eventSender;
             _adapter = adapter;
             _log = log;
-            _channelToConfig = new Lazy<IDictionary<byte, NooliteSensorConfig>>(() => LoadConfig(configuration));
+            _channelToConfig = new Lazy<IDictionary<byte, NooliteSensorInfo>>(() => LoadConfig(configuration));
         }
 
         public void Activate()
@@ -45,13 +44,13 @@ namespace homeControl.NooliteService
             _log.Debug("Noolite sensor started.");
         }
 
-        private static Dictionary<byte, NooliteSensorConfig> LoadConfig(ISensorConfigurationRepository config)
+        private static Dictionary<byte, NooliteSensorInfo> LoadConfig(INooliteSensorInfoRepository config)
         {
             Guard.DebugAssertArgumentNotNull(config, nameof(config));
 
             try
             {
-                return config.GetAll<NooliteSensorConfig>().Result.ToDictionary(cfg => cfg.Channel);
+                return config.GetAll().Result.ToDictionary(cfg => cfg.Channel);
             }
             catch (ArgumentException ex)
             {
@@ -63,20 +62,20 @@ namespace homeControl.NooliteService
         {
             Guard.DebugAssertArgumentNotNull(receivedCommandData, nameof(receivedCommandData));
 
-            NooliteSensorConfig config;
-            if (!_channelToConfig.Value.TryGetValue(receivedCommandData.Channel, out config))
+            NooliteSensorInfo info;
+            if (!_channelToConfig.Value.TryGetValue(receivedCommandData.Channel, out info))
                 throw new InvalidConfigurationException($"Could not locate Noolite channel #{receivedCommandData.Channel} in the configuration.");
 
             switch (receivedCommandData.Cmd)
             {
                 case CommandOn:
-                    _eventSender.SendEvent(new SensorActivatedEvent(config.SensorId));
-                    _log.Information("Noolite sensor activated: {SensorId}", config.SensorId);
+                    _eventSender.SendEvent(new SensorActivatedEvent(info.SensorId));
+                    _log.Information("Noolite sensor activated: {SensorId}", info.SensorId);
 
                     break;
                 case CommandOff:
-                    _eventSender.SendEvent(new SensorDeactivatedEvent(config.SensorId));
-                    _log.Information("Noolite sensor deactivated: {SensorId}", config.SensorId);
+                    _eventSender.SendEvent(new SensorDeactivatedEvent(info.SensorId));
+                    _log.Information("Noolite sensor deactivated: {SensorId}", info.SensorId);
 
                     break;
                 default:

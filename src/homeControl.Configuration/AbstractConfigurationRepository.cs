@@ -5,10 +5,31 @@ namespace homeControl.Configuration
 {
     public abstract class AbstractConfigurationRepository<TConfigurationSource, TConfigurationStore>
     {
-        private readonly Task<TConfigurationStore> _configurationLoader;
+        private readonly string _configKey;
+        private readonly IConfigurationLoader<TConfigurationSource> _configLoader;
+        private readonly Func<TConfigurationSource, TConfigurationStore> _configurationPreprocessor;
+        private volatile Task<TConfigurationStore> _configurationLoader;
         private readonly object _lock = new object();
 
-        protected async Task<TConfigurationStore> GetConfiguration() => await _configurationLoader;
+        protected Task<TConfigurationStore> GetConfiguration()
+        {
+            if (_configurationLoader != null)
+                return _configurationLoader;
+
+            lock (_lock)
+            {
+                if (_configurationLoader != null)
+                    return _configurationLoader;
+
+                _configurationLoader = Task.Run(async () =>
+                {
+                    var config = await _configLoader.Load(_configKey);
+                    return _configurationPreprocessor(config);
+                });
+            }
+
+            return _configurationLoader;
+        }
 
         protected AbstractConfigurationRepository(
             string configKey,
@@ -19,11 +40,9 @@ namespace homeControl.Configuration
             Guard.DebugAssertArgumentNotNull(configurationPreprocessor, nameof(configurationPreprocessor));
             Guard.DebugAssertArgumentNotNull(configKey, nameof(configKey));
 
-            _configurationLoader = Task.Run(async () =>
-            {
-                var config = await configLoader.Load(configKey);
-                return configurationPreprocessor(config);
-            });
+            _configKey = configKey;
+            _configLoader = configLoader;
+            _configurationPreprocessor = configurationPreprocessor;
         }
     }
 }

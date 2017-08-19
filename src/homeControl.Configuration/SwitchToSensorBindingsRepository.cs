@@ -10,15 +10,15 @@ namespace homeControl.Configuration
 {
     [UsedImplicitly]
     internal sealed class SwitchToSensorBindingsRepository : 
-        AbstractConfigurationRepository<ISwitchToSensorBinding[], ISwitchToSensorBinding[]>,
+        AbstractConfigurationRepository<SwitchToSensorBinding[], SwitchToSensorBinding[]>,
         ISwitchToSensorBindingsRepository
     {
-        public SwitchToSensorBindingsRepository(IConfigurationLoader<ISwitchToSensorBinding[]> configLoader)
+        public SwitchToSensorBindingsRepository(IConfigurationLoader<SwitchToSensorBinding[]> configLoader)
             : base("bindings", configLoader, PrepareConfiguration)
         {
         }
 
-        private static ISwitchToSensorBinding[] PrepareConfiguration(ISwitchToSensorBinding[] configurations)
+        private static SwitchToSensorBinding[] PrepareConfiguration(SwitchToSensorBinding[] configurations)
         {
             Guard.DebugAssertArgumentNotNull(configurations, nameof(configurations));
 
@@ -32,7 +32,7 @@ namespace homeControl.Configuration
             return configurations;
         }
 
-        public async Task<IReadOnlyCollection<ISwitchToSensorBinding>> GetAll()
+        public async Task<IReadOnlyCollection<SwitchToSensorBinding>> GetAll()
         {
             return await GetConfiguration();
         }

@@ -5,6 +5,6 @@ namespace homeControl.Domain.Repositories
 {
     public interface ISwitchToSensorBindingsRepository
     {
-        Task<IReadOnlyCollection<ISwitchToSensorBinding>> GetAll();
+        Task<IReadOnlyCollection<SwitchToSensorBinding>> GetAll();
     }
 }

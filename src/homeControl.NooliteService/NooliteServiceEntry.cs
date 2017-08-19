@@ -2,12 +2,14 @@
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using homeControl.Configuration;
 using homeControl.Configuration.IoC;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
 using homeControl.Interop.Rabbit.IoC;
 using homeControl.NooliteService.Adapters;
+using homeControl.NooliteService.Configuration;
 using homeControl.NooliteService.SwitchController;
 using RabbitMQ.Client;
 using Serilog;
@@ -55,6 +57,8 @@ namespace homeControl.NooliteService
                 cfg.For<IRX2164Adapter>().Use<RX2164AdapterWrapper>().Singleton();
                 //cfg.For<ISwitchController>().Add<NooliteSwitchController>().Singleton();
                 cfg.For<ISwitchController>().Add<SwitchControllerConsoleEmulator>().Singleton();
+                cfg.For<INooliteSwitchInfoRepository>().Use<NooliteSwitchInfoRepository>().Transient();
+                cfg.For<INooliteSensorInfoRepository>().Use<INooliteSensorInfoRepository>().Transient();
                 cfg.ForConcreteType<NooliteSensor>().Configure.Transient();
 
                 cfg.For<ILogger>().Use(c => _log.ForContext(c.ParentType));

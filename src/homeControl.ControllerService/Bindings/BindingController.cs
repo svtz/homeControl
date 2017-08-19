@@ -15,7 +15,7 @@ namespace homeControl.ControllerService.Bindings
             private readonly Dictionary<SensorId, HashSet<SwitchId>> _enabledBindings = new Dictionary<SensorId, HashSet<SwitchId>>();
             private readonly HashSet<Tuple<SwitchId, SensorId>> _allowedCombinations;
 
-            public State(IReadOnlyCollection<ISwitchToSensorBinding> bindings)
+            public State(IReadOnlyCollection<SwitchToSensorBinding> bindings)
             {
                 Guard.DebugAssertArgumentNotNull(bindings, nameof(bindings));
 

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using homeControl.Domain;
-using homeControl.Domain.Repositories;
 using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using homeControl.NooliteService.SwitchController;
@@ -16,14 +15,14 @@ namespace homeControl.Tests.Noolite
         public void Test_TurnOn_SendsAdapterOnCommand()
         {
             var switchId = SwitchId.NewId();
-            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
+            var configRepositoryMock = new Mock<INooliteSwitchInfoRepository>(MockBehavior.Strict);
             var adapterMock = new Mock<IPC11XXAdapter>();
-            var config = new NooliteSwitchConfig { Channel = 123 };
+            var config = new NooliteSwitchInfo { Channel = 123 };
             configRepositoryMock
-                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(switchId))
+                .Setup(repository => repository.ContainsConfig(switchId))
                 .Returns(Task.FromResult(true));
             configRepositoryMock
-                .Setup(repository => repository.GetConfig<NooliteSwitchConfig>(switchId))
+                .Setup(repository => repository.GetConfig(switchId))
                 .Returns(Task.FromResult(config));
 
             var controller = new NooliteSwitchController(configRepositoryMock.Object, adapterMock.Object);
@@ -36,14 +35,14 @@ namespace homeControl.Tests.Noolite
         public void Test_TurnOff_SendsAdapterOffCommand()
         {
             var switchId = SwitchId.NewId();
-            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
+            var configRepositoryMock = new Mock<INooliteSwitchInfoRepository>(MockBehavior.Strict);
             var adapterMock = new Mock<IPC11XXAdapter>();
-            var config = new NooliteSwitchConfig { Channel = 98 };
+            var config = new NooliteSwitchInfo { Channel = 98 };
             configRepositoryMock
-                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(switchId))
+                .Setup(repository => repository.ContainsConfig(switchId))
                 .Returns(Task.FromResult(true));
             configRepositoryMock
-                .Setup(repository => repository.GetConfig<NooliteSwitchConfig>(switchId))
+                .Setup(repository => repository.GetConfig(switchId))
                 .Returns(Task.FromResult(config));
 
             var controller = new NooliteSwitchController(configRepositoryMock.Object, adapterMock.Object);
@@ -55,30 +54,30 @@ namespace homeControl.Tests.Noolite
         [Fact]
         public void Test_IfRepoDoesNotContainConfig_ThenCantHandle()
         {
-            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
+            var configRepositoryMock = new Mock<INooliteSwitchInfoRepository>(MockBehavior.Strict);
             configRepositoryMock
-                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(It.IsAny<SwitchId>()))
+                .Setup(repository => repository.ContainsConfig(It.IsAny<SwitchId>()))
                 .Returns(Task.FromResult(false));
 
             var controller = new NooliteSwitchController(configRepositoryMock.Object, Mock.Of<IPC11XXAdapter>());
             Assert.False(controller.CanHandleSwitch(SwitchId.NewId()));
 
-            configRepositoryMock.Verify(repo => repo.ContainsConfig<NooliteSwitchConfig>(It.IsAny<SwitchId>()), Times.Once);
+            configRepositoryMock.Verify(repo => repo.ContainsConfig(It.IsAny<SwitchId>()), Times.Once);
         }
 
         [Fact]
         public void Test_IfRepoContainsConfig_ThenCanHandle()
         {
-            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
+            var configRepositoryMock = new Mock<INooliteSwitchInfoRepository>(MockBehavior.Strict);
             var switchId = SwitchId.NewId();
             configRepositoryMock
-                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(switchId))
+                .Setup(repository => repository.ContainsConfig(switchId))
                 .Returns(Task.FromResult(true));
             
             var controller = new NooliteSwitchController(configRepositoryMock.Object, Mock.Of<IPC11XXAdapter>());
             Assert.True(controller.CanHandleSwitch(switchId));
 
-            configRepositoryMock.Verify(repo => repo.ContainsConfig<NooliteSwitchConfig>(switchId), Times.Once);
+            configRepositoryMock.Verify(repo => repo.ContainsConfig(switchId), Times.Once);
         }
 
         [Theory]
@@ -90,8 +89,8 @@ namespace homeControl.Tests.Noolite
         [InlineData(100, 50, 0.2, 60)]
         public void Test_SetPower_ChangesAdapterLevel(byte fullPower, byte zeroPower, double requestedPower, byte expectedLevel)
         {
-            var configRepositoryMock = new Mock<ISwitchConfigurationRepository>(MockBehavior.Strict);
-            var config = new NooliteSwitchConfig
+            var configRepositoryMock = new Mock<INooliteSwitchInfoRepository>(MockBehavior.Strict);
+            var config = new NooliteSwitchInfo
             {
                 SwitchId = SwitchId.NewId(),
                 Channel = 98,
@@ -99,10 +98,10 @@ namespace homeControl.Tests.Noolite
                 ZeroPowerLevel = zeroPower
             };
             configRepositoryMock
-                .Setup(repository => repository.ContainsConfig<NooliteSwitchConfig>(config.SwitchId))
+                .Setup(repository => repository.ContainsConfig(config.SwitchId))
                 .Returns(Task.FromResult(true));
             configRepositoryMock
-                .Setup(repository => repository.GetConfig<NooliteSwitchConfig>(config.SwitchId))
+                .Setup(repository => repository.GetConfig(config.SwitchId))
                 .Returns(Task.FromResult(config));
             var adapterMock = new Mock<IPC11XXAdapter>(MockBehavior.Strict);
             adapterMock.Setup(adapter => adapter.SendCommand(PC11XXCommand.SetLevel, config.Channel, expectedLevel));

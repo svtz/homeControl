@@ -2,30 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using homeControl.Configuration;
 using homeControl.Domain;
-using homeControl.Domain.Repositories;
 using JetBrains.Annotations;
 
-namespace homeControl.Configuration
+namespace homeControl.NooliteService.Configuration
 {
     [UsedImplicitly]
-    internal sealed class SwitchConfgurationRepository :
-        AbstractConfigurationRepository<SwitchConfiguration[], Dictionary<SwitchId, SwitchConfiguration>>,
-        ISwitchConfigurationRepository
+    internal sealed class NooliteSwitchInfoRepository :
+        AbstractConfigurationRepository<NooliteSwitchInfo[], Dictionary<SwitchId, NooliteSwitchInfo>>, INooliteSwitchInfoRepository
     {
-        public SwitchConfgurationRepository(IConfigurationLoader<SwitchConfiguration[]> configLoader)
-            : base("switches", configLoader, PrepareConfiguration)
+        public NooliteSwitchInfoRepository(IConfigurationLoader<NooliteSwitchInfo[]> configLoader)
+            : base("switches-noolite", configLoader, PrepareConfiguration)
         {
         }
 
-        private static Dictionary<SwitchId, SwitchConfiguration> PrepareConfiguration(SwitchConfiguration[] configurations)
+        private static Dictionary<SwitchId, NooliteSwitchInfo> PrepareConfiguration(NooliteSwitchInfo[] configurations)
         {
             Guard.DebugAssertArgumentNotNull(configurations, nameof(configurations));
 
             if (configurations.Any(cfg => cfg == null))
-                throw new InvalidConfigurationException($"Found null-configuration for switch.");
+                throw new InvalidConfigurationException($"Found null-configuration for NooliteSwitchInfo.");
             if (configurations.Any(cfg => cfg.SwitchId?.Id == Guid.Empty))
-                throw new InvalidConfigurationException("Found zero identifier in the switch config.");
+                throw new InvalidConfigurationException("Found zero identifier in the NooliteSwitchInfo config.");
 
             try
             {
@@ -42,12 +41,12 @@ namespace homeControl.Configuration
             return (await GetConfiguration()).ContainsKey(switchId);
         }
 
-        public async Task<SwitchConfiguration> GetConfig(SwitchId switchId)
+        public async Task<NooliteSwitchInfo> GetConfig(SwitchId switchId)
         {
             return (await GetConfiguration())[switchId];
         }
 
-        public async Task<IReadOnlyCollection<SwitchConfiguration>> GetAll()
+        public async Task<IReadOnlyCollection<NooliteSwitchInfo>> GetAll()
         {
             return (await GetConfiguration()).Values;
         }

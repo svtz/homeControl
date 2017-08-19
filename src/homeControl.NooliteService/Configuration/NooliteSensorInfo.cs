@@ -2,7 +2,7 @@
 
 namespace homeControl.NooliteService.Configuration
 {
-    internal sealed class NooliteSensorConfig : ISensorConfiguration
+    internal sealed class NooliteSensorInfo
     {
         public byte Channel { get; set; }
         public SensorId SensorId { get; set; }
