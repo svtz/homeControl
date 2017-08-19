@@ -31,6 +31,9 @@ namespace homeControl.Interop.Rabbit.IoC
                 cfg.For<IConnection>()
                     .Use(c => c.GetInstance<ConnectionFactory>().CreateConnection())
                     .Transient();
+                cfg.For<IModel>()
+                    .Use(c => c.GetInstance<IConnection>().CreateModel())
+                    .Transient();
                 cfg.For<IEventProcessorFactory>()
                     .Use<RabbitEventProcessorFactory>()
                     .Transient();
@@ -48,10 +51,10 @@ namespace homeControl.Interop.Rabbit.IoC
             return this;
         }
 
-        public RabbitConfigurationRegistryBuilder SetupEventSender<TEvent>(string exchangeName, string exchangeType)
+        public RabbitConfigurationRegistryBuilder SetupEventSender<TEvent>(string exchangeName)
             where TEvent : IEvent
         {
-            _exchangeConfigActions.Add(efg => efg.ConfigureEventSender(typeof(TEvent), exchangeName, exchangeType));
+            _exchangeConfigActions.Add(efg => efg.ConfigureEventSender(typeof(TEvent), exchangeName));
 
             return this;
         }

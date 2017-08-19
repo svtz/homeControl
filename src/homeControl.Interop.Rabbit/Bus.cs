@@ -8,12 +8,6 @@ using JetBrains.Annotations;
 
 namespace homeControl.Interop.Rabbit
 {
-    internal interface IEventProcessorFactory
-    {
-        IEventSource CreateSource(string exchangeName, string exchangeType, string routingKey);
-        IEventSender CreateSender(string exchangeName, string exchangeType);
-    }
-
     [UsedImplicitly]
     internal sealed class Bus : IEventSender, IEventSource, IDisposable
     {
@@ -23,8 +17,8 @@ namespace homeControl.Interop.Rabbit
         private readonly Dictionary<(string name, string type, string route), IEventSource> _allEventSources
             = new Dictionary<(string, string, string), IEventSource>();
 
-        private readonly Dictionary<(string name, string type), IEventSender> _allEventSenders =
-            new Dictionary<(string, string), IEventSender>();
+        private readonly Dictionary<string, IEventSender> _allEventSenders =
+            new Dictionary<string, IEventSender>();
 
         public Bus(IEventProcessorFactory factory, ExchangeConfiguration routes)
         {
@@ -136,9 +130,9 @@ namespace homeControl.Interop.Rabbit
             return _factory.CreateSource(newExchange.name, newExchange.type, newExchange.route);
         }
 
-        private IEventSender CreateEventSender((string name, string type) newExchange)
+        private IEventSender CreateEventSender(string exchangeName)
         {
-            return _factory.CreateSender(newExchange.name, newExchange.type);
+            return _factory.CreateSender(exchangeName);
         }
     }
 }

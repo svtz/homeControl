@@ -38,15 +38,14 @@ namespace homeControl.Tests.Interop
         public void TestSender_WhenEventConfigured_ThenSend()
         {
             const string exchangeName = "exchange";
-            const string exchangeType = "type";
 
             var @event = new TestEvent();
             var senderMock = new Mock<IEventSender>(MockBehavior.Strict);
             senderMock.Setup(m => m.SendEvent(@event));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
-            factoryMock.Setup(m => m.CreateSender(exchangeName, exchangeType)).Returns(senderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(exchangeName)).Returns(senderMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
-            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName, exchangeType);
+            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSender;
             bus.SendEvent(@event);
@@ -80,20 +79,19 @@ namespace homeControl.Tests.Interop
         public void TestSender_WhenConfiguredMultipleEventsWithEqualParameters_ThenCreateOnlyOneSender()
         {
             const string exchangeName = "exchange";
-            const string exchangeType = "type";
 
             var senderMock = new Mock<IEventSender>(MockBehavior.Loose);
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
-            factoryMock.Setup(m => m.CreateSender(exchangeName, exchangeType)).Returns(senderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(exchangeName)).Returns(senderMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
-            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName, exchangeType);
-            exchangeConfiguration.ConfigureEventSender(typeof(AnotherTestEvent), exchangeName, exchangeType);
+            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName);
+            exchangeConfiguration.ConfigureEventSender(typeof(AnotherTestEvent), exchangeName);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSender;
             bus.SendEvent(new TestEvent());
             bus.SendEvent(new AnotherTestEvent());
 
-            factoryMock.Verify(m => m.CreateSender(exchangeName, exchangeType), Times.Once);
+            factoryMock.Verify(m => m.CreateSender(exchangeName), Times.Once);
         }
 
         [Fact]
@@ -123,9 +121,7 @@ namespace homeControl.Tests.Interop
         public void TestSender_WhenConfiguredMultipleEvents_ThenChooseWisely()
         {
             const string exchangeName = "exchange";
-            const string exchangeType = "type";
             const string anotherExchangeName = "another-exchange";
-            const string anotherExchangeType = "another-type";
 
             var @event = new TestEvent();
             var anotherEvent = new AnotherTestEvent();
@@ -134,11 +130,11 @@ namespace homeControl.Tests.Interop
             var anotherSenderMock = new Mock<IEventSender>(MockBehavior.Strict);
             anotherSenderMock.Setup(m => m.SendEvent(anotherEvent));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
-            factoryMock.Setup(m => m.CreateSender(exchangeName, exchangeType)).Returns(senderMock.Object);
-            factoryMock.Setup(m => m.CreateSender(anotherExchangeName, anotherExchangeType)).Returns(anotherSenderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(exchangeName)).Returns(senderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(anotherExchangeName)).Returns(anotherSenderMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
-            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName, exchangeType);
-            exchangeConfiguration.ConfigureEventSender(typeof(AnotherTestEvent), anotherExchangeName, anotherExchangeType);
+            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName);
+            exchangeConfiguration.ConfigureEventSender(typeof(AnotherTestEvent), anotherExchangeName);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSender;
             bus.SendEvent(@event);
@@ -188,15 +184,14 @@ namespace homeControl.Tests.Interop
         public void TestSender_WhenConfiguredForBaseEvent_ThenSendDerived()
         {
             const string exchangeName = "exchange";
-            const string exchangeType = "type";
 
             var derivedTestEvent = new DerivedTestEvent();
             var senderMock = new Mock<IEventSender>(MockBehavior.Strict);
             senderMock.Setup(m => m.SendEvent(derivedTestEvent));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
-            factoryMock.Setup(m => m.CreateSender(exchangeName, exchangeType)).Returns(senderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(exchangeName)).Returns(senderMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
-            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName, exchangeType);
+            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSender;
             bus.SendEvent(derivedTestEvent);
@@ -208,9 +203,7 @@ namespace homeControl.Tests.Interop
         public void TestSender_WhenDifferentConfigsForBaseAndDerived_ThenSendToBoth()
         {
             const string exchangeName = "exchange";
-            const string exchangeType = "type";
             const string derivedExchangeName = "derived-exchange";
-            const string derivedExchangeType = "derived-type";
 
             var derivedTestEvent = new DerivedTestEvent();
             var senderMock = new Mock<IEventSender>(MockBehavior.Strict);
@@ -218,11 +211,11 @@ namespace homeControl.Tests.Interop
             var derivedSenderMock = new Mock<IEventSender>(MockBehavior.Strict);
             derivedSenderMock.Setup(m => m.SendEvent(derivedTestEvent));
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
-            factoryMock.Setup(m => m.CreateSender(exchangeName, exchangeType)).Returns(senderMock.Object);
-            factoryMock.Setup(m => m.CreateSender(derivedExchangeName, derivedExchangeType)).Returns(derivedSenderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(exchangeName)).Returns(senderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(derivedExchangeName)).Returns(derivedSenderMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
-            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName, exchangeType);
-            exchangeConfiguration.ConfigureEventSender(typeof(DerivedTestEvent), derivedExchangeName, derivedExchangeType);
+            exchangeConfiguration.ConfigureEventSender(typeof(TestEvent), exchangeName);
+            exchangeConfiguration.ConfigureEventSender(typeof(DerivedTestEvent), derivedExchangeName);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSender;
             bus.SendEvent(derivedTestEvent);
@@ -235,14 +228,13 @@ namespace homeControl.Tests.Interop
         public void TestSender_WhenConfiguredsDerivedEvent_ThenErrorWhileSendingBase()
         {
             const string derivedExchangeName = "derived-exchange";
-            const string derivedExchangeType = "derived-type";
 
             var @event = new TestEvent();
             var derivedSenderMock = new Mock<IEventSender>(MockBehavior.Strict);
             var factoryMock = new Mock<IEventProcessorFactory>(MockBehavior.Strict);
-            factoryMock.Setup(m => m.CreateSender(derivedExchangeName, derivedExchangeType)).Returns(derivedSenderMock.Object);
+            factoryMock.Setup(m => m.CreateSender(derivedExchangeName)).Returns(derivedSenderMock.Object);
             var exchangeConfiguration = new ExchangeConfiguration();
-            exchangeConfiguration.ConfigureEventSender(typeof(DerivedTestEvent), derivedExchangeName, derivedExchangeType);
+            exchangeConfiguration.ConfigureEventSender(typeof(DerivedTestEvent), derivedExchangeName);
 
             var bus = new Bus(factoryMock.Object, exchangeConfiguration) as IEventSender;
             Assert.Throws<InvalidOperationException>(() => bus.SendEvent(@event));

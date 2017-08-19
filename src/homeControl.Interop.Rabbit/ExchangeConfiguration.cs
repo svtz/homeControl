@@ -15,26 +15,24 @@ namespace homeControl.Interop.Rabbit
         public IReadOnlyDictionary<Type, List<(string name, string type, string route)>> SourceExchangesByType
             => new ReadOnlyDictionary<Type, List<(string, string, string)>>(_sourceExchangesByType);
 
-        private readonly Dictionary<Type, List<(string, string)>> _sendExchangesByType
-            = new Dictionary<Type, List<(string, string)>>();
-        public IReadOnlyDictionary<Type, List<(string name, string type)>> SendExchangesByType
-            => new ReadOnlyDictionary<Type, List<(string, string)>>(_sendExchangesByType);
+        private readonly Dictionary<Type, List<string>> _sendExchangesByType
+            = new Dictionary<Type, List<string>>();
+        public IReadOnlyDictionary<Type, List<string>> SendExchangesByType
+            => new ReadOnlyDictionary<Type, List<string>>(_sendExchangesByType);
 
-        public void ConfigureEventSender(Type eventType, string exchangeName, string exchangeType)
+        public void ConfigureEventSender(Type eventType, string exchangeName)
         {
             Guard.DebugAssertArgumentNotNull(eventType, nameof(eventType));
             Guard.DebugAssertArgument(typeof(IEvent).IsAssignableFrom(eventType), nameof(eventType));
             Guard.DebugAssertArgumentNotNull(exchangeName, nameof(exchangeName));
-            Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
-            Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
 
             if (!_sendExchangesByType.TryGetValue(eventType, out var exchangesByType))
             {
-                exchangesByType = new List<(string, string)>();
+                exchangesByType = new List<string>();
                 _sendExchangesByType.Add(eventType, exchangesByType);
             }
 
-            exchangesByType.Add((exchangeName, exchangeType));
+            exchangesByType.Add((exchangeName));
         }
 
         public void ConfigureEventSource(Type eventType, string exchangeName, string exchangeType, string routingKey)

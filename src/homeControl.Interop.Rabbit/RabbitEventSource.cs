@@ -8,38 +8,44 @@ using RabbitMQ.Client.Events;
 namespace homeControl.Interop.Rabbit
 {
     [UsedImplicitly]
-    internal sealed class RabbitEventSource : AbstractRabbitEventProcessor, IEventSource
+    internal sealed class RabbitEventSource : IEventSource
     {
+        private readonly IEventSerializer _eventSerializer;
         private readonly EventingBasicConsumer _consumer;
 
         public RabbitEventSource(
-            IConnection connection,
+            IModel channel,
             IEventSerializer eventSerializer,
             string exchangeName,
             string exchangeType,
             string routingKey)
-            : base(connection, eventSerializer, exchangeName, exchangeType)
         {
             Guard.DebugAssertArgumentNotNull(routingKey, nameof(routingKey));
+            Guard.DebugAssertArgumentNotNull(exchangeName, nameof(exchangeName));
+            Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
+            Guard.DebugAssertArgumentNotNull(eventSerializer, nameof(eventSerializer));
+            Guard.DebugAssertArgumentNotNull(channel, nameof(channel));
 
-            var queue = Channel.QueueDeclare();
-            Channel.QueueBind(queue.QueueName, exchangeName, routingKey);
+            _eventSerializer = eventSerializer;
 
-            _consumer = new EventingBasicConsumer(Channel);
-            Channel.BasicConsume(queue.QueueName, true, _consumer);
+            channel.ExchangeDeclare(exchangeName, exchangeType);
+
+            var queue = channel.QueueDeclare();
+            channel.QueueBind(queue.QueueName, exchangeName, routingKey);
+
+            _consumer = new EventingBasicConsumer(channel);
+            channel.BasicConsume(queue.QueueName, true, _consumer);
         }
 
         public IObservable<TEvent> ReceiveEvents<TEvent>() where TEvent : IEvent
         {
-            CheckNotDisposed();
-
             var messageSource = Observable.FromEventPattern<BasicDeliverEventArgs>(
                 e => _consumer.Received += e,
                 e => _consumer.Received -= e);
 
             return messageSource
                 .Select(e => e.EventArgs.Body)
-                .Select(EventSerializer.Deserialize)
+                .Select(_eventSerializer.Deserialize)
                 .OfType<TEvent>();
         }
     }

@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using homeControl.Configuration;
 using homeControl.Configuration.IoC;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Sensors;
@@ -45,9 +44,9 @@ namespace homeControl.NooliteService
             {
                 cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://noolite:noolite@192.168.1.17/debug")
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                    .SetupEventSender<ConfigurationRequestEvent>("configuration_requests", ExchangeType.Fanout)
+                    .SetupEventSender<ConfigurationRequestEvent>("configuration_requests")
                     .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
-                    .SetupEventSender<AbstractSensorEvent>("main", ExchangeType.Fanout)
+                    .SetupEventSender<AbstractSensorEvent>("main")
                     .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
                     .Build());
 

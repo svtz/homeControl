@@ -7,15 +7,15 @@ namespace homeControl.Interop.Rabbit
     [UsedImplicitly]
     internal sealed class RabbitEventProcessorFactory : IEventProcessorFactory
     {
-        private readonly IConnection _connection;
+        private readonly IModel _model;
         private readonly IEventSerializer _serializer;
 
-        public RabbitEventProcessorFactory(IConnection connection, IEventSerializer serializer)
+        public RabbitEventProcessorFactory(IModel model, IEventSerializer serializer)
         {
-            Guard.DebugAssertArgumentNotNull(connection, nameof(connection));
+            Guard.DebugAssertArgumentNotNull(model, nameof(model));
             Guard.DebugAssertArgumentNotNull(serializer, nameof(serializer));
 
-            _connection = connection;
+            _model = model;
             _serializer = serializer;
         }
 
@@ -25,15 +25,14 @@ namespace homeControl.Interop.Rabbit
             Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
             Guard.DebugAssertArgumentNotNull(routingKey, nameof(routingKey));
 
-            return new RabbitEventSource(_connection, _serializer, exchangeName, exchangeType, routingKey);
+            return new RabbitEventSource(_model, _serializer, exchangeName, exchangeType, routingKey);
         }
 
-        public IEventSender CreateSender(string exchangeName, string exchangeType)
+        public IEventSender CreateSender(string exchangeName)
         {
             Guard.DebugAssertArgumentNotNull(exchangeName, nameof(exchangeName));
-            Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
 
-            return new RabbitEventSender(_connection, _serializer, exchangeName, exchangeType);
+            return new RabbitEventSender(_model, _serializer, exchangeName);
         }
     }
 }
