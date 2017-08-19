@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using homeControl.NooliteService.Configuration;
 using JetBrains.Annotations;
+using Serilog;
 
 namespace homeControl.Configuration
 {
@@ -12,8 +13,8 @@ namespace homeControl.Configuration
         AbstractConfigurationRepository<NooliteSensorInfo[], NooliteSensorInfo[]>, INooliteSensorInfoRepository
 
     {
-        public NooliteSensorInfoRepository(IConfigurationLoader<NooliteSensorInfo[]> configLoader)
-            : base("sensors-noolite", configLoader, PrepareConfiguration)
+        public NooliteSensorInfoRepository(IConfigurationLoader<NooliteSensorInfo[]> configLoader, ILogger logger)
+            : base("sensors-noolite", configLoader, PrepareConfiguration, logger)
         {
         }
 

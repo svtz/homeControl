@@ -1,6 +1,7 @@
 ﻿using homeControl.Domain.Events;
 using JetBrains.Annotations;
 using RabbitMQ.Client;
+using Serilog;
 
 namespace homeControl.Interop.Rabbit
 {
@@ -9,14 +10,17 @@ namespace homeControl.Interop.Rabbit
     {
         private readonly IModel _model;
         private readonly IEventSerializer _serializer;
+        private readonly ILogger _logger;
 
-        public RabbitEventProcessorFactory(IModel model, IEventSerializer serializer)
+        public RabbitEventProcessorFactory(IModel model, IEventSerializer serializer, ILogger logger)
         {
             Guard.DebugAssertArgumentNotNull(model, nameof(model));
             Guard.DebugAssertArgumentNotNull(serializer, nameof(serializer));
+            Guard.DebugAssertArgumentNotNull(logger, nameof(logger));
 
             _model = model;
             _serializer = serializer;
+            _logger = logger;
         }
 
         public IEventSource CreateSource(string exchangeName, string exchangeType, string routingKey)
@@ -25,14 +29,14 @@ namespace homeControl.Interop.Rabbit
             Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
             Guard.DebugAssertArgumentNotNull(routingKey, nameof(routingKey));
 
-            return new RabbitEventSource(_model, _serializer, exchangeName, exchangeType, routingKey);
+            return new RabbitEventSource(_model, _serializer, _logger.ForContext(typeof(RabbitEventSource)), exchangeName, exchangeType, routingKey);
         }
 
         public IEventSender CreateSender(string exchangeName)
         {
             Guard.DebugAssertArgumentNotNull(exchangeName, nameof(exchangeName));
 
-            return new RabbitEventSender(_model, _serializer, exchangeName);
+            return new RabbitEventSender(_model, _serializer, _logger.ForContext(typeof(RabbitEventSender)), exchangeName);
         }
     }
 }

@@ -67,7 +67,7 @@
                 </MenuItem>
             </Menu>
             
-            <ItemsControl Grid.Row="1" Margin="3" >
+            <ItemsControl Grid.Row="1" Margin="3" ItemsSource="{Binding Switches}">
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>

@@ -31,7 +31,7 @@ namespace homeControl.Client.WPF
             {
                 cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://client:client@192.168.1.17/debug")
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                    .SetupEventSender<ConfigurationRequestEvent>("configuration_requests")
+                    .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
                     .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
                     .SetupEventSender<AbstractBindingEvent>("main")
                     .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")

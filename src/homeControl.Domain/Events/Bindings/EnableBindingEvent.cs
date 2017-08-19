@@ -5,5 +5,10 @@
         public EnableBindingEvent(SwitchId switchId, SensorId sensorId) : base(switchId, sensorId)
         {
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(EnableBindingEvent)} {SwitchId}::{SensorId}";
+        }
     }
 }

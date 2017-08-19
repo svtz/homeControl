@@ -43,7 +43,7 @@ namespace homeControl.ConfigurationStore
 
                 cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://configStore:configStore@192.168.1.17/debug")
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                    .SetupEventSource<ConfigurationRequestEvent>("configuration_requests", ExchangeType.Fanout, string.Empty)
+                    .SetupEventSource<ConfigurationRequestEvent>("configuration-requests", ExchangeType.Fanout, string.Empty)
                     .SetupEventSender<ConfigurationResponseEvent>("configuration")
                     .Build());
 

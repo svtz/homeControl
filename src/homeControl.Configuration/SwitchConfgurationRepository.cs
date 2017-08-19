@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using homeControl.Domain;
 using homeControl.Domain.Repositories;
 using JetBrains.Annotations;
+using Serilog;
 
 namespace homeControl.Configuration
 {
@@ -13,8 +14,8 @@ namespace homeControl.Configuration
         AbstractConfigurationRepository<SwitchConfiguration[], Dictionary<SwitchId, SwitchConfiguration>>,
         ISwitchConfigurationRepository
     {
-        public SwitchConfgurationRepository(IConfigurationLoader<SwitchConfiguration[]> configLoader)
-            : base("switches", configLoader, PrepareConfiguration)
+        public SwitchConfgurationRepository(IConfigurationLoader<SwitchConfiguration[]> configLoader, ILogger logger)
+            : base("switches", configLoader, PrepareConfiguration, logger)
         {
         }
 

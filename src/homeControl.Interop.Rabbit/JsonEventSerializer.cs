@@ -1,7 +1,9 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using homeControl.Domain.Events;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace homeControl.Interop.Rabbit
 {
@@ -9,14 +11,17 @@ namespace homeControl.Interop.Rabbit
     internal sealed class JsonEventSerializer : IEventSerializer
     {
         private readonly Encoding _messageEncoding;
+        private readonly ILogger _log;
         private readonly JsonSerializerSettings _serializerSettings;
 
-        public JsonEventSerializer(Encoding messageEncoding, JsonConverter[] converters)
+        public JsonEventSerializer(Encoding messageEncoding, JsonConverter[] converters, ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(messageEncoding, nameof(messageEncoding));
             Guard.DebugAssertArgumentNotNull(converters, nameof(converters));
+            Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
             _messageEncoding = messageEncoding;
+            _log = log;
             _serializerSettings = new JsonSerializerSettings
             {
                 Converters = converters,
@@ -29,18 +34,34 @@ namespace homeControl.Interop.Rabbit
         {
             Guard.DebugAssertArgumentNotNull(messageBytes, nameof(messageBytes));
 
-            var messageString = _messageEncoding.GetString(messageBytes);
-            var messageObject = JsonConvert.DeserializeObject<IEvent>(messageString, _serializerSettings);
-            return messageObject;
+            try
+            {
+                var messageString = _messageEncoding.GetString(messageBytes);
+                var messageObject = JsonConvert.DeserializeObject<IEvent>(messageString, _serializerSettings);
+                return messageObject;
+            }
+            catch (Exception e)
+            {
+                _log.Error("Error while deserializing message: {Exception}", e);
+                throw;
+            }
         }
 
         public byte[] Serialize(IEvent message)
         {
             Guard.DebugAssertArgumentNotNull(message, nameof(message));
 
-            var messageString = JsonConvert.SerializeObject(message, _serializerSettings);
-            var messageBytes = _messageEncoding.GetBytes(messageString);
-            return messageBytes;
+            try
+            {
+                var messageString = JsonConvert.SerializeObject(message, _serializerSettings);
+                var messageBytes = _messageEncoding.GetBytes(messageString);
+                return messageBytes;
+            }
+            catch (Exception e)
+            {
+                _log.Error("Error while serializing message: {Exception}", e);
+                throw;
+            }
         }
     }
 }

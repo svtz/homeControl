@@ -5,5 +5,10 @@
         public SensorActivatedEvent(SensorId sensorId) : base(sensorId)
         {
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(SensorActivatedEvent)} {SensorId}";
+        }
     }
 }

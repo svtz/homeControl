@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using homeControl.Domain;
 using homeControl.Domain.Repositories;
 using JetBrains.Annotations;
+using Serilog;
 
 namespace homeControl.Configuration
 {
@@ -13,8 +14,8 @@ namespace homeControl.Configuration
         AbstractConfigurationRepository<SwitchToSensorBinding[], SwitchToSensorBinding[]>,
         ISwitchToSensorBindingsRepository
     {
-        public SwitchToSensorBindingsRepository(IConfigurationLoader<SwitchToSensorBinding[]> configLoader)
-            : base("bindings", configLoader, PrepareConfiguration)
+        public SwitchToSensorBindingsRepository(IConfigurationLoader<SwitchToSensorBinding[]> configLoader, ILogger logger)
+            : base("bindings", configLoader, PrepareConfiguration, logger)
         {
         }
 

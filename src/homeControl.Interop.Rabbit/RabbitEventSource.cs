@@ -4,6 +4,7 @@ using homeControl.Domain.Events;
 using JetBrains.Annotations;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Serilog;
 
 namespace homeControl.Interop.Rabbit
 {
@@ -11,11 +12,14 @@ namespace homeControl.Interop.Rabbit
     internal sealed class RabbitEventSource : IEventSource
     {
         private readonly IEventSerializer _eventSerializer;
+        private readonly ILogger _log;
+        private readonly string _exchangeName;
         private readonly EventingBasicConsumer _consumer;
 
         public RabbitEventSource(
             IModel channel,
             IEventSerializer eventSerializer,
+            ILogger log,
             string exchangeName,
             string exchangeType,
             string routingKey)
@@ -25,12 +29,16 @@ namespace homeControl.Interop.Rabbit
             Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
             Guard.DebugAssertArgumentNotNull(eventSerializer, nameof(eventSerializer));
             Guard.DebugAssertArgumentNotNull(channel, nameof(channel));
+            Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
             _eventSerializer = eventSerializer;
+            _log = log;
+            _exchangeName = exchangeName;
 
             channel.ExchangeDeclare(exchangeName, exchangeType);
 
-            var queue = channel.QueueDeclare();
+            var queueName = $"{exchangeName}-{Guid.NewGuid()}";
+            var queue = channel.QueueDeclare(queueName);
             channel.QueueBind(queue.QueueName, exchangeName, routingKey);
 
             _consumer = new EventingBasicConsumer(channel);
@@ -46,6 +54,7 @@ namespace homeControl.Interop.Rabbit
             return messageSource
                 .Select(e => e.EventArgs.Body)
                 .Select(_eventSerializer.Deserialize)
+                .Do(msg => _log.Verbose("{ExchangeName}>>>{Event}", _exchangeName, msg))
                 .OfType<TEvent>();
         }
     }

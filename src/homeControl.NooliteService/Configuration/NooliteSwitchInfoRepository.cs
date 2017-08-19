@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using homeControl.Configuration;
 using homeControl.Domain;
 using JetBrains.Annotations;
+using Serilog;
 
 namespace homeControl.NooliteService.Configuration
 {
@@ -12,8 +13,8 @@ namespace homeControl.NooliteService.Configuration
     internal sealed class NooliteSwitchInfoRepository :
         AbstractConfigurationRepository<NooliteSwitchInfo[], Dictionary<SwitchId, NooliteSwitchInfo>>, INooliteSwitchInfoRepository
     {
-        public NooliteSwitchInfoRepository(IConfigurationLoader<NooliteSwitchInfo[]> configLoader)
-            : base("switches-noolite", configLoader, PrepareConfiguration)
+        public NooliteSwitchInfoRepository(IConfigurationLoader<NooliteSwitchInfo[]> configLoader, ILogger logger)
+            : base("switches-noolite", configLoader, PrepareConfiguration, logger)
         {
         }
 

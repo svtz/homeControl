@@ -45,7 +45,7 @@ namespace homeControl.ControllerService
             {
                 cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://controller:controller@192.168.1.17/debug")
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                    .SetupEventSender<ConfigurationRequestEvent>("configuration_requests")
+                    .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
                     .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
                     .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
                     .SetupEventSource<AbstractSensorEvent>("main", ExchangeType.Fanout, "")

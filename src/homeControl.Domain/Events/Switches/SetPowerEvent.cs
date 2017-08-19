@@ -12,5 +12,10 @@
             Guard.DebugAssertArgument(power >= MinPower && power <= MaxPower, nameof(power));
             Power = power;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(SetPowerEvent)} {SwitchId} {Power:F2}";
+        }
     }
 }

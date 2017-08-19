@@ -5,5 +5,10 @@
         public TurnOnEvent(SwitchId switchId) : base(switchId)
         {
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(TurnOnEvent)} {SwitchId}";
+        }
     }
 }
