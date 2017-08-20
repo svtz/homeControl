@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using homeControl.Domain;
@@ -44,11 +45,10 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             var switches = await _switchesRepo.GetAll();
             var automatedSwitches = bindings.Select(b => b.SwitchId).Distinct().ToArray();
 
+            var result = new List<SwitchViewModelBase>(switches.Count);
             foreach (var @switch in switches)
             {
                 SwitchViewModelBase vm;
-                var isAutomated = automatedSwitches.Contains(@switch.SwitchId);
-
                 switch (@switch.SwitchKind)
                 {
                     case SwitchKind.Toggle:
@@ -66,11 +66,11 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 vm.Id = @switch.SwitchId;
                 vm.Name = @switch.Name;
                 vm.Description = @switch.Description;
-                vm.IsAutomated = isAutomated;
+                vm.IsAutomated = automatedSwitches.Contains(@switch.SwitchId);
+                result.Add(vm);
             }
-            
 
-            throw new NotImplementedException();
+            return result.ToArray();
         }
     }
 }
