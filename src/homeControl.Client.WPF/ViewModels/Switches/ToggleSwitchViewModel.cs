@@ -14,34 +14,32 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         {
         }
 
-        protected override void OnMouseWheelUp()
-        {
-            Value = true;
-        }
+        protected override bool GetMinimumValue() => false;
 
-        protected override void OnMouseWheelDown()
-        {
-            Value = false;
-        }
+        protected override bool GetMaximumValue() => true;
 
-        protected override void SetEvent(AbstractSwitchEvent e)
+        protected override bool GetMouseWheelUpValue() => true;
+
+        protected override bool GetMouseWheelDownValue() => false;
+
+        protected override bool GetValueFromEvent(AbstractSwitchEvent e)
         {
             if (e.SwitchId != Id)
-                return;
+                return Value;
 
             if (e is TurnOffEvent)
-                Value = false;
-            else if (e is TurnOnEvent)
-                Value = true;
-            else if (e is SetPowerEvent powerEvent)
-                Value = powerEvent.Power >= 0.5;
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(e));
-            }
+                return false;
+
+            if (e is TurnOnEvent)
+                return true;
+
+            if (e is SetPowerEvent powerEvent)
+                return powerEvent.Power >= 0.5;
+
+            throw new ArgumentOutOfRangeException(nameof(e));
         }
 
-        protected override IEnumerable<AbstractSwitchEvent> GetEvent(bool value)
+        protected override IEnumerable<AbstractSwitchEvent> GetEventsFromValue(bool value)
         {
             if (value)
             {
@@ -51,16 +49,6 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             {
                 yield return new TurnOffEvent(Id);
             }
-        }
-
-        protected override void OnSetMaximum()
-        {
-            Value = true;
-        }
-
-        protected override void OnSetMinimum()
-        {
-            Value = false;
         }
     }
 }

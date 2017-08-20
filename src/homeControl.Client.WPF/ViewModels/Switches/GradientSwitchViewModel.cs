@@ -15,44 +15,34 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         {
         }
 
-        protected override void OnMouseWheelUp()
-        {
-            Value = Math.Min(SetPowerEvent.MaxPower, Value + WheelStep);
-        }
+        protected override double GetMinimumValue() => SetPowerEvent.MinPower;
 
-        protected override void OnMouseWheelDown()
-        {
-            Value = Math.Max(SetPowerEvent.MinPower, Value - WheelStep);
-        }
+        protected override double GetMaximumValue() => SetPowerEvent.MaxPower;
 
-        protected override void OnSetMaximum()
-        {
-            Value = SetPowerEvent.MaxPower;
-        }
+        protected override double GetMouseWheelUpValue() 
+            => Math.Min(SetPowerEvent.MaxPower, Value + WheelStep);
 
-        protected override void OnSetMinimum()
-        {
-            Value = SetPowerEvent.MinPower;
-        }
+        protected override double GetMouseWheelDownValue()
+            => Math.Max(SetPowerEvent.MinPower, Value - WheelStep);
 
-        protected override void SetEvent(AbstractSwitchEvent e)
+        protected override double GetValueFromEvent(AbstractSwitchEvent e)
         {
             if (e.SwitchId != Id)
-                return;
+                return Value;
 
             if (e is TurnOffEvent)
-                Value = SetPowerEvent.MinPower;
-            else if (e is TurnOnEvent)
-                Value = SetPowerEvent.MaxPower;
-            else if (e is SetPowerEvent powerEvent)
-                Value = powerEvent.Power;
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(e));
-            }
+                return SetPowerEvent.MinPower;
+
+            if (e is TurnOnEvent)
+                return SetPowerEvent.MaxPower;
+
+            if (e is SetPowerEvent powerEvent)
+                return powerEvent.Power;
+
+            throw new ArgumentOutOfRangeException(nameof(e));
         }
 
-        protected override IEnumerable<AbstractSwitchEvent> GetEvent(double value)
+        protected override IEnumerable<AbstractSwitchEvent> GetEventsFromValue(double value)
         {
             yield return new SetPowerEvent(Id, value);
 

@@ -16,6 +16,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         private T _value;
         private readonly IDisposable _eventSubscription;
 
+        private readonly object _valueLock = new object();
         public T Value
         {
             get => _value;
@@ -23,10 +24,17 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             {
                 if (Equals(_value, value))
                     return;
-                
-                _value = value;
-                OnValueChanged();
-                RaisePropertyChanged();
+
+                lock (_valueLock)
+                {
+                    if (Equals(_value, value))
+                        return;
+
+                    _value = value;
+
+                    OnValueChangedByUser();
+                    RaisePropertyChanged();
+                }
             }
         }
 
@@ -53,28 +61,65 @@ namespace homeControl.Client.WPF.ViewModels.Switches
 
             _eventSubscription = eventSource
                 .ReceiveEvents<AbstractSwitchEvent>()
-                .ForEachAsync(SetEvent);
+                .Where(e => e.SwitchId == Id)
+                .ForEachAsync(UpdateValueFromEvent);
 
             Log.Debug("Вьюмодель переключателя создана.");
         }
 
-        protected abstract void OnSetMinimum();
-        protected abstract void OnSetMaximum();
-        protected abstract void OnMouseWheelUp();
-        protected abstract void OnMouseWheelDown();
+        private void OnSetMinimum()
+        {
+            Value = GetMinimumValue();
+        }
 
-        protected abstract void SetEvent(AbstractSwitchEvent e);
-        protected abstract IEnumerable<AbstractSwitchEvent> GetEvent(T value);
+        private void OnSetMaximum()
+        {
+            Value = GetMaximumValue();
+        }
 
-        private void OnValueChanged()
+        private void OnMouseWheelUp()
+        {
+            Value = GetMouseWheelUpValue();
+        }
+
+        private void OnMouseWheelDown()
+        {
+            Value = GetMouseWheelDownValue();
+        }
+
+        protected abstract T GetMinimumValue();
+        protected abstract T GetMaximumValue();
+        protected abstract T GetMouseWheelUpValue();
+        protected abstract T GetMouseWheelDownValue();
+        protected abstract T GetValueFromEvent(AbstractSwitchEvent e);
+        protected abstract IEnumerable<AbstractSwitchEvent> GetEventsFromValue(T value);
+
+        private void UpdateValueFromEvent(AbstractSwitchEvent e)
+        {
+            var newValue = GetValueFromEvent(e);
+            if (Equals(newValue, _value))
+                return;
+
+            lock (_valueLock)
+            {
+                if (Equals(newValue, _value))
+                    return;
+
+                _value = newValue;
+                RaisePropertyChanged(() => Value);
+            }
+        }
+
+        private void OnValueChangedByUser()
         {
             Log.Debug("Пользователь изменил значение.");
 
-            var events = GetEvent(Value);
+            var events = GetEventsFromValue(Value);
             foreach (var @event in events)
             {
                 _eventSender.SendEvent(@event);
             }
+
             Log.Debug("События отправлены.");
         }
 
