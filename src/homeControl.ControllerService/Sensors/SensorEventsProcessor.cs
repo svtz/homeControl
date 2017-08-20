@@ -33,22 +33,22 @@ namespace homeControl.ControllerService.Sensors
         {
             return _source
                 .ReceiveEvents<AbstractSensorEvent>()
-                .ForEachAsync(Handle, ct);
+                .ForEachAsync(async e => await Handle(e), ct);
         }
 
-        private void Handle(AbstractSensorEvent sensorEvent)
+        private async Task Handle(AbstractSensorEvent sensorEvent)
         {
             Guard.DebugAssertArgumentNotNull(sensorEvent, nameof(sensorEvent));
 
             if (sensorEvent is SensorActivatedEvent)
             {
                 _log.Information("Sensor {SensorId} activated", sensorEvent.SensorId);
-                _bindingController.ProcessSensorActivation(sensorEvent.SensorId);
+                await _bindingController.ProcessSensorActivation(sensorEvent.SensorId);
             }
             else if (sensorEvent is SensorDeactivatedEvent)
             {
                 _log.Information("Sensor {SensorId} deactivated", sensorEvent.SensorId);
-                _bindingController.ProcessSensorDeactivation(sensorEvent.SensorId);
+                await _bindingController.ProcessSensorDeactivation(sensorEvent.SensorId);
             }
             else
             {

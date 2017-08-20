@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using homeControl.ControllerService.Bindings;
 using homeControl.ControllerService.Sensors;
 using homeControl.Domain;
@@ -19,7 +20,7 @@ namespace homeControl.Tests.Controller
             var sensorId = SensorId.NewId();
             var sensorActivatedEvent = new SensorActivatedEvent(sensorId);
             var controllerMock = new Mock<IBindingController>(MockBehavior.Strict);
-            controllerMock.Setup(controller => controller.ProcessSensorActivation(sensorId));
+            controllerMock.Setup(controller => controller.ProcessSensorActivation(sensorId)).Returns(Task.CompletedTask);
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
             eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSensorEvent>()).Returns(Observable.Repeat(sensorActivatedEvent, 1));
 
@@ -35,7 +36,7 @@ namespace homeControl.Tests.Controller
             var sensorId = SensorId.NewId();
             var sensorDeactivatedEvent = new SensorDeactivatedEvent(sensorId);
             var controllerMock = new Mock<IBindingController>(MockBehavior.Strict);
-            controllerMock.Setup(controller => controller.ProcessSensorDeactivation(sensorId));
+            controllerMock.Setup(controller => controller.ProcessSensorDeactivation(sensorId)).Returns(Task.CompletedTask); ;
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
             eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSensorEvent>()).Returns(Observable.Repeat(sensorDeactivatedEvent, 1));
 

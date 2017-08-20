@@ -1,10 +1,11 @@
-﻿using homeControl.Domain;
+﻿using System.Threading.Tasks;
+using homeControl.Domain;
 
 namespace homeControl.ControllerService.Bindings
 {
     internal interface IBindingStateManager
     {
-        void EnableBinding(SwitchId switchId, SensorId sensorId);
-        void DisableBinding(SwitchId switchId, SensorId sensorId);
+        Task EnableBinding(SwitchId switchId, SensorId sensorId);
+        Task DisableBinding(SwitchId switchId, SensorId sensorId);
     }
 }

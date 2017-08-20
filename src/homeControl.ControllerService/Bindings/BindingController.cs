@@ -115,17 +115,17 @@ namespace homeControl.ControllerService.Bindings
             _bindingsRepository = bindingsRepository;
         }
 
-        public async void EnableBinding(SwitchId switchId, SensorId sensorId)
+        public async Task EnableBinding(SwitchId switchId, SensorId sensorId)
         {
             (await GetState()).Enable(switchId, sensorId);
         }
 
-        public async void DisableBinding(SwitchId switchId, SensorId sensorId)
+        public async Task DisableBinding(SwitchId switchId, SensorId sensorId)
         {
             (await GetState()).Disable(switchId, sensorId);
         }
 
-        public async void ProcessSensorActivation(SensorId sensorId)
+        public async Task ProcessSensorActivation(SensorId sensorId)
         {
             var switchesToTurnOn = (await GetState()).GetAutomatedSwitches(sensorId);
             foreach (var switchId in switchesToTurnOn)
@@ -134,7 +134,7 @@ namespace homeControl.ControllerService.Bindings
             }
         }
 
-        public async void ProcessSensorDeactivation(SensorId sensorId)
+        public async Task ProcessSensorDeactivation(SensorId sensorId)
         {
             var switchesToTurnOff = (await GetState()).GetAutomatedSwitches(sensorId);
             foreach (var switchId in switchesToTurnOff)

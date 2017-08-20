@@ -1,10 +1,11 @@
-﻿using homeControl.Domain;
+﻿using System.Threading.Tasks;
+using homeControl.Domain;
 
 namespace homeControl.ControllerService.Bindings
 {
     internal interface IBindingController
     {
-        void ProcessSensorActivation(SensorId sensorId);
-        void ProcessSensorDeactivation(SensorId sensorId);
+        Task ProcessSensorActivation(SensorId sensorId);
+        Task ProcessSensorDeactivation(SensorId sensorId);
     }
 }

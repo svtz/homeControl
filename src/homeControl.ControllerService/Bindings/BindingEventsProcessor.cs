@@ -30,21 +30,23 @@ namespace homeControl.ControllerService.Bindings
         
         public Task Run(CancellationToken ct)
         {
-            return _source.ReceiveEvents<AbstractBindingEvent>().ForEachAsync(HandleEvent, ct);
+            return _source
+                .ReceiveEvents<AbstractBindingEvent>()
+                .ForEachAsync(async e => await HandleEvent(e), ct);
         }
 
-        private void HandleEvent(AbstractBindingEvent bindingEvent)
+        private async Task HandleEvent(AbstractBindingEvent bindingEvent)
         {
             Guard.DebugAssertArgumentNotNull(bindingEvent, nameof(bindingEvent));
 
             if (bindingEvent is EnableBindingEvent)
             {
-                _bindingStateManager.EnableBinding(bindingEvent.SwitchId, bindingEvent.SensorId);
+                await _bindingStateManager.EnableBinding(bindingEvent.SwitchId, bindingEvent.SensorId);
                 _log.Information("Binding enabled: {SwitchId}, {SensorId}", bindingEvent.SwitchId, bindingEvent.SensorId);
             }
             else if (bindingEvent is DisableBindingEvent)
             {
-                _bindingStateManager.DisableBinding(bindingEvent.SwitchId, bindingEvent.SensorId);
+                await _bindingStateManager.DisableBinding(bindingEvent.SwitchId, bindingEvent.SensorId);
                 _log.Information("Binding disabled: {SwitchId}, {SensorId}", bindingEvent.SwitchId, bindingEvent.SensorId);
             }
             else
