@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using homeControl.Domain.Events;
 using JetBrains.Annotations;
 using RabbitMQ.Client;
@@ -9,12 +10,10 @@ using Serilog;
 namespace homeControl.Interop.Rabbit
 {
     [UsedImplicitly]
-    internal sealed class RabbitEventSource : IEventSource
+    internal sealed class RabbitEventSource : IEventSource, IDisposable
     {
-        private readonly IEventSerializer _eventSerializer;
-        private readonly ILogger _log;
-        private readonly string _exchangeName;
-        private readonly EventingBasicConsumer _consumer;
+        private readonly IConnectableObservable<IEvent> _deserializedEvents;
+        private readonly IDisposable _eventsConnection;
 
         public RabbitEventSource(
             IModel channel,
@@ -31,31 +30,36 @@ namespace homeControl.Interop.Rabbit
             Guard.DebugAssertArgumentNotNull(channel, nameof(channel));
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
-            _eventSerializer = eventSerializer;
-            _log = log;
-            _exchangeName = exchangeName;
-
             channel.ExchangeDeclare(exchangeName, exchangeType);
 
             var queueName = $"{exchangeName}-{Guid.NewGuid()}";
             var queue = channel.QueueDeclare(queueName);
             channel.QueueBind(queue.QueueName, exchangeName, routingKey);
 
-            _consumer = new EventingBasicConsumer(channel);
-            channel.BasicConsume(queue.QueueName, true, _consumer);
+            var consumer = new EventingBasicConsumer(channel);
+
+            var messageSource = Observable.FromEventPattern<BasicDeliverEventArgs>(
+                e => consumer.Received += e,
+                e => consumer.Received -= e);
+
+            _deserializedEvents = messageSource
+                .Select(e => e.EventArgs.Body)
+                .Select(eventSerializer.Deserialize)
+                .Do(msg => log.Verbose("{ExchangeName}>>>{Event}", exchangeName, msg))
+                .Publish();
+            _eventsConnection = _deserializedEvents.Connect();
+
+            channel.BasicConsume(queue.QueueName, true, consumer);
         }
 
         public IObservable<TEvent> ReceiveEvents<TEvent>() where TEvent : IEvent
         {
-            var messageSource = Observable.FromEventPattern<BasicDeliverEventArgs>(
-                e => _consumer.Received += e,
-                e => _consumer.Received -= e);
+            return _deserializedEvents.OfType<TEvent>();
+        }
 
-            return messageSource
-                .Select(e => e.EventArgs.Body)
-                .Select(_eventSerializer.Deserialize)
-                .Do(msg => _log.Verbose("{ExchangeName}>>>{Event}", _exchangeName, msg))
-                .OfType<TEvent>();
+        public void Dispose()
+        {
+            _eventsConnection.Dispose();
         }
     }
 }
