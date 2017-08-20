@@ -33,8 +33,10 @@ namespace homeControl.Client.WPF
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
                     .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
                     .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
+                    .SetupEventSender<AbstractSwitchEvent>("main")
                     .SetupEventSender<AbstractBindingEvent>("main")
                     .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
+                    .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
                     .Build());
 
                 cfg.AddRegistry(new ConfigurationRegistry(serviceName));
