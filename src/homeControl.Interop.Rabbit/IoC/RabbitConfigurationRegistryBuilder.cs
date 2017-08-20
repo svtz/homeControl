@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using homeControl.Domain.Events;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using StructureMap;
 
@@ -12,16 +13,16 @@ namespace homeControl.Interop.Rabbit.IoC
         private readonly List<Action<Registry>> _registryConfigActions = new List<Action<Registry>>();
         private readonly List<Action<ExchangeConfiguration>> _exchangeConfigActions = new List<Action<ExchangeConfiguration>>();
 
-        public RabbitConfigurationRegistryBuilder(string uri)
+        public RabbitConfigurationRegistryBuilder(IConfigurationRoot config)
         {
-            Guard.DebugAssertArgumentNotNull(uri, nameof(uri));
+            Guard.DebugAssertArgumentNotNull(config, nameof(config));
 
             _registryConfigActions.Add(cfg =>
             {
                 cfg.ForConcreteType<ConnectionFactory>()
                     .Configure
                     .Ctor<Uri>("uri")
-                    .Is(new Uri(uri))
+                    .Is(new Uri($"amqp://{config["RabbitUserName"]}:{config["RabbitUserPass"]}@{config["RabbitHost"]}"))
                     .Singleton();
                 cfg.ForConcreteType<Bus>()
                     .Configure

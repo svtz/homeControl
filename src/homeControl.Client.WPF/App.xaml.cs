@@ -7,6 +7,7 @@ using homeControl.Domain.Events.Bindings;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Switches;
 using homeControl.Interop.Rabbit.IoC;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using Serilog;
 using Serilog.Events;
@@ -20,7 +21,11 @@ namespace homeControl.Client.WPF
     /// </summary>
     public partial class App : Application
     {
-        private static readonly ILogger _log = CreateLogger();
+        private static readonly ILogger _log;
+        private static readonly IConfigurationRoot _config =
+            new ConfigurationBuilder()
+                .AddJsonFile("settings.json")
+                .Build();
 
         private static readonly IContainer _rootContainer = BuildContainer();
         private static IContainer BuildContainer()
@@ -29,7 +34,7 @@ namespace homeControl.Client.WPF
 
             var container = new Container(cfg =>
             {
-                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://client:client@192.168.1.17/debug")
+                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder(_config)
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
                     .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
                     .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
@@ -76,25 +81,19 @@ namespace homeControl.Client.WPF
             _log.Information("Exiting, return code = {ReturnCode}.", e.ApplicationExitCode);
         }
 
-        private static ILogger CreateLogger()
+        static App()
         {
-#if DEBUG
-            var level = LogEventLevel.Verbose;
-#else
-            var level = LogEventLevel.Information;
-#endif
+            var level = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), _config["LogEventLevel"]);
 
-            var log = new LoggerConfiguration()
+            _log = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
                 .WriteTo.RollingFile("logs/log-{Date}.txt", retainedFileCountLimit: 5)
                 .WriteTo.Trace()
                 .CreateLogger();
 
-            AppDomain.CurrentDomain.UnhandledException += (s, e) => log.Fatal("Необработанное исключение: {Exception}", e.ExceptionObject);
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => _log.Fatal("Необработанное исключение: {Exception}", e.ExceptionObject);
 
-            log.Debug("Logging initialized.");
-
-            return log;
+            _log.Debug("Logging initialized.");
         }
     }
 }

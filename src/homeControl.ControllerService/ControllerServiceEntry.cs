@@ -11,6 +11,7 @@ using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
 using homeControl.Interop.Rabbit.IoC;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using Serilog;
 using Serilog.Events;
@@ -21,13 +22,16 @@ namespace homeControl.ControllerService
     internal sealed class ControllerServiceEntry
     {
         private static readonly ILogger _log;
+
+        private static readonly IConfigurationRoot _config = 
+            new ConfigurationBuilder()
+            .AddJsonFile("settings.json")
+            .Build();
+
         static ControllerServiceEntry()
         {
-#if DEBUG
-            var level = LogEventLevel.Verbose;
-#else
-            var level = LogEventLevel.Information;
-#endif
+            var level = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), _config["LogEventLevel"]);
+
             _log = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
@@ -43,7 +47,7 @@ namespace homeControl.ControllerService
 
             var container = new Container(cfg =>
             {
-                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://controller:controller@192.168.1.17/debug")
+                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder(_config)
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
                     .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
                     .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)

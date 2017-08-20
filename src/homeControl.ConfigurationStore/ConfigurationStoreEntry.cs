@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Interop.Rabbit.IoC;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using Serilog;
 using Serilog.Events;
@@ -15,13 +16,15 @@ namespace homeControl.ConfigurationStore
     internal sealed class ConfigurationStoreEntry
     {
         private static readonly ILogger _log;
+        private static readonly IConfigurationRoot _config =
+            new ConfigurationBuilder()
+                .AddJsonFile("settings.json")
+                .Build();
+
         static ConfigurationStoreEntry()
         {
-#if DEBUG
-            var level = LogEventLevel.Verbose;
-#else
-            var level = LogEventLevel.Information;
-#endif
+            var level = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), _config["LogEventLevel"]);
+
             _log = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
@@ -41,7 +44,7 @@ namespace homeControl.ConfigurationStore
                    .Ctor<string>("configurationsDirectory").Is(configPath);
                 cfg.ForConcreteType<ConfigurationRequestsProcessor>();
 
-                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder("amqp://configStore:configStore@192.168.1.17/debug")
+                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder(_config)
                     .UseJsonSerializationWithEncoding(Encoding.UTF8)
                     .SetupEventSource<ConfigurationRequestEvent>("configuration-requests", ExchangeType.Fanout, string.Empty)
                     .SetupEventSender<ConfigurationResponseEvent>("configuration")
