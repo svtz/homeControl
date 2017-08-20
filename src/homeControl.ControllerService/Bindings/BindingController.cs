@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using homeControl.Domain;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Switches;
@@ -81,8 +82,29 @@ namespace homeControl.ControllerService.Bindings
         }
 
         private readonly IEventSender _eventSender;
-        private readonly Lazy<State> _state;
+        private readonly ISwitchToSensorBindingsRepository _bindingsRepository;
 
+        private readonly object _lock = new object();
+        private volatile Task<State> _stateCreator;
+        private Task<State> GetState()
+        {
+            if (_stateCreator != null)
+                return _stateCreator;
+
+            lock (_lock)
+            {
+                if (_stateCreator != null)
+                    return _stateCreator;
+
+                _stateCreator = Task.Run(async () =>
+                {
+                    var bindings = await _bindingsRepository.GetAll();
+                    return new State(bindings);
+                });
+            }
+
+            return _stateCreator;
+        }
 
         public BindingController(IEventSender eventSender, ISwitchToSensorBindingsRepository bindingsRepository)
         {
@@ -90,32 +112,31 @@ namespace homeControl.ControllerService.Bindings
             Guard.DebugAssertArgumentNotNull(bindingsRepository, nameof(bindingsRepository));
 
             _eventSender = eventSender;
-
-            _state = new Lazy<State>(() => new State(bindingsRepository.GetAll().Result));
+            _bindingsRepository = bindingsRepository;
         }
 
-        public void EnableBinding(SwitchId switchId, SensorId sensorId)
+        public async void EnableBinding(SwitchId switchId, SensorId sensorId)
         {
-            _state.Value.Enable(switchId, sensorId);
+            (await GetState()).Enable(switchId, sensorId);
         }
 
-        public void DisableBinding(SwitchId switchId, SensorId sensorId)
+        public async void DisableBinding(SwitchId switchId, SensorId sensorId)
         {
-            _state.Value.Disable(switchId, sensorId);
+            (await GetState()).Disable(switchId, sensorId);
         }
 
-        public void ProcessSensorActivation(SensorId sensorId)
+        public async void ProcessSensorActivation(SensorId sensorId)
         {
-            var switchesToTurnOn = _state.Value.GetAutomatedSwitches(sensorId);
+            var switchesToTurnOn = (await GetState()).GetAutomatedSwitches(sensorId);
             foreach (var switchId in switchesToTurnOn)
             {
                 _eventSender.SendEvent(new TurnOnEvent(switchId));
             }
         }
 
-        public void ProcessSensorDeactivation(SensorId sensorId)
+        public async void ProcessSensorDeactivation(SensorId sensorId)
         {
-            var switchesToTurnOff = _state.Value.GetAutomatedSwitches(sensorId);
+            var switchesToTurnOff = (await GetState()).GetAutomatedSwitches(sensorId);
             foreach (var switchId in switchesToTurnOff)
             {
                 _eventSender.SendEvent(new TurnOffEvent(switchId));
