@@ -1,9 +1,16 @@
-[
+﻿[
   {
     "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
-    "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c",
+    "SwitchId": "B9250AA6-9FEC-49C5-9947-ACEDD2DB9115",
+    "SwitchKind": "Gradient",
+    "Name": "Зал - основной",
+    "Description": "Люстра - белые галогеновые лампочки"
+  },
+  {
+    "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
+    "SwitchId": "24AA0725-180C-40A8-A132-B47B901D9093",
     "SwitchKind": "Toggle",
-    "Name": "Toggle Test",
-    "Description": "Toggle Test Description",
+    "Name": "Зал - индикатор",
+    "Description": "Люстра - голубые диоды"
   }
 ]

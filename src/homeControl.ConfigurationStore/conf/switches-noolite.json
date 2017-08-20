@@ -1,9 +1,16 @@
-[
+﻿[
+  {
+    "$type": "homeControl.NooliteService.Configuration.NooliteSwitchInfo, homeControl.NooliteService",
+    "Channel": 0,
+    "SwitchId": "B9250AA6-9FEC-49C5-9947-ACEDD2DB9115",
+    "FullPowerLevel": "141",
+    "ZeroPowerLevel": "40"
+  },
   {
     "$type": "homeControl.NooliteService.Configuration.NooliteSwitchInfo, homeControl.NooliteService",
     "Channel": 1,
-    "SwitchId": "f2c29b73-cf36-44c2-a75e-584a8bc5ce6c",
-    "FullPowerLevel": "255",
-    "ZeroPowerLevel": "10"
+    "SwitchId": "24AA0725-180C-40A8-A132-B47B901D9093",
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0"
   }
 ]
