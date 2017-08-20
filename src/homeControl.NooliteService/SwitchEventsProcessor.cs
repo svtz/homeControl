@@ -29,7 +29,20 @@ namespace homeControl.NooliteService
         
         public Task Run(CancellationToken ct)
         {
-            return _source.ReceiveEvents<AbstractSwitchEvent>().ForEachAsync(HandleEvent, ct);
+            return Task.Run(() => RunImpl(ct), ct);
+        }
+
+        private void RunImpl(CancellationToken ct)
+        {
+            var latest = _source
+                .ReceiveEvents<AbstractSwitchEvent>()
+                .Latest();
+
+            foreach (var @event in latest)
+            {
+                ct.ThrowIfCancellationRequested();
+                HandleEvent(@event);
+            }
         }
 
         private void HandleEvent(AbstractSwitchEvent switchEvent)
