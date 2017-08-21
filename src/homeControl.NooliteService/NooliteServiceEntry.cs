@@ -59,7 +59,6 @@ namespace homeControl.NooliteService
                 cfg.For<IPC11XXAdapter>().Use<PC11XXAdapterWrapper>().Singleton();
                 cfg.For<IRX2164Adapter>().Use<RX2164AdapterWrapper>().Singleton();
                 cfg.For<ISwitchController>().Add<NooliteSwitchController>().Singleton();
-                //cfg.For<ISwitchController>().Add<SwitchControllerConsoleEmulator>().Singleton();
                 cfg.For<INooliteSwitchInfoRepository>().Use<NooliteSwitchInfoRepository>().Transient();
                 cfg.For<INooliteSensorInfoRepository>().Use<NooliteSensorInfoRepository>().Transient();
                 cfg.ForConcreteType<NooliteSensor>().Configure.Transient();
@@ -90,7 +89,7 @@ namespace homeControl.NooliteService
 
         private static void Run(IContainer workContainer, CancellationToken ct)
         {
-            //workContainer.GetInstance<NooliteSensor>().Activate();
+            workContainer.GetInstance<NooliteSensor>().Activate();
             
             var switchesProcessor = workContainer.GetInstance<SwitchEventsProcessor>();
 
