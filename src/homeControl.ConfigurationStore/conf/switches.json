@@ -12,5 +12,12 @@
     "SwitchKind": "Toggle",
     "Name": "Зал - индикатор",
     "Description": "Люстра - голубые диоды"
+  },
+  {
+    "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
+    "SwitchId": "567E8945-2AA3-4891-B59B-91B3C077701E",
+    "SwitchKind": "Toggle",
+    "Name": "Коридор",
+    "Description": "Люстра в коридоре"
   }
 ]

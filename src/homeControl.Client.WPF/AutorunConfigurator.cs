@@ -17,12 +17,7 @@ namespace homeControl.Client.WPF
 
         private string GetProgramPath()
         {
-            return
-#if !DEBUG
-                Environment.GetFolderPath(Environment.SpecialFolder.Programs) + @"\svtz\homeControl\Дом.appref-ms";
-#else
-                System.Reflection.Assembly.GetExecutingAssembly().Location;
-#endif
+            return System.Reflection.Assembly.GetExecutingAssembly().Location;
         }
 
         public AutorunConfigurator(ILogger log)

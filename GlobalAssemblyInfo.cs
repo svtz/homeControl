@@ -9,4 +9,4 @@ using System.Reflection;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCopyright("Copyright © 2016-2017 Svyatoslav Zakhryapin")]
 
-[assembly: AssemblyVersion("0.1.0")]
+[assembly: AssemblyVersion("0.2.0")]

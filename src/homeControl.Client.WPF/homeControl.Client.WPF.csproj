@@ -166,7 +166,6 @@
     <Compile Include="Views\Switches\MouseWheel\MouseWheel.cs" />
     <Compile Include="Views\Switches\MouseWheel\MouseWheelDirection.cs" />
     <Compile Include="Views\Switches\MouseWheel\MouseWheelGesture.cs" />
-    <Compile Include="Views\Switches\SwitchControlsFactory.cs" />
     <Compile Include="ViewModels\Switches\SwitchViewModelBaseOfT.cs" />
     <Compile Include="ViewModels\Switches\SwitchViewModelsFactory.cs" />
     <Compile Include="Views\Switches\BooleanToFontWeightConverter.cs" />
