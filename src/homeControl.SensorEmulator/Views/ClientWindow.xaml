@@ -1,0 +1,61 @@
+﻿<Window x:Class="homeControl.SensorEmulator.Views.ClientWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:viewModels="clr-namespace:homeControl.SensorEmulator.ViewModels"
+        xmlns:sensors="clr-namespace:homeControl.SensorEmulator.Views.Sensors"
+        xmlns:switches="clr-namespace:homeControl.SensorEmulator.ViewModels.Sensors"
+        mc:Ignorable="d"
+        Title="Эмулятор датчиков" 
+        Width="Auto"
+        Height="300"
+        SizeToContent="Width"
+        MinHeight="300" MaxHeight="300"
+        MinWidth="150"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance viewModels:ClientViewModel}"
+        Icon="pack://application:,,,/homeControl.SensorEmulator;component/Resources/MainIcon.ico" 
+        ResizeMode="NoResize"
+        ShowInTaskbar="True">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding ReloadSwitchesCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="Обновляю состояние...">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="18"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
+            <Menu Grid.Row="0" IsMainMenu="True">
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Обновить состояние" Command="{Binding ReloadSwitchesCommand}" />
+                    <Separator />
+                    <MenuItem Header="Закрыть" Command="{Binding ExitClickCommand}" />
+                </MenuItem>
+            </Menu>
+            
+            <ItemsControl Grid.Row="1" Margin="3" ItemsSource="{Binding Switches}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type switches:ToggleSensorViewModel}">
+                        <sensors:ToggleSensorControl DataContext="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.Resources>
+            </ItemsControl>
+
+        </Grid>
+    </xctk:BusyIndicator>
+</Window>
