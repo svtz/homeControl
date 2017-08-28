@@ -6,6 +6,7 @@ using homeControl.Domain.Events;
 using homeControl.Domain.Events.Sensors;
 using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
+using Newtonsoft.Json;
 using Serilog;
 using ThinkingHome.NooLite.ReceivedData;
 
@@ -13,8 +14,13 @@ namespace homeControl.NooliteService
 {
     internal sealed class NooliteSensor : IDisposable
     {
-        private const byte CommandOn = 2;
-        private const byte CommandOff = 0;
+        private const byte CommandMotionDetected = 2;
+        private const byte CommandMotionNotDetected = 0;
+
+        private const byte CommandPowerUp = 3;
+        private const byte CommandPowerDown = 1;
+        private const byte CommandToggle = 4;
+        private const byte CommandUnknown = 10;
 
         private readonly IEventSender _eventSender;
         private readonly IRX2164Adapter _adapter;
@@ -62,24 +68,37 @@ namespace homeControl.NooliteService
         {
             Guard.DebugAssertArgumentNotNull(receivedCommandData, nameof(receivedCommandData));
 
-            NooliteSensorInfo info;
-            if (!_channelToConfig.Value.TryGetValue(receivedCommandData.Channel, out info))
+            _log.Verbose($"Processing command:{Environment.NewLine}{JsonConvert.SerializeObject(receivedCommandData, Formatting.Indented)}");
+
+            if (!_channelToConfig.Value.TryGetValue(receivedCommandData.Channel, out NooliteSensorInfo info))
                 throw new InvalidConfigurationException($"Could not locate Noolite channel #{receivedCommandData.Channel} in the configuration.");
 
             switch (receivedCommandData.Cmd)
             {
-                case CommandOn:
+                case CommandMotionDetected:
                     _eventSender.SendEvent(new SensorActivatedEvent(info.SensorId));
                     _log.Information("Noolite sensor activated: {SensorId}", info.SensorId);
-
                     break;
-                case CommandOff:
+
+                case CommandMotionNotDetected:
                     _eventSender.SendEvent(new SensorDeactivatedEvent(info.SensorId));
                     _log.Information("Noolite sensor deactivated: {SensorId}", info.SensorId);
-
                     break;
+
+                case CommandToggle:
+                    break;
+
+                case CommandPowerUp:
+                    break;
+
+                case CommandPowerDown:
+                    break;
+
+                case CommandUnknown:
+                    break;
+
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(receivedCommandData.Cmd));
+                    throw new ArgumentOutOfRangeException(nameof(receivedCommandData.Cmd), receivedCommandData.Cmd, "");
             }
         }
 

@@ -2,5 +2,9 @@
   {
     "$type": "homeControl.Domain.SensorConfiguration, homeControl.Domain",
     "SensorId": "1f94da1e-6fc8-4977-ab9a-96654adcacb8"
+  },
+  {
+    "$type": "homeControl.Domain.SensorConfiguration, homeControl.Domain",
+    "SensorId": "11BAAAD6-F3E1-4395-A214-FFA6D66A21DC"
   }
 ]
