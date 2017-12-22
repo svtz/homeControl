@@ -10,6 +10,7 @@ namespace homeControl.Domain
         public SwitchKind SwitchKind { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool ShowOnUi { get; set; }
 
 
         public bool Equals(SwitchConfiguration other)

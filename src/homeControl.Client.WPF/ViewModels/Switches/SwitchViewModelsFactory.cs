@@ -42,10 +42,10 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         public async Task<SwitchViewModelBase[]> CreateViewModels()
         {
             var bindings = await _bindingsRepo.GetAll();
-            var switches = await _switchesRepo.GetAll();
+            var switches = (await _switchesRepo.GetAll()).Where(s => s.ShowOnUi).ToArray();
             var automatedSwitches = bindings.Select(b => b.SwitchId).Distinct().ToArray();
 
-            var result = new List<SwitchViewModelBase>(switches.Count);
+            var result = new List<SwitchViewModelBase>(switches.Length);
             foreach (var @switch in switches)
             {
                 SwitchViewModelBase vm;
