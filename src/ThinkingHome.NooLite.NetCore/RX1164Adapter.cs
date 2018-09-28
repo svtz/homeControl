@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Linq;
-using HidLibrary;
+﻿using System;
 using ThinkingHome.NooLite.Common;
 using ThinkingHome.NooLite.ReceivedData;
 
@@ -9,47 +6,43 @@ namespace ThinkingHome.NooLite
 {
 	public class RX1164Adapter : BaseRxAdapter
 	{
+
 		#region fields & properties
 
-		protected RX1164ReceivedCommandData lastReceivedData;
-		private bool lastProcessedTogl;						// предыдущее значение TOGL
-		private byte lastProcessedCommand = byte.MaxValue;	// предыдущая команда
+		protected override Func<string, bool> ProductNameFilter => 
+			name => string.Equals(name, "rx1164", StringComparison.OrdinalIgnoreCase);
+		
+		private RX1164ReceivedCommandData _lastReceivedData;
+		private bool _lastProcessedTogl;						// предыдущее значение TOGL
+		private byte _lastProcessedCommand = byte.MaxValue;	// предыдущая команда
+		private readonly object _lockObject = new object();
 
 		#endregion
-
-		protected override HidDevice SelectDevice()
-		{
-			var hidDevice = HidDevices
-				.Enumerate(VendorId, ProductId)
-				.FirstOrDefault(a => StringComparer.OrdinalIgnoreCase.Equals(GetProductString(a), "rx1164"));
-
-			return hidDevice;
-		}
 
 		protected override void TimerElapsed()
 		{
 			RX1164ReceivedCommandData prev, current;
 
-			lock (lockObject)
+			lock (_lockObject)
 			{
 				var buf = ReadBufferData();
 
-				prev = lastReceivedData;
-				lastReceivedData = current = new RX1164ReceivedCommandData(buf);
+				prev = _lastReceivedData;
+				_lastReceivedData = current = new RX1164ReceivedCommandData(buf);
 				
 				if (prev == null)
 				{
 					prev = current;
-					lastProcessedTogl = current.ToggleFlag;
-					lastProcessedCommand = current.Cmd;
+					_lastProcessedTogl = current.ToggleFlag;
+					_lastProcessedCommand = current.Cmd;
 				}
 			}
 
 			if (current.Equals(prev) &&
-				(current.ToggleFlag != lastProcessedTogl || current.Cmd != lastProcessedCommand))
+				(current.ToggleFlag != _lastProcessedTogl || current.Cmd != _lastProcessedCommand))
 			{
-				lastProcessedTogl = current.ToggleFlag;
-				lastProcessedCommand = current.Cmd;
+				_lastProcessedTogl = current.ToggleFlag;
+				_lastProcessedCommand = current.Cmd;
 
 				OnCommandReceived(current);
 			}

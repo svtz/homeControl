@@ -22,9 +22,6 @@ namespace homeControl.NooliteService.Adapters
             {
                 if (!Adapter.OpenDevice())
                 {
-                    if (!Adapter.IsConnected)
-                        throw new DeviceDisconnectedException(DeviceName);
-
                     throw new DeviceInitializationException(DeviceName, "Could not open the device.");
                 }
             }

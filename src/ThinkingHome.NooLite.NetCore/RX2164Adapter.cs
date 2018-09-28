@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using HidLibrary;
+using System.Threading;
 using ThinkingHome.NooLite.Common;
 using ThinkingHome.NooLite.ReceivedData;
 
@@ -8,27 +7,23 @@ namespace ThinkingHome.NooLite
 {
     public class RX2164Adapter : BaseRxAdapter
     {
-		protected RX2164ReceivedCommandData lastReceivedData;
+		protected override Func<string, bool> ProductNameFilter => 
+			name => string.Equals(name, "rx2164", StringComparison.OrdinalIgnoreCase);
 
-		protected override HidDevice SelectDevice()
-		{
-			var hidDevice = HidDevices
-				.Enumerate(VendorId, ProductId)
-				.FirstOrDefault(a => StringComparer.OrdinalIgnoreCase.Equals(GetProductString(a), "rx2164"));
+		private readonly object _lockObject = new object();
 
-			return hidDevice;
-		}
+		private RX2164ReceivedCommandData _lastReceivedData;
 
 		protected override void TimerElapsed()
 		{
-			lock (lockObject)
+			lock (_lockObject)
 			{
 				var buf = ReadBufferData();
 				var current = new RX2164ReceivedCommandData(buf);
-				var prev = lastReceivedData ?? current;
+				var prev = _lastReceivedData ?? current;
 
 				// обновляем поле с последней полученной командой
-				lastReceivedData = current;
+				_lastReceivedData = current;
 
 				// генерируем события
 				if (current.ToggleValue != prev.ToggleValue)
@@ -51,12 +46,8 @@ namespace ThinkingHome.NooLite
 
 		protected virtual void OnMicroclimateDataReceived(MicroclimateReceivedCommandData obj)
 		{
-			var handler = MicroclimateDataReceived;
-
-			if (handler != null)
-			{
-				handler(obj);
-			}
+			var handler = Interlocked.CompareExchange(ref MicroclimateDataReceived, null, null);
+			handler?.Invoke(obj);
 		}
 
 		#endregion

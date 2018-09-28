@@ -1,4 +1,5 @@
-﻿using ThinkingHome.NooLite.Common;
+﻿using System;
+using ThinkingHome.NooLite.Common;
 using ThinkingHome.NooLite.ReceivedData;
 
 namespace ThinkingHome.NooLite
@@ -8,10 +9,9 @@ namespace ThinkingHome.NooLite
 	/// </summary>
 	public class PC11XXAdapter : BaseAdapter
 	{
-		public override int ProductId
-		{
-			get { return 0x05DF; }
-		}
+		protected override int ProductId =>  0x05DF;
+		protected override Func<string, bool> ProductNameFilter => 
+			name => true;
 
 		public void SendLedCommand(
 			PC11XXLedCommand cmd,
@@ -49,8 +49,7 @@ namespace ThinkingHome.NooLite
 			data[7] = level1;
 			data[8] = level2;
 
-			device.WriteFeatureData(data);
-			System.Threading.Thread.Sleep(200);
+			WriteBufferData(data);
 		}
 	}
 }

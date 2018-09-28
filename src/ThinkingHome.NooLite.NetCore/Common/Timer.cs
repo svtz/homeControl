@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ThinkingHome.NooLite.Common
 {
@@ -31,7 +32,8 @@ namespace ThinkingHome.NooLite.Common
 
         private void OnElapsed()
         {
-            Elapsed?.Invoke(this, EventArgs.Empty);
+            var handler = Interlocked.CompareExchange(ref Elapsed, null, null);
+            handler?.Invoke(this, EventArgs.Empty);
         }
     }
 }

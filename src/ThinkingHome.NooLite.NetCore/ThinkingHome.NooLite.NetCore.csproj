@@ -14,13 +14,11 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RootNamespace>ThinkingHome.NooLite</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HidLibrary.NetCore\HidLibrary.NetCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="LibUsbDotNet" Version="2.2.18" />
     <PackageReference Include="System.Xml.XPath" Version="4.3.0" />
   </ItemGroup>
 
