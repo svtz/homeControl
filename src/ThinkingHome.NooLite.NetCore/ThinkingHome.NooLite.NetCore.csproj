@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LibUsbDotNet" Version="2.2.18" />
+    <PackageReference Include="LibUsbDotNet" Version="2.2.29" />
     <PackageReference Include="System.Xml.XPath" Version="4.3.0" />
   </ItemGroup>
 

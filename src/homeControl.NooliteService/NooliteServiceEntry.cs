@@ -71,10 +71,12 @@ namespace homeControl.NooliteService
 
         static void Main(string[] args)
         {
+            // todo create base entry class
             var asmName = Assembly.GetEntryAssembly().GetName();
-            Console.Title = $"{asmName.Name} v.{asmName.Version.ToString(3)}";
+            var title = $"{asmName.Name} v.{asmName.Version.ToString(3)}";
+            Console.Title = title;
 
-            _log.Information($"Starting service: {Console.Title}");
+            _log.Information($"Starting service: {title}");
 
             using (var workContainer = _rootContainer.GetNestedContainer())
             using (var cts = new CancellationTokenSource())
