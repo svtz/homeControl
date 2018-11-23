@@ -32,7 +32,7 @@ namespace ThinkingHome.NooLite
 
 					if (current.Cmd == 21 && current.DataFormat == CommandFormat.FourByteData)
 					{
-						var data = new MicroclimateReceivedCommandData(current.buf);
+						var data = new MicroclimateReceivedCommandData(current.Buffer);
 						OnMicroclimateDataReceived(data);
 					}
 				}

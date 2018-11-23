@@ -2,8 +2,8 @@
 {
 	public class MicroclimateReceivedCommandData : RX2164ReceivedCommandData
 	{
-		public MicroclimateReceivedCommandData(byte[] buf)
-			: base(buf)
+		public MicroclimateReceivedCommandData(byte[] source)
+			: base(source)
 		{
 		}
 
@@ -22,9 +22,6 @@
 			}
 		}
 
-		public int Humidity
-		{
-			get { return Data[2]; }
-		}
+		public int Humidity => Data[2];
 	}
 }

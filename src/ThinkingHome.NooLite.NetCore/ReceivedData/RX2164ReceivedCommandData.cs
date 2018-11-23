@@ -2,14 +2,14 @@
 {
 	public class RX2164ReceivedCommandData : ReceivedCommandData
 	{
-		public RX2164ReceivedCommandData(byte[] buf)
-			: base(buf)
+		public RX2164ReceivedCommandData(byte[] source)
+			: base(source)
 		{
 		}
 
 		public int ToggleValue
 		{
-			get { return buf[1] & 0x3f; }
+			get { return Buffer[0] & 0x3f; }
 		}
 	}
 }
