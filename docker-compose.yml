@@ -2,15 +2,18 @@ version: '3'
 services:
   configStore:
     image: svtz/homecontrol-configurationstore:latest
+    restart: always
   
   controller:
     image: svtz/homecontrol-controllerservice:latest
+    restart: always
     
   noolite:
     image: svtz/homecontrol-nooliteservice:latest
     privileged: true
     volumes:
       - /dev/bus/usb:/dev/bus/usb
+    restart: always
     
   rabbitmq:
     container_name: rabbit
@@ -20,3 +23,4 @@ services:
       - 5671:5671
       - 5672:5672
       - 25672:25672
+    restart: always
