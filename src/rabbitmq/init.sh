@@ -1,6 +1,6 @@
 #!/bin/sh
 
-( sleep 5 ; \
+( sleep 60 ; \
 rabbitmqctl add_user controller controller 2>/dev/null ; \
 rabbitmqctl add_user noolite noolite 2>/dev/null ; \
 rabbitmqctl add_user configStore configStore 2>/dev/null ; \
