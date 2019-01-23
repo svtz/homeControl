@@ -44,13 +44,13 @@ namespace homeControl.Client.WPF.ViewModels.Switches
 
         protected override IEnumerable<AbstractSwitchEvent> GetEventsFromValue(double value)
         {
-            yield return new SetPowerEvent(Id, value);
-
-            if (value <= SetPowerEvent.MinPower)
-                yield return new TurnOffEvent(Id);
-
             if (value >= SetPowerEvent.MaxPower)
                 yield return new TurnOnEvent(Id);
+            
+            yield return new SetPowerEvent(Id, value);
+            
+            if (value <= SetPowerEvent.MinPower)
+                yield return new TurnOffEvent(Id);
         }
     }
 }

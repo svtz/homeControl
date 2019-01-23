@@ -7,7 +7,6 @@ using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
 using homeControl.Entry;
 using homeControl.Interop.Rabbit.IoC;
-using JetBrains.Annotations;
 using RabbitMQ.Client;
 using StructureMap;
 
@@ -37,7 +36,8 @@ namespace homeControl.NooliteService
             
             var switchesProcessor = container.GetInstance<SwitchEventsProcessor>();
 
-            switchesProcessor.Run(ct).Wait(ct);
+            switchesProcessor.RunAsync(ct);
+            switchesProcessor.Completion(ct).Wait(ct);
         }
         
         private static void Main(string[] args)
