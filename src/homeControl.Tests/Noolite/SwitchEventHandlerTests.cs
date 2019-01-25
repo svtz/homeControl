@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using homeControl.Domain.Events.Switches;
 using homeControl.NooliteService;
 using homeControl.NooliteService.SwitchController;
 using Moq;
-using Serilog;
+using Serilog.Core;
 using Xunit;
 
 namespace homeControl.Tests.Noolite
@@ -25,23 +26,16 @@ namespace homeControl.Tests.Noolite
         private static async Task Act(ISwitchController switchCtrl, IEnumerable<AbstractSwitchEvent> events)
         {
             var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            var eventSource = new TestObservable<AbstractSwitchEvent>();
+            var eventSource = events.ToObservable();
             eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(eventSource);
             
             using (var cts = new CancellationTokenSource())
             {
-                cts.CancelAfter(TimeSpan.FromMilliseconds(5000));
+                cts.CancelAfter(TimeSpan.FromMilliseconds(500000));
 
-                using (var handler = new SwitchEventsProcessor(switchCtrl, eventsSourceMock.Object, Mock.Of<ILogger>()))
+                using (var handler = new SwitchEventsProcessor(switchCtrl, eventsSourceMock.Object, TestLoggerHolder.Logger.ForContext<SwitchEventsProcessor>()))
                 {
                     handler.RunAsync(cts.Token);
-                    foreach (var @event in events)
-                    {
-                        eventSource.Add(@event);
-                    }
-
-                    eventSource.Complete();
-
                     await handler.Completion(cts.Token);
                 }
             }

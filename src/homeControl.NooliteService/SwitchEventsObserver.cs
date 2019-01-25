@@ -38,14 +38,21 @@ namespace homeControl.NooliteService
             {
                 if (_processingTask != null)
                 {
-                    _processingTask.ContinueWith(t => _completionSemaphore.Release(), _ct);
+                    _processingTask.ContinueWith(t => DoComplete(), _ct);
                 }
                 else
                 {
-                    _completionSemaphore.Release();
+                    DoComplete();
                 }
             }
         }
+
+        private void DoComplete()
+        {
+            _log.Debug("Complete!");
+            _completionSemaphore.Release();
+        }
+            
 
         public void OnError(Exception error)
         {
@@ -58,27 +65,40 @@ namespace homeControl.NooliteService
             
         public void OnNext(AbstractSwitchEvent next)
         {
+            _log.Debug("New event: {switchEvent}.", next);
+            
             lock (_lock)
             {
                 if (!SkipCurrentEvent(_waitingForProcess, next) && _waitingForProcess != null)
                 {
                     HandleEvent(_waitingForProcess);
                 }
+                else
+                {
+                    _log.Debug("Cancelling event processing: {switchEvent}.", _waitingForProcess);
+                }
 
                 _waitingForProcess = next;
                 var current = next;
                     
+                _log.Debug("Enqueuing event: {switchEvent}.", next);
                 _processingTask = Task
                     .Delay(DelayBeforeProcessInMs, _ct)
                     .ContinueWith(t =>
                     {
                         if (_waitingForProcess != current)
+                        {
+                            _log.Debug("Event {switchEvent} has been cancelled, skipping.", current);
                             return;
+                        }
 
                         lock (_lock)
                         {
                             if (_waitingForProcess != current)
+                            {
+                                _log.Debug("Event {switchEvent} has been cancelled, skipping.", current);
                                 return;
+                            }
 
                             HandleEvent(current);
                             _waitingForProcess = null;
@@ -102,7 +122,7 @@ namespace homeControl.NooliteService
 
             if (!_switchController.CanHandleSwitch(switchEvent.SwitchId))
             {
-                _log.Debug("Switch not supported: {SwitchId}", switchEvent.SwitchId);
+                _log.Warning("Switch not supported: {SwitchId}", switchEvent.SwitchId);
                 return;
             }
 

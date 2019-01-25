@@ -35,12 +35,14 @@ namespace homeControl.NooliteService
         
         public void RunAsync(CancellationToken ct)
         {
+            _log.Debug("Starting events processing.");
             var eventSource = _source.ReceiveEvents<AbstractSwitchEvent>();
             eventSource
                 .GroupBy(e => e.SwitchId)
                 .ForEachAsync(switchObservable =>
                 {
-                    var observer = new SwitchEventsObserver(_switchController, _log, ct);
+                    _log.Debug("Received new SwitchId={SwitchId}, creating observer.", switchObservable.Key);
+                    var observer = new SwitchEventsObserver(_switchController, _log.ForContext<SwitchEventsObserver>(), ct);
                     _observers.Add(observer);
                     switchObservable.Subscribe(observer);
                 }, ct)
@@ -49,8 +51,10 @@ namespace homeControl.NooliteService
 
         public async Task Completion(CancellationToken ct)
         {
+            _log.Debug("Awaiting completion.");
             await _completionSemaphore.WaitAsync(ct);
             await Task.WhenAll(_observers.Select(o => o.Completion(ct)));
+            _log.Debug("Complete!");
         }
 
         public void Dispose()
