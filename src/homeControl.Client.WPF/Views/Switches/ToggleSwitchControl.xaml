@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <switches:BooleanToFontWeightConverter Inverse="False" x:Key="DirectFontWeightConverter"/>
         <switches:BooleanToFontWeightConverter Inverse="True" x:Key="InversedFontWeightConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
     <UserControl.InputBindings>
         <MouseBinding Gesture="{mouseWheel:MouseWheel Direction=Down}" Command="{Binding MouseWheelDown}" />
@@ -31,6 +32,9 @@
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="10"/>
@@ -47,9 +51,32 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Image>
+
+            <ToggleButton Grid.Column="1" Grid.Row="3"
+                          Margin="0,0,0,5"
+                          Visibility="{Binding IsAutomated, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          IsChecked="{Binding IsAutomationEnabled}"
+                          Content="АВТО" />
+            
+            <TextBlock Text="ВКЛ" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontWeight="{Binding Value, Converter={StaticResource DirectFontWeightConverter}}"/>
+            <Slider Name="Slider" 
+                    Orientation="Vertical" 
+                    Grid.Column="1" 
+                    Grid.Row="5" 
+                    Maximum="1" 
+                    Minimum="0" 
+                    Height="40"
+                    Value="{Binding Value}"
+                    HorizontalAlignment="Center"
+                    Margin="0,5,0,5">
+            </Slider>
+            <TextBlock Text="ВЫКЛ" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontWeight="{Binding Value, Converter={StaticResource InversedFontWeightConverter}}"/>
+            
             <Image Source="pack://application:,,,/homeControl.Client.WPF;component/Resources/LampOff.ico" 
                    Grid.Column="1" 
-                   Grid.Row="5"
+                   Grid.Row="8"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    RenderTransformOrigin="0.5,0.5">
                 <Image.RenderTransform>
@@ -63,23 +90,6 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Image>
-
-            <TextBlock Text="ВКЛ" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                       FontWeight="{Binding Value, Converter={StaticResource DirectFontWeightConverter}}"/>
-            <Slider Name="Slider" 
-                    Orientation="Vertical" 
-                    Grid.Column="1" 
-                    Grid.Row="3" 
-                    Maximum="1" 
-                    Minimum="0" 
-                    Height="40"
-                    Value="{Binding Value}"
-                    HorizontalAlignment="Center"
-                    Margin="0,5,0,5">
-            </Slider>
-            <TextBlock Text="ВЫКЛ" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Top"
-                       FontWeight="{Binding Value, Converter={StaticResource InversedFontWeightConverter}}"/>
-
         </Grid>
     </GroupBox>
 </UserControl>

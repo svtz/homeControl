@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
+using homeControl.Domain;
 using homeControl.Domain.Events;
+using homeControl.Domain.Events.Bindings;
 using homeControl.Domain.Events.Switches;
 using Serilog;
 
@@ -16,7 +18,6 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         private T _value;
         private readonly IDisposable _eventSubscription;
 
-        private readonly object _valueLock = new object();
         public T Value
         {
             get => _value;
@@ -25,7 +26,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 if (Equals(_value, value))
                     return;
 
-                lock (_valueLock)
+                lock (UserInteractionLock)
                 {
                     if (Equals(_value, value))
                         return;
@@ -37,18 +38,18 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 }
             }
         }
-
+        
         public ICommand MouseWheelDown { get; }
         public ICommand MouseWheelUp { get; }
         public ICommand SetMaximum { get; }
         public ICommand SetMinimum { get; }
 
 
-        protected SwitchViewModelBaseOfT(
-            IEventSource eventSource,
+        protected SwitchViewModelBaseOfT(IEventSource eventSource,
             IEventSender eventSender,
+            SensorId[] sensors,
             ILogger log)
-            : base(log)
+            : base(eventSource, eventSender, sensors, log)
         {
             Guard.DebugAssertArgumentNotNull(eventSource, nameof(eventSource));
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
@@ -100,7 +101,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             if (Equals(newValue, _value))
                 return;
 
-            lock (_valueLock)
+            lock (UserInteractionLock)
             {
                 if (Equals(newValue, _value))
                     return;
@@ -109,7 +110,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 RaisePropertyChanged(() => Value);
             }
         }
-
+        
         private void OnValueChangedByUser()
         {
             Log.Debug("Пользователь изменил значение.");
@@ -120,12 +121,13 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 _eventSender.SendEvent(@event);
             }
 
-            Log.Debug("События отправлены.");
+            Log.Debug("События значения отправлены.");
         }
-
-        public void Dispose()
+        
+        public override void Dispose()
         {
-            _eventSubscription?.Dispose();
+            base.Dispose();
+            _eventSubscription.Dispose();
         }
     }
 }
