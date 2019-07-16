@@ -1,4 +1,5 @@
 ﻿using ThinkingHome.NooLite;
+using ThinkingHome.NooLite.LibUsb;
 
 namespace homeControl.NooliteService.Adapters
 {

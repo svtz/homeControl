@@ -1,6 +1,7 @@
 ﻿using System;
 using ThinkingHome.NooLite;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 
 namespace homeControl.NooliteService.Adapters
 {

@@ -1,6 +1,4 @@
-using System.Collections;
-
-namespace ThinkingHome.NooLite.PR1132
+namespace ThinkingHome.NooLite.LibUsb.PR1132
 {
 	public class PR1132Timer
 	{

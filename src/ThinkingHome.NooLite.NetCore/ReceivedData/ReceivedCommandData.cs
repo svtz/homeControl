@@ -1,7 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Linq;
 
-namespace ThinkingHome.NooLite.ReceivedData
+namespace ThinkingHome.NooLite.LibUsb.ReceivedData
 {
 	public abstract class ReceivedCommandData
 	{

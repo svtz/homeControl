@@ -7,7 +7,7 @@ using homeControl.Domain.Events.Sensors;
 using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using Serilog;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 
 namespace homeControl.NooliteService
 {

@@ -1,4 +1,4 @@
-﻿namespace ThinkingHome.NooLite.ReceivedData
+﻿namespace ThinkingHome.NooLite.LibUsb.ReceivedData
 {
 	public class RX2164ReceivedCommandData : ReceivedCommandData
 	{

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
-using LibUsbDotNet.Main;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 
-namespace ThinkingHome.NooLite.Common
+namespace ThinkingHome.NooLite.LibUsb.Common
 {
     public abstract class BaseRxAdapter : BaseAdapter
 	{

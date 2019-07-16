@@ -1,8 +1,7 @@
 ﻿using System;
-using ThinkingHome.NooLite.Common;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb.Common;
 
-namespace ThinkingHome.NooLite
+namespace ThinkingHome.NooLite.LibUsb
 {
     /// <summary>
 	/// Class for working wuth device

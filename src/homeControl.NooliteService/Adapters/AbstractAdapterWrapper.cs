@@ -1,6 +1,6 @@
 ﻿using System;
 using homeControl.NooliteService.Diagnostics;
-using ThinkingHome.NooLite.Common;
+using ThinkingHome.NooLite.LibUsb.Common;
 
 namespace homeControl.NooliteService.Adapters
 {

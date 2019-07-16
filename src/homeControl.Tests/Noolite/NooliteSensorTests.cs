@@ -10,7 +10,7 @@ using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using Moq;
 using Serilog;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 using Xunit;
 
 namespace homeControl.Tests.Noolite

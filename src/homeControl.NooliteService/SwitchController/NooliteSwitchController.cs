@@ -4,6 +4,7 @@ using homeControl.Domain;
 using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using ThinkingHome.NooLite;
+using ThinkingHome.NooLite.LibUsb;
 
 namespace homeControl.NooliteService.SwitchController
 {

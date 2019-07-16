@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>ThinkingHome.NooLite.NetCore</AssemblyName>
     <PackageId>ThinkingHome.NooLite.NetCore</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
@@ -12,7 +11,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <RootNamespace>ThinkingHome.NooLite</RootNamespace>
+    <RootNamespace>ThinkingHome.NooLite.LibUsb</RootNamespace>
   </PropertyGroup>
 
 

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using LibUsbDotNet;
 using LibUsbDotNet.Main;
 
-namespace ThinkingHome.NooLite.Common
+namespace ThinkingHome.NooLite.LibUsb.Common
 {
 	public abstract class BaseAdapter : IDisposable
 	{

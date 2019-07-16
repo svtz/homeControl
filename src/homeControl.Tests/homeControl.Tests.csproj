@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\homeControl.ControllerService\homeControl.ControllerService.csproj" />
     <ProjectReference Include="..\homeControl.Interop.Rabbit\homeControl.Interop.Rabbit.csproj" />
+    <ProjectReference Include="..\homeControl.NooliteF\homeControl.NooliteF.csproj" />
     <ProjectReference Include="..\homeControl.NooliteService\homeControl.NooliteService.csproj" />
     <ProjectReference Include="..\ThinkingHome.NooLite.NetCore\ThinkingHome.NooLite.NetCore.csproj" />
   </ItemGroup>

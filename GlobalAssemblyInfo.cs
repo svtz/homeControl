@@ -7,6 +7,6 @@
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("homeControl")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCopyright("Copyright © 2016-2017 Svyatoslav Zakhryapin")]
+[assembly: AssemblyCopyright("Copyright © 2016-2019 Svyatoslav Zakhryapin")]
 
-[assembly: AssemblyVersion("0.3.0")]
+[assembly: AssemblyVersion("0.4.0")]

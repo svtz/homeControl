@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace ThinkingHome.NooLite.Common
+namespace ThinkingHome.NooLite.LibUsb.Common
 {
     internal sealed class Timer : IDisposable
     {

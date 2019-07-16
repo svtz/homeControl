@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using ThinkingHome.NooLite.Common;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb.Common;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 
-namespace ThinkingHome.NooLite
+namespace ThinkingHome.NooLite.LibUsb
 {
     public class RX2164Adapter : BaseRxAdapter
     {
