@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -7,6 +7,6 @@ using System.Reflection;
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("homeControl")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCopyright("Copyright � 2016-2017 Svyatoslav Zakhryapin")]
+[assembly: AssemblyCopyright("Copyright © 2016-2019 Svyatoslav Zakhryapin")]
 
-[assembly: AssemblyVersion("0.2.0")]
+[assembly: AssemblyVersion("0.4.0")]

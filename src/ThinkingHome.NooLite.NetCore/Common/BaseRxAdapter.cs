@@ -1,26 +1,26 @@
 ﻿using System;
-using ThinkingHome.NooLite.ReceivedData;
+using System.Threading;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 
-namespace ThinkingHome.NooLite.Common
+namespace ThinkingHome.NooLite.LibUsb.Common
 {
     public abstract class BaseRxAdapter : BaseAdapter
 	{
-		protected readonly object lockObject = new object();
-		private readonly Timer timer;
+		private readonly Timer _timer;
 
-		public override int ProductId
-		{
-			get { return 0x05DC; }
-		}
+		protected override int ProductId => 0x05DC;
+		
 
 		#region Lifecycle
+
+		private const int TimerIntervalMilliseconds = 200; 
 
 		protected abstract void TimerElapsed();
 
 		protected BaseRxAdapter()
 		{
-			timer = new Timer(200);
-			timer.Elapsed += (s, e) => TimerElapsed();
+			_timer = new Timer(TimerIntervalMilliseconds);
+			_timer.Elapsed += (s, e) => TimerElapsed();
 		}
 
 		public override bool OpenDevice()
@@ -30,53 +30,38 @@ namespace ThinkingHome.NooLite.Common
 				return false;
 			}
 
-			timer.Start();
+			_timer.Start();
 			return true;
 		}
 
 		public override void Dispose()
 		{
 			base.Dispose();
-			timer.Dispose();
+			_timer.Dispose();
 		}
 
 		#endregion
 
+		
 		#region Events
 
 		public event Action<ReceivedCommandData> CommandReceived;
 
-		protected virtual void OnCommandReceived(ReceivedCommandData obj)
+		protected void OnCommandReceived(ReceivedCommandData obj)
 		{
-			var handler = CommandReceived;
-
-			if (handler != null)
-			{
-				handler(obj);
-			}
+			var handler = Interlocked.CompareExchange(ref CommandReceived, null, null);
+			handler?.Invoke(obj);
 		}
 
 		#endregion
 
+		
 		#region IO
-
-		public byte[] ReadBufferData()
-		{
-			byte[] buf;
-			device.ReadFeatureData(out buf);
-
-			return buf;
-		}
 
 		public void SendCommand(RxCommand cmd, byte channel = 0)
 		{
-			var data = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-			data[1] = (byte)cmd;
-			data[2] = channel;
-
-			device.WriteFeatureData(data);
-			System.Threading.Thread.Sleep(200);
+			var buffer = CreateCommand(0, (byte) cmd, channel);
+			WriteBufferData(buffer);
 		}
 
 		#endregion

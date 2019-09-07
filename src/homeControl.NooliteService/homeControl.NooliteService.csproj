@@ -2,31 +2,28 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
-    <PackageReference Include="Serilog" Version="2.5.0" />
-    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="3.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\homeControl.Configuration\homeControl.Configuration.csproj" />
+    <ProjectReference Include="..\homeControl.Entry\homeControl.Entry.csproj" />
     <ProjectReference Include="..\homeControl.Guard\homeControl.Guard.csproj" />
     <ProjectReference Include="..\homeControl.Interop.Rabbit\homeControl.Interop.Rabbit.csproj" />
     <ProjectReference Include="..\ThinkingHome.NooLite.NetCore\ThinkingHome.NooLite.NetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

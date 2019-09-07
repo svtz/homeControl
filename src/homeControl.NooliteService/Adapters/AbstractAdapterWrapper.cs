@@ -1,6 +1,6 @@
 ﻿using System;
 using homeControl.NooliteService.Diagnostics;
-using ThinkingHome.NooLite.Common;
+using ThinkingHome.NooLite.LibUsb.Common;
 
 namespace homeControl.NooliteService.Adapters
 {
@@ -22,9 +22,6 @@ namespace homeControl.NooliteService.Adapters
             {
                 if (!Adapter.OpenDevice())
                 {
-                    if (!Adapter.IsConnected)
-                        throw new DeviceDisconnectedException(DeviceName);
-
                     throw new DeviceInitializationException(DeviceName, "Could not open the device.");
                 }
             }

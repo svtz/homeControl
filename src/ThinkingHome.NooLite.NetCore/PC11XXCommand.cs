@@ -1,4 +1,4 @@
-﻿namespace ThinkingHome.NooLite
+﻿namespace ThinkingHome.NooLite.LibUsb
 {
     /// <summary>
     /// Available commands for device

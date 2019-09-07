@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using homeControl.Domain.Events;
 using homeControl.Interop.Rabbit;
 using Moq;
@@ -225,7 +226,7 @@ namespace homeControl.Tests.Interop
         }
 
         [Fact]
-        public void TestSender_WhenConfiguredsDerivedEvent_ThenErrorWhileSendingBase()
+        public void TestSender_WhenConfiguredDerivedEvent_ThenErrorWhileSendingBase()
         {
             const string derivedExchangeName = "derived-exchange";
 
@@ -289,14 +290,14 @@ namespace homeControl.Tests.Interop
             var receivedEvents = bus.ReceiveEvents<DerivedTestEvent>().ToArray().Wait();
 
             Assert.Equal(2, receivedEvents.Length);
-            Assert.True(receivedEvents.Contains(derivedTestEvent));
-            Assert.True(receivedEvents.Contains(derivedTestEvent2));
+            Assert.Contains(derivedTestEvent, receivedEvents);
+            Assert.Contains(derivedTestEvent2, receivedEvents);
             sourceMock.Verify(m => m.ReceiveEvents<DerivedTestEvent>(), Times.Once);
             derivedSourceMock.Verify(m => m.ReceiveEvents<DerivedTestEvent>(), Times.Once);
         }
 
         [Fact]
-        public void TestSource_WhenConfiguredsDerivedEvent_ThenErrorWhileReceivingBase()
+        public void TestSource_WhenConfiguredDerivedEvent_ThenErrorWhileReceivingBase()
         {
             const string exchangeName = "exchange";
             const string exchangeType = "type";

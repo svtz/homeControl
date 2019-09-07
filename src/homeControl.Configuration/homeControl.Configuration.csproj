@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Serilog" Version="2.5.0" />
     <PackageReference Include="StructureMap" Version="4.5.1" />
@@ -19,6 +15,12 @@
   <ItemGroup>
     <ProjectReference Include="..\homeControl.Domain\homeControl.Domain.csproj" />
     <ProjectReference Include="..\homeControl.Guard\homeControl.Guard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>

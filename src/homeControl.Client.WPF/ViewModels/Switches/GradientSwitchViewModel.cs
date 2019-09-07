@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using homeControl.Domain;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Switches;
 using Serilog;
@@ -11,7 +12,8 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         private const double WheelStep = 0.1d;
 
 
-        public GradientSwitchViewModel(IEventSource eventSource, IEventSender eventSender, ILogger log) : base(eventSource, eventSender, log)
+        public GradientSwitchViewModel(IEventSource eventSource, IEventSender eventSender, SensorId[] sensors, ILogger log) 
+            : base(eventSource, eventSender, sensors, log)
         {
         }
 
@@ -44,13 +46,13 @@ namespace homeControl.Client.WPF.ViewModels.Switches
 
         protected override IEnumerable<AbstractSwitchEvent> GetEventsFromValue(double value)
         {
-            yield return new SetPowerEvent(Id, value);
-
-            if (value <= SetPowerEvent.MinPower)
-                yield return new TurnOffEvent(Id);
-
             if (value >= SetPowerEvent.MaxPower)
                 yield return new TurnOnEvent(Id);
+            
+            yield return new SetPowerEvent(Id, value);
+            
+            if (value <= SetPowerEvent.MinPower)
+                yield return new TurnOffEvent(Id);
         }
     }
 }

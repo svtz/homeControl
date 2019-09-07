@@ -1,4 +1,4 @@
-﻿namespace ThinkingHome.NooLite
+﻿namespace ThinkingHome.NooLite.LibUsb
 {
 	internal enum CommandFormat
 	{

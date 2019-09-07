@@ -8,7 +8,7 @@ using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using Newtonsoft.Json;
 using Serilog;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 
 namespace homeControl.NooliteService
 {

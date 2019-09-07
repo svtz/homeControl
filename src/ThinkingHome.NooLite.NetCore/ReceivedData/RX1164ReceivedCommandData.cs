@@ -1,18 +1,12 @@
-﻿namespace ThinkingHome.NooLite.ReceivedData
+﻿namespace ThinkingHome.NooLite.LibUsb.ReceivedData
 {
 	public class RX1164ReceivedCommandData : ReceivedCommandData
 	{
-		public RX1164ReceivedCommandData(byte[] buf)
-			: base(buf)
+		public RX1164ReceivedCommandData(byte[] source)
+			: base(source)
 		{
 		}
 
-		public bool ToggleFlag
-		{
-			get
-			{
-				return (buf[1] & 0x80) > 0;	// 7й бит 1-го байта
-			}
-		}
+		public bool ToggleFlag => (Buffer[0] & 0x80) > 0;
 	}
 }

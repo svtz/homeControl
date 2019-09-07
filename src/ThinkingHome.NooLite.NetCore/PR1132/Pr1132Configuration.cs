@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ThinkingHome.NooLite.PR1132
+namespace ThinkingHome.NooLite.LibUsb.PR1132
 {
 	public class PR1132Configuration
 	{

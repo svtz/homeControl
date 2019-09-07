@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ using homeControl.Domain.Events.Bindings;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
+using homeControl.Entry;
 using homeControl.Interop.Rabbit.IoC;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
@@ -19,79 +21,26 @@ using StructureMap;
 
 namespace homeControl.ControllerService
 {
-    internal sealed class ControllerServiceEntry
+    internal sealed class ControllerService : AbstractService
     {
-        private static readonly ILogger _log;
+        protected override string ServiceNamePrefix => "controller";
 
-        private static readonly IConfigurationRoot _config = 
-            new ConfigurationBuilder()
-            .AddJsonFile("settings.json")
-            .Build();
-
-        static ControllerServiceEntry()
+        protected override IEnumerable<Registry> GetConfigurationRegistries(string uniqueServiceName)
         {
-            var level = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), _config["LogEventLevel"]);
-
-            _log = new LoggerConfiguration()
-                .MinimumLevel.Is(level)
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
-                .CreateLogger()
-                .ForContext(typeof(ControllerServiceEntry));
-            _log.Debug("Logging initialized.");
+            yield return new RabbitConfigurationRegistryBuilder(Config)
+                .UseJsonSerializationWithEncoding(Encoding.UTF8)
+                .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
+                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
+                .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventSource<AbstractSensorEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventSender<AbstractSwitchEvent>("main")
+                .Build();
+            
+            yield return new ConfigurationRegistry(uniqueServiceName);
+            yield return new ControllerRegistry();
         }
 
-        private static readonly IContainer _rootContainer = BuildContainer();
-        private static IContainer BuildContainer()
-        {
-            var serviceName = "controller-" + Guid.NewGuid();
-
-            var container = new Container(cfg =>
-            {
-                cfg.AddRegistry(new RabbitConfigurationRegistryBuilder(_config)
-                    .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                    .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
-                    .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
-                    .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
-                    .SetupEventSource<AbstractSensorEvent>("main", ExchangeType.Fanout, "")
-                    .SetupEventSender<AbstractSwitchEvent>("main")
-                    .Build());
-
-                cfg.AddRegistry(new ConfigurationRegistry(serviceName));
-
-                cfg.ForConcreteType<BindingController>().Configure.Transient();
-
-                cfg.Forward<BindingController, IBindingController>();
-                cfg.Forward<BindingController, IBindingStateManager>();
-
-                cfg.ForConcreteType<BindingEventsProcessor>().Configure.Transient();
-                cfg.ForConcreteType<SensorEventsProcessor>().Configure.Transient();
-
-                cfg.For<ILogger>().Use(c => _log.ForContext(c.ParentType));
-            });
-
-            return container;
-        }
-
-
-        static void Main(string[] args)
-        {
-            var asmName = Assembly.GetEntryAssembly().GetName();
-            Console.Title = $"{asmName.Name} v.{asmName.Version.ToString(3)}";
-
-            _log.Information($"Starting service: {Console.Title}");
-
-            using (var workContainer = _rootContainer.GetNestedContainer())
-            using (var cts = new CancellationTokenSource())
-            {
-                workContainer.Configure(c => c.For<CancellationToken>().Use(() => cts.Token));
-
-                Console.CancelKeyPress += (s, e) => cts.Cancel();
-
-                Run(workContainer, cts.Token);
-            }
-        }
-
-        private static void Run(IContainer workContainer, CancellationToken ct)
+        protected override void Run(IContainer workContainer, CancellationToken ct)
         {
             var bindingsProcessor = workContainer.GetInstance<BindingEventsProcessor>();
             var sensorsProcessor = workContainer.GetInstance<SensorEventsProcessor>();
@@ -99,6 +48,11 @@ namespace homeControl.ControllerService
             Task.WaitAll(
                 bindingsProcessor.Run(ct),
                 sensorsProcessor.Run(ct));
+        }
+
+        private static void Main(string[] args)
+        {
+            new ControllerService().Run();
         }
     }
 }

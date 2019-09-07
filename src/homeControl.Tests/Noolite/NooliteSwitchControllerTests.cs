@@ -5,6 +5,7 @@ using homeControl.NooliteService.Configuration;
 using homeControl.NooliteService.SwitchController;
 using Moq;
 using ThinkingHome.NooLite;
+using ThinkingHome.NooLite.LibUsb;
 using Xunit;
 
 namespace homeControl.Tests.Noolite

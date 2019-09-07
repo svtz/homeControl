@@ -1,4 +1,4 @@
-namespace ThinkingHome.NooLite.PR1132
+namespace ThinkingHome.NooLite.LibUsb.PR1132
 {
 	public enum PR1132ChannelUiType
 	{

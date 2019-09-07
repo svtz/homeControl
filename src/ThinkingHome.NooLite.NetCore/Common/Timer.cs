@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Threading;
 
-namespace ThinkingHome.NooLite.Common
+namespace ThinkingHome.NooLite.LibUsb.Common
 {
     internal sealed class Timer : IDisposable
     {
@@ -31,7 +32,8 @@ namespace ThinkingHome.NooLite.Common
 
         private void OnElapsed()
         {
-            Elapsed?.Invoke(this, EventArgs.Empty);
+            var handler = Interlocked.CompareExchange(ref Elapsed, null, null);
+            handler?.Invoke(this, EventArgs.Empty);
         }
     }
 }

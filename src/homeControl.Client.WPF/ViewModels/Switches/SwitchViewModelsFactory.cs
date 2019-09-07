@@ -43,20 +43,26 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         {
             var bindings = await _bindingsRepo.GetAll();
             var switches = (await _switchesRepo.GetAll()).Where(s => s.ShowOnUi).ToArray();
-            var automatedSwitches = bindings.Select(b => b.SwitchId).Distinct().ToArray();
+            var sensorsBySwitches = bindings
+                .GroupBy(b => b.SwitchId, b => b.SensorId)
+                .ToDictionary(b => b.Key, b => b.ToArray());
 
             var result = new List<SwitchViewModelBase>(switches.Length);
             foreach (var @switch in switches)
             {
                 SwitchViewModelBase vm;
+                SensorId[] sensors;
+                if (!sensorsBySwitches.TryGetValue(@switch.SwitchId, out sensors))
+                    sensors = new SensorId[0];
+                
                 switch (@switch.SwitchKind)
                 {
                     case SwitchKind.Toggle:
-                        vm = new ToggleSwitchViewModel(_eventSource, _eventSender, _log);
+                        vm = new ToggleSwitchViewModel(_eventSource, _eventSender, sensors, _log);
                         break;
 
                     case SwitchKind.Gradient:
-                        vm = new GradientSwitchViewModel(_eventSource, _eventSender, _log);
+                        vm = new GradientSwitchViewModel(_eventSource, _eventSender, sensors, _log);
                         break;
 
                     default:
@@ -66,7 +72,6 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 vm.Id = @switch.SwitchId;
                 vm.Name = @switch.Name;
                 vm.Description = @switch.Description;
-                vm.IsAutomated = automatedSwitches.Contains(@switch.SwitchId);
                 result.Add(vm);
             }
 

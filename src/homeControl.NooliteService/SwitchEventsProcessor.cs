@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +13,7 @@ using Serilog;
 namespace homeControl.NooliteService
 {
     [UsedImplicitly]
-    internal sealed class SwitchEventsProcessor
+    internal sealed class SwitchEventsProcessor : IDisposable
     {
         private readonly ISwitchController _switchController;
         private readonly IEventSource _source;
@@ -21,58 +23,46 @@ namespace homeControl.NooliteService
         {
             Guard.DebugAssertArgumentNotNull(switchController, nameof(switchController));
             Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
             _switchController = switchController;
             _source = source;
             _log = log;
         }
+
+        private readonly List<SwitchEventsObserver> _observers = new List<SwitchEventsObserver>();
+        private readonly SemaphoreSlim _completionSemaphore = new SemaphoreSlim(0, 1);
         
-        public Task Run(CancellationToken ct)
+        public void RunAsync(CancellationToken ct)
         {
-            return Task.Run(() => RunImpl(ct), ct);
+            _log.Debug("Starting events processing.");
+            var eventSource = _source.ReceiveEvents<AbstractSwitchEvent>();
+            eventSource
+                .GroupBy(e => e.SwitchId)
+                .ForEachAsync(switchObservable =>
+                {
+                    _log.Debug("Received new SwitchId={SwitchId}, creating observer.", switchObservable.Key);
+                    var observer = new SwitchEventsObserver(_switchController, _log.ForContext<SwitchEventsObserver>(), ct);
+                    _observers.Add(observer);
+                    switchObservable.Subscribe(observer);
+                }, ct)
+                .ContinueWith(t => _completionSemaphore.Release(), ct);
         }
 
-        private void RunImpl(CancellationToken ct)
+        public async Task Completion(CancellationToken ct)
         {
-            var latest = _source
-                .ReceiveEvents<AbstractSwitchEvent>()
-                .Latest();
-
-            foreach (var @event in latest)
-            {
-                ct.ThrowIfCancellationRequested();
-                HandleEvent(@event);
-            }
+            _log.Debug("Awaiting completion.");
+            await _completionSemaphore.WaitAsync(ct);
+            await Task.WhenAll(_observers.Select(o => o.Completion(ct)));
+            _log.Debug("Complete!");
         }
 
-        private void HandleEvent(AbstractSwitchEvent switchEvent)
+        public void Dispose()
         {
-            Guard.DebugAssertArgumentNotNull(switchEvent, nameof(switchEvent));
-
-            if (!_switchController.CanHandleSwitch(switchEvent.SwitchId))
+            _completionSemaphore?.Dispose();
+            foreach (var observer in _observers)
             {
-                _log.Debug("Switch not supported: {SwitchId}", switchEvent.SwitchId);
-                return;
-            }
-
-            if (switchEvent is TurnOnEvent)
-            {
-                _switchController.TurnOn(switchEvent.SwitchId);
-                _log.Information("Switch turned on: {SwitchId}", switchEvent.SwitchId);
-            }
-            else if (switchEvent is TurnOffEvent)
-            {
-                _switchController.TurnOff(switchEvent.SwitchId);
-                _log.Information("Switch turned off: {SwitchId}", switchEvent.SwitchId);
-            }
-            else if (switchEvent is SetPowerEvent setPower)
-            {
-                _switchController.SetPower(switchEvent.SwitchId, setPower.Power);
-                _log.Information("Adjusted switch power: {SwitchId}, {Power:G}", setPower.SwitchId, setPower.Power);
-            }
-            else
-            {
-                throw new NotImplementedException();
+                observer.Dispose();
             }
         }
     }

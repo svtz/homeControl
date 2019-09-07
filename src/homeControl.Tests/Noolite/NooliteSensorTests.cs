@@ -10,7 +10,7 @@ using homeControl.NooliteService.Adapters;
 using homeControl.NooliteService.Configuration;
 using Moq;
 using Serilog;
-using ThinkingHome.NooLite.ReceivedData;
+using ThinkingHome.NooLite.LibUsb.ReceivedData;
 using Xunit;
 
 namespace homeControl.Tests.Noolite
@@ -19,9 +19,9 @@ namespace homeControl.Tests.Noolite
     {
         private RX2164ReceivedCommandData CreateCommandData(byte cmd, byte channel)
         {
-            var buf = new byte[9];
-            buf[2] = channel;
-            buf[3] = cmd;
+            var buf = new byte[8];
+            buf[1] = channel;
+            buf[2] = cmd;
             return new RX2164ReceivedCommandData(buf);
         }
 

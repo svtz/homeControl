@@ -1,4 +1,4 @@
-﻿namespace ThinkingHome.NooLite
+﻿namespace ThinkingHome.NooLite.LibUsb
 {
 	public enum RxCommand: byte
     {
