@@ -31,6 +31,8 @@ namespace homeControl.Entry
                 }
             });
 
+            Logger.Debug($"Root container created");
+            
             return container;
         }
         

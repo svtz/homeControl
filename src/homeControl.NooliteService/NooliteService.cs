@@ -8,6 +8,7 @@ using homeControl.Domain.Events.Switches;
 using homeControl.Entry;
 using homeControl.Interop.Rabbit.IoC;
 using RabbitMQ.Client;
+using Serilog;
 using StructureMap;
 
 namespace homeControl.NooliteService
@@ -32,10 +33,13 @@ namespace homeControl.NooliteService
 
         protected override void Run(IContainer container, CancellationToken ct)
         {
+            Logger.Debug("Run: the beginning");
+            
             container.GetInstance<NooliteSensor>().Activate();
             
             var switchesProcessor = container.GetInstance<SwitchEventsProcessor>();
-
+ 
+            Logger.Debug("Starting SwitchEventsProcessor");
             switchesProcessor.RunAsync(ct);
             switchesProcessor.Completion(ct).Wait(ct);
         }
