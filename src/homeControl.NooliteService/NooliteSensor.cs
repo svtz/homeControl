@@ -45,6 +45,7 @@ namespace homeControl.NooliteService
 
         public void Activate()
         {
+            _log.Debug("Activating noolite sensor");
             _adapter.CommandReceived += AdapterOnCommandReceived;
             _adapter.Activate();
             _log.Debug("Noolite sensor started.");
