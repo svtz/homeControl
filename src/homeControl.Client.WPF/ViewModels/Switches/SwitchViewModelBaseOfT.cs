@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Command;
 using homeControl.Domain;
 using homeControl.Domain.Events;
-using homeControl.Domain.Events.Bindings;
 using homeControl.Domain.Events.Switches;
 using Serilog;
 
@@ -16,8 +17,9 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         private readonly IEventSender _eventSender;
 
         private T _value;
-        private readonly IDisposable _eventSubscription;
-
+        private readonly Task _eventSubscription;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        
         public T Value
         {
             get => _value;
@@ -63,7 +65,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             _eventSubscription = eventSource
                 .ReceiveEvents<AbstractSwitchEvent>()
                 .Where(e => e.SwitchId == Id)
-                .ForEachAsync(UpdateValueFromEvent);
+                .ForEachAsync(UpdateValueFromEvent, _cts.Token);
 
             Log.Debug("Вьюмодель переключателя создана.");
         }
@@ -127,6 +129,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         public override void Dispose()
         {
             base.Dispose();
+            _cts.Cancel();
             _eventSubscription.Dispose();
         }
     }

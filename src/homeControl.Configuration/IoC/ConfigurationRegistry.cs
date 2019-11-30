@@ -19,7 +19,7 @@ namespace homeControl.Configuration.IoC
 
             For<JsonConverter>().Add<SwitchIdSerializer>().Singleton();
             For<JsonConverter>().Add<SensorIdSerializer>().Singleton();
-            For<JsonConverter>().Add<StringEnumConverter>().Singleton();
+            For<JsonConverter>().Add(new StringEnumConverter()).Singleton();
 
             For(typeof(IConfigurationLoader<>))
                 .Use(typeof(JsonConfigurationLoader<>))

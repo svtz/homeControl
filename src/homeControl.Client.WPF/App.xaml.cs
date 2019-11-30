@@ -87,7 +87,7 @@ namespace homeControl.Client.WPF
 
             _log = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
-                .WriteTo.RollingFile("logs/log-{Date}.txt", retainedFileCountLimit: 5)
+                .WriteTo.File("logs/log-{Date}.txt", retainedFileCountLimit: 5)
                 .WriteTo.Trace()
                 .CreateLogger();
 

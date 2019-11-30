@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Command;
 using homeControl.Client.WPF.ViewModels.Switches;
 using JetBrains.Annotations;
 using Serilog;
@@ -25,6 +26,7 @@ namespace homeControl.Client.WPF.ViewModels
             {
                 _isBusy = value;
                 RaisePropertyChanged();
+                (ReloadSwitchesCommand as RelayCommand)?.RaiseCanExecuteChanged();
             }
         }
 
@@ -60,7 +62,7 @@ namespace homeControl.Client.WPF.ViewModels
             try
             {
                 _log.Debug("Идёт обновление набора переключателей.");
-                foreach (var oldSwitch in _switches)
+                foreach (var oldSwitch in _switches.ToArray())
                 {
                     _switches.Remove(oldSwitch);
                     (oldSwitch as IDisposable)?.Dispose();
