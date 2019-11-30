@@ -98,7 +98,7 @@ namespace homeControl.NooliteF.Adapters
 
         private void OnReceiveMicroclimateData(object sender, MicroclimateData data)
         {
-            _logger.Information($"Получены климатические данные: {JsonConvert.SerializeObject(data, Formatting.Indented, new StringEnumConverter())}");
+            _logger.Information($"Получены климатические данные: {data}");
         }
 
         private void OnReceiveData(object sender, ReceivedData data)

@@ -95,8 +95,11 @@ namespace homeControl.NooliteF
                 case MTRFXXCommand.SendState:
                     if (!_channelToSwitchConfig.Value.TryGetValue(receivedData.Channel, out var switchInfo))
                         throw new InvalidConfigurationException($"Could not locate Noolite channel #{receivedData.Channel} in the switches configuration.");
-                    
                     break;
+                
+                case MTRFXXCommand.MicroclimateData:
+                    break;
+                
                 default:
                     throw new ArgumentOutOfRangeException(nameof(receivedData.Command));
             }
