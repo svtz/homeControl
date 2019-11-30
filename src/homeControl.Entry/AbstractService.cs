@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
-using homeControl.Configuration.IoC;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using StructureMap;
 
 namespace homeControl.Entry
 {
@@ -14,28 +12,25 @@ namespace homeControl.Entry
         protected static ILogger Logger => LoggerHolder.Logger;
         
         protected abstract string ServiceNamePrefix { get; }
-        protected abstract IEnumerable<Registry> GetConfigurationRegistries(string uniqueServiceName);
-        protected abstract void Run(IContainer container, CancellationToken ct);
+        protected abstract void Run(IServiceProvider serviceProvider, CancellationToken ct);
 
-        private IContainer CreateRootContainer()
+        protected abstract void ConfigureServices(ServiceCollection services, string uniqueServiceName);
+        
+        private IServiceProvider CreateRootServiceProvider()
         {
             var uniqueServiceName = $"{ServiceNamePrefix}-{Guid.NewGuid()}";
 
-            var container = new Container(cfg =>
-            {
-                cfg.For<ILogger>().Use(c => Logger.ForContext(c.ParentType));
+            var services = new ServiceCollection();
+            services.AddSingleton(sp => Logger);
+            services.AddSingleton(new CancellationTokenSource());
+            ConfigureServices(services, uniqueServiceName);
 
-                foreach (var registry in GetConfigurationRegistries(uniqueServiceName))
-                {
-                    cfg.AddRegistry(registry);
-                }
-            });
-
-            Logger.Debug($"Root container created");
+            Logger.Debug($"Root service provider created");
             
-            return container;
+            return services.BuildServiceProvider();
         }
-        
+
+
         protected void Run()
         {
             var version = GetType().Assembly.GetName().Version;
@@ -44,15 +39,11 @@ namespace homeControl.Entry
 
             Logger.Information($"Starting service: {title}");
 
-            using (var workContainer = CreateRootContainer().GetNestedContainer())
-            using (var cts = new CancellationTokenSource())
-            {
-                workContainer.Configure(c => c.For<CancellationToken>().Use(() => cts.Token));
+            using var serviceScope = CreateRootServiceProvider().CreateScope();
+            var cts = serviceScope.ServiceProvider.GetRequiredService<CancellationTokenSource>();
+            Console.CancelKeyPress += (s, e) => cts.Cancel();
 
-                Console.CancelKeyPress += (s, e) => cts.Cancel();
-
-                Run(workContainer, cts.Token);
-            }
+            Run(serviceScope.ServiceProvider, cts.Token);
         }
     }
 }

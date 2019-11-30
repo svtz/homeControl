@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using homeControl.Domain.Events;
@@ -13,14 +14,14 @@ namespace homeControl.Configuration
         private readonly JsonConverter[] _converters;
         private readonly IEventSender _sender;
         private readonly IEventSource _source;
-        private readonly string _serviceName;
+        private readonly ServiceNameHolder _serviceName;
         private readonly ILogger _log;
 
         public JsonConfigurationLoader(
-            JsonConverter[] converters,
+            IEnumerable<JsonConverter> converters,
             IEventSender sender,
             IEventSource source,
-            string serviceName,
+            ServiceNameHolder serviceName,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(converters, nameof(converters));
@@ -28,7 +29,7 @@ namespace homeControl.Configuration
             Guard.DebugAssertArgumentNotNull(source, nameof(source));
             Guard.DebugAssertArgumentNotNull(serviceName, nameof(serviceName));
 
-            _converters = converters;
+            _converters = converters.ToArray();
             _sender = sender;
             _source = source;
             _serviceName = serviceName;
@@ -44,7 +45,7 @@ namespace homeControl.Configuration
             var request = new ConfigurationRequestEvent()
             {
                 ConfigurationKey = configKey,
-                ReplyAddress = _serviceName
+                ReplyAddress = _serviceName.ServiceName
             };
             var response = _source.ReceiveEvents<ConfigurationResponseEvent>().FirstAsync();
             _sender.SendEvent(request);

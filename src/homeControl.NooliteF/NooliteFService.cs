@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Text;
 using System.Threading;
 using homeControl.Configuration.IoC;
@@ -7,39 +7,39 @@ using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
 using homeControl.Entry;
 using homeControl.Interop.Rabbit.IoC;
+using homeControl.NooliteF.IoC;
+using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
-using StructureMap;
 
 namespace homeControl.NooliteF
 {
     public class NooliteFService : AbstractService
     {
-        protected override string ServiceNamePrefix { get; } = "noolite";
-        
-        protected override IEnumerable<Registry> GetConfigurationRegistries(string uniqueServiceName)
+        protected override string ServiceNamePrefix { get; } = "noolite-f";
+        protected override void Run(IServiceProvider serviceProvider, CancellationToken ct)
         {
-            yield return new RabbitConfigurationRegistryBuilder(Config)
+            serviceProvider.GetRequiredService<NooliteFSensor>().Activate();
+            
+            var switchesProcessor = serviceProvider.GetRequiredService<SwitchEventsProcessorF>();
+
+            switchesProcessor.RunAsync(ct);
+            switchesProcessor.Completion(ct).Wait(ct);
+        }
+
+        protected override void ConfigureServices(ServiceCollection services, string uniqueServiceName)
+        {
+            new RabbitConfiguration(Config)
                 .UseJsonSerializationWithEncoding(Encoding.UTF8)
                 .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
                 .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
                 .SetupEventSender<AbstractSensorEvent>("main")
                 .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
-                .Build();
+                .Apply(services);
             
-            yield return new ConfigurationRegistry(uniqueServiceName);
-            yield return new NooliteFRegistry(Config);
+            services.AddConfigurationRepositories(uniqueServiceName);
+            services.AddNooliteFServices(Config);
         }
 
-        protected override void Run(IContainer container, CancellationToken ct)
-        {
-            container.GetInstance<NooliteFSensor>().Activate();
-            
-            var switchesProcessor = container.GetInstance<SwitchEventsProcessorF>();
-
-            switchesProcessor.RunAsync(ct);
-            switchesProcessor.Completion(ct).Wait(ct);
-        }
-        
         private static void Main(string[] args)
         {
             new NooliteFService().Run();

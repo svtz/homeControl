@@ -1,32 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Text;
 using System.Threading;
+using homeControl.ConfigurationStore.IoC;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Entry;
 using homeControl.Interop.Rabbit.IoC;
+using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
-using StructureMap;
 
 namespace homeControl.ConfigurationStore
 {
     internal sealed class ConfigurationStoreService : AbstractService
     {
         protected override string ServiceNamePrefix => "configStore";
-
-        protected override IEnumerable<Registry> GetConfigurationRegistries(string uniqueServiceName)
+        protected override void Run(IServiceProvider serviceProvider, CancellationToken ct)
         {
-            yield return new RabbitConfigurationRegistryBuilder(Config)
+            serviceProvider.GetRequiredService<ConfigurationRequestsProcessor>().Run(ct).Wait(ct);
+        }
+
+        protected override void ConfigureServices(ServiceCollection services, string uniqueServiceName)
+        {
+            new RabbitConfiguration(Config)
                 .UseJsonSerializationWithEncoding(Encoding.UTF8)
                 .SetupEventSource<ConfigurationRequestEvent>("configuration-requests", ExchangeType.Fanout, string.Empty)
                 .SetupEventSender<ConfigurationResponseEvent>("configuration")
-                .Build();
-
-            yield return new ConfigurationStoreRegistry();
-        }
-
-        protected override void Run(IContainer workContainer, CancellationToken ct)
-        {
-            workContainer.GetInstance<ConfigurationRequestsProcessor>().Run(ct).Wait(ct);
+                .Apply(services);
+            
+            services.AddConfigurationStoreServices();
         }
 
         private static void Main(string[] args)
