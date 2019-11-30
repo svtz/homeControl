@@ -18,6 +18,8 @@ namespace homeControl.NooliteF.IoC
             services.AddSingleton<INooliteFSwitchInfoRepository, NooliteFSwitchInfoRepository>();
             services.AddSingleton<INooliteFSensorInfoRepository, NooliteFSensorInfoRepository>();
             services.AddSingleton<NooliteFSensor>();
+            services.AddSingleton<SwitchEventsProcessorF>();
+            services.AddSingleton<SwitchEventsObserverF>();
         }
     }
 }

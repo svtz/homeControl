@@ -17,22 +17,26 @@ namespace homeControl.NooliteF
         private readonly IEventSender _eventSender;
         private readonly IMtrfAdapter _adapter;
         private readonly ILogger _log;
-        private readonly Lazy<IDictionary<int, NooliteFSensorInfo>> _channelToConfig;
+        private readonly Lazy<IDictionary<int, NooliteFSensorInfo>> _channelToSensorConfig;
+        private readonly Lazy<IDictionary<int, NooliteFSwitchInfo>> _channelToSwitchConfig;
 
         public NooliteFSensor(
             IEventSender eventSender,
             IMtrfAdapter adapter,
-            INooliteFSensorInfoRepository configuration,
+            INooliteFSensorInfoRepository sensorRepository,
+            INooliteFSwitchInfoRepository switchRepository,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
             Guard.DebugAssertArgumentNotNull(adapter, nameof(adapter));
-            Guard.DebugAssertArgumentNotNull(configuration, nameof(configuration));
+            Guard.DebugAssertArgumentNotNull(sensorRepository, nameof(sensorRepository));
+            Guard.DebugAssertArgumentNotNull(switchRepository, nameof(switchRepository));
 
             _eventSender = eventSender;
             _adapter = adapter;
             _log = log;
-            _channelToConfig = new Lazy<IDictionary<int, NooliteFSensorInfo>>(() => LoadConfig(configuration));
+            _channelToSensorConfig = new Lazy<IDictionary<int, NooliteFSensorInfo>>(() => LoadSensorConfig(sensorRepository));
+            _channelToSwitchConfig = new Lazy<IDictionary<int, NooliteFSwitchInfo>>(() => LoadSwitchConfig(switchRepository));
         }
 
         public void Activate()
@@ -42,13 +46,27 @@ namespace homeControl.NooliteF
             _log.Debug("Noolite sensor started.");
         }
 
-        private static Dictionary<int, NooliteFSensorInfo> LoadConfig(INooliteFSensorInfoRepository config)
+        private static Dictionary<int, NooliteFSensorInfo> LoadSensorConfig(INooliteFSensorInfoRepository repository)
         {
-            Guard.DebugAssertArgumentNotNull(config, nameof(config));
+            Guard.DebugAssertArgumentNotNull(repository, nameof(repository));
 
             try
             {
-                return config.GetAll().Result.ToDictionary(cfg => (int)cfg.Channel);
+                return repository.GetAll().Result.ToDictionary(cfg => (int)cfg.Channel);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidConfigurationException(ex, "Found duplicated Noolite.F sensor channels in the configuration file.");
+            }
+        }
+        
+        private static Dictionary<int, NooliteFSwitchInfo> LoadSwitchConfig(INooliteFSwitchInfoRepository repository)
+        {
+            Guard.DebugAssertArgumentNotNull(repository, nameof(repository));
+
+            try
+            {
+                return repository.GetAll().Result.ToDictionary(cfg => (int)cfg.Channel);
             }
             catch (ArgumentException ex)
             {
@@ -60,24 +78,36 @@ namespace homeControl.NooliteF
         {
             Guard.DebugAssertArgumentNotNull(receivedData, nameof(receivedData));
 
-            if (!_channelToConfig.Value.TryGetValue(receivedData.Channel, out var info))
-                throw new InvalidConfigurationException($"Could not locate Noolite channel #{receivedData.Channel} in the configuration.");
-
             switch (receivedData.Command)
             {
                 case MTRFXXCommand.On:
-                    _eventSender.SendEvent(new SensorActivatedEvent(info.SensorId));
-                    _log.Information("Noolite.F sensor activated: {SensorId}", info.SensorId);
-
+                    var onSensorInfo = GetSensorInfo(receivedData);
+                    _eventSender.SendEvent(new SensorActivatedEvent(onSensorInfo.SensorId));
+                    _log.Information("Noolite.F sensor activated: {SensorId}", onSensorInfo.SensorId);
                     break;
+                
                 case MTRFXXCommand.Off:
-                    _eventSender.SendEvent(new SensorDeactivatedEvent(info.SensorId));
-                    _log.Information("Noolite.F sensor deactivated: {SensorId}", info.SensorId);
-
+                    var offSensorInfo = GetSensorInfo(receivedData);
+                    _eventSender.SendEvent(new SensorDeactivatedEvent(offSensorInfo.SensorId));
+                    _log.Information("Noolite.F sensor deactivated: {SensorId}", offSensorInfo.SensorId);
+                    break;
+                    
+                case MTRFXXCommand.SendState:
+                    if (!_channelToSwitchConfig.Value.TryGetValue(receivedData.Channel, out var switchInfo))
+                        throw new InvalidConfigurationException($"Could not locate Noolite channel #{receivedData.Channel} in the switches configuration.");
+                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(receivedData.Command));
             }
+        }
+
+        private NooliteFSensorInfo GetSensorInfo(ReceivedData receivedData)
+        {
+            if (!_channelToSensorConfig.Value.TryGetValue(receivedData.Channel, out var info))
+                throw new InvalidConfigurationException($"Could not locate Noolite channel #{receivedData.Channel} in the sensors configuration.");
+
+            return info;
         }
 
         public void Dispose()
