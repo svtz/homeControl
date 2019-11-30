@@ -27,7 +27,7 @@ namespace homeControl.NooliteF
                 .Build();
             
             yield return new ConfigurationRegistry(uniqueServiceName);
-            yield return new NooliteFRegistry();
+            yield return new NooliteFRegistry(Config);
         }
 
         protected override void Run(IContainer container, CancellationToken ct)

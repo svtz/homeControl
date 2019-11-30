@@ -1,23 +1,82 @@
 ﻿[
   {
-    "$type": "homeControl.NooliteService.Configuration.NooliteSwitchInfo, homeControl.NooliteService",
-    "SwitchId": "B9250AA6-9FEC-49C5-9947-ACEDD2DB9115",
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "b3d84320-12b9-46ef-8062-b4a73e319892",
     "Channel": 0,
-    "FullPowerLevel": "141",
-    "ZeroPowerLevel": "40"
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
   },
   {
-    "$type": "homeControl.NooliteService.Configuration.NooliteSwitchInfo, homeControl.NooliteService",
-    "SwitchId": "24AA0725-180C-40A8-A132-B47B901D9093",
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "16e552be-20bc-49fc-a75e-f02781cbf72d",
     "Channel": 1,
     "FullPowerLevel": "1",
-    "ZeroPowerLevel": "0"
+    "ZeroPowerLevel": "0",
+    "UseF": true
   },
   {
-    "$type": "homeControl.NooliteService.Configuration.NooliteSwitchInfo, homeControl.NooliteService",
-    "SwitchId": "567E8945-2AA3-4891-B59B-91B3C077701E",
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "d277d140-4fa6-41f2-b0f3-0b050c0f62ef",
     "Channel": 2,
     "FullPowerLevel": "1",
-    "ZeroPowerLevel": "0"
+    "ZeroPowerLevel": "0",
+    "UseF": true
+  },
+  {
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "bc17fba3-6d58-4c71-a833-6017b9bac2b6",
+    "Channel": 3,
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
+  },
+  {
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "8aa78bcf-de8f-4e83-b244-c98ccd45ea7e",
+    "Channel": 4,
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
+  },
+  {
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "ac27f946-79fe-4c10-85bd-c72454e152fb",
+    "Channel": 5,
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
+  },
+  {
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "12ba7e4e-b621-450d-882f-1cb537019efa",
+    "Channel": 6,
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
+  },
+  {
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "cb7c0999-5e74-46ec-92cc-d52ad613e278",
+    "Channel": 9,
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
+  },
+  {
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "385777ba-6255-4ec5-a80c-78b0b83d6c6d",
+    "Channel": 8,
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
+  },
+  {
+    "$type": "homeControl.NooliteF.Configuration.NooliteFSwitchInfo, homeControl.NooliteF",
+    "SwitchId": "8589b218-8c08-409e-b0dc-669df545cdfd",
+    "Channel": 10,
+    "FullPowerLevel": "1",
+    "ZeroPowerLevel": "0",
+    "UseF": true
   }
 ]

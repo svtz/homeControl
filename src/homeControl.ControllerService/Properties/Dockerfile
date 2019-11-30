@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-runtime-stretch-slim-arm32v7
+FROM mcr.microsoft.com/dotnet/core/runtime:3.0.1-buster-slim-arm64v8
 
 COPY ./publish /publish
 WORKDIR /publish

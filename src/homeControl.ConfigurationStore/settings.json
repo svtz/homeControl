@@ -1,7 +1,7 @@
 {
   "RabbitUserName": "configStore",
   "RabbitUserPass": "configStore",
-  "RabbitHost": "192.168.1.20/homeControl",
+  "RabbitHost": "192.168.1.44/homeControl",
 
   "LogEventLevel": "Verbose"
 }

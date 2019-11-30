@@ -1,52 +1,82 @@
 ﻿[
     {
         "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
-        "SwitchId": "B9250AA6-9FEC-49C5-9947-ACEDD2DB9115",
-        "SwitchKind": "Gradient",
-        "Name": "Зал - основной",
-        "Description": "Люстра - белые галогеновые лампочки",
+        "SwitchId": "b3d84320-12b9-46ef-8062-b4a73e319892",
+        "SwitchKind": "Toggle",
+        "Name": "Зал - светильники",
+        "Description": "Зал - светильники",
         "ShowOnUi": true 
     },
     {
         "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
-        "SwitchId": "24AA0725-180C-40A8-A132-B47B901D9093",
+        "SwitchId": "16e552be-20bc-49fc-a75e-f02781cbf72d",
         "SwitchKind": "Toggle",
-        "Name": "Зал - индикатор",
-        "Description": "Люстра - голубые диоды",
+        "Name": "Спальня - светильники",
+        "Description": "Спальня - светильники",
         "ShowOnUi": true
     },
     {
         "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
-        "SwitchId": "567E8945-2AA3-4891-B59B-91B3C077701E",
+        "SwitchId": "d277d140-4fa6-41f2-b0f3-0b050c0f62ef",
+        "SwitchKind": "Toggle",
+        "Name": "Ванная",
+        "Description": "Ванная",
+        "ShowOnUi": true
+    },
+    {
+        "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
+        "SwitchId": "bc17fba3-6d58-4c71-a833-6017b9bac2b6",
         "SwitchKind": "Toggle",
         "Name": "Коридор",
-        "Description": "Люстра в коридоре",
-        "ShowOnUi": true
-    },
-
-
-    {
-        "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
-        "SwitchId": "60E1D882-50F2-4709-BC93-2C44CD09398E",
-        "SwitchKind": "Toggle",
-        "Name": "Все гирлянды",
-        "Description": "Огоньки!",
+        "Description": "Коридор",
         "ShowOnUi": true
     },
     {
         "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
-        "SwitchId": "14229E17-727E-4641-BE5D-4D8282F9D51B",
+        "SwitchId": "8aa78bcf-de8f-4e83-b244-c98ccd45ea7e",
         "SwitchKind": "Toggle",
-        "Name": "Ёлка + Окно",
-        "Description": "",
-        "ShowOnUi": false
+        "Name": "Кухня",
+        "Description": "Кухня",
+        "ShowOnUi": true
     },
     {
         "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
-        "SwitchId": "BC015781-D9C7-47F9-AA2D-0AC13A4427B2",
+        "SwitchId": "ac27f946-79fe-4c10-85bd-c72454e152fb",
         "SwitchKind": "Toggle",
-        "Name": "Шкаф",
-        "Description": "",
-        "ShowOnUi": false
+        "Name": "Кухня подсветка",
+        "Description": "Подсветка рабочей зоны на кухне",
+        "ShowOnUi": true
+    },
+    {
+        "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
+        "SwitchId": "12ba7e4e-b621-450d-882f-1cb537019efa",
+        "SwitchKind": "Toggle",
+        "Name": "Балкон",
+        "Description": "Балкон",
+        "ShowOnUi": true
+    },
+    {
+        "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
+        "SwitchId": "cb7c0999-5e74-46ec-92cc-d52ad613e278",
+        "SwitchKind": "Toggle",
+        "Name": "Спальня",
+        "Description": "Спальня",
+        "ShowOnUi": true
+    },
+    {
+        "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
+        "SwitchId": "385777ba-6255-4ec5-a80c-78b0b83d6c6d",
+        "SwitchKind": "Toggle",
+        "Name": "Зал",
+        "Description": "Зал",
+        "ShowOnUi": true
+    },
+    {
+        "$type": "homeControl.Domain.SwitchConfiguration, homeControl.Domain",
+        "SwitchId": "8589b218-8c08-409e-b0dc-669df545cdfd",
+        "SwitchKind": "Toggle",
+        "Name": "Вентилятор в ванной",
+        "Description": "Вытяжной вентилятор в ванной",
+        "ShowOnUi": true
     }
 ]

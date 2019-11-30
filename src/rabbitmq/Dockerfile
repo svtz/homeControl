@@ -1,4 +1,4 @@
-FROM arm32v7/rabbitmq:3.6
+FROM arm64v8/rabbitmq:3.8
 
 COPY init.sh /init.sh
 
