@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using homeControl.ControllerService.Bindings;
 using homeControl.Domain;
+using homeControl.Domain.Configuration.Bindings;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Switches;
 using homeControl.Domain.Repositories;
@@ -18,7 +19,7 @@ namespace homeControl.Tests.Controller
         {
             IReadOnlyCollection<SwitchToSensorBinding> config = new []
             {
-                new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() }
+                new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() }
             };
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(config));
@@ -37,7 +38,7 @@ namespace homeControl.Tests.Controller
         {
             IReadOnlyCollection<SwitchToSensorBinding> config = new []
             {
-                new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() }
+                new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() }
             };
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(config));
@@ -53,7 +54,7 @@ namespace homeControl.Tests.Controller
         [Fact]
         public async void Test_ConsecutiveEnableEvents_AreOk()
         {
-            var config = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -66,7 +67,7 @@ namespace homeControl.Tests.Controller
         [Fact]
         public async void Test_ConsecutiveDisableEvents_AreOk()
         {
-            var config = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -79,7 +80,7 @@ namespace homeControl.Tests.Controller
         [Fact]
         public async void TestBindingEnabledByDefault_TurnOn()
         {
-            var config = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -95,7 +96,7 @@ namespace homeControl.Tests.Controller
         [Fact]
         public async void TestBindingEnabledByDefault_TurnOff()
         {
-            var config = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -111,7 +112,7 @@ namespace homeControl.Tests.Controller
         [Fact]
         public async void TestWhenBindingDeactivated_DoNothing()
         {
-            var config = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -125,12 +126,46 @@ namespace homeControl.Tests.Controller
             publisherMock.Verify(m => m.SendEvent(It.IsAny<IEvent>()), Times.Never);
         }
 
+        [Fact]
+        public async void TestWhenBindingOnOnly_IgnoreOffSensorEvents()
+        {
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOnly, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
+            var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
+            bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
+            var publisherMock = new Mock<IEventSender>(MockBehavior.Strict);
+            var handler = new BindingController(publisherMock.Object, bindingsRepoMock.Object);
+
+            await handler.ProcessSensorActivation(config.SensorId);
+            await handler.ProcessSensorDeactivation(config.SensorId);
+
+            publisherMock.Verify(m => m.SendEvent(It.IsAny<TurnOnEvent>()), Times.Once);
+            publisherMock.Verify(m => m.SendEvent(It.IsAny<TurnOffEvent>()), Times.Never);
+        }
+        
+        [Fact]
+        public async void TestWhenBindingOffOnly_IgnoreOnSensorEvents()
+        {
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOnly, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
+            var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
+            bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
+            var publisherMock = new Mock<IEventSender>(MockBehavior.Strict);
+            var handler = new BindingController(publisherMock.Object, bindingsRepoMock.Object);
+
+            await handler.ProcessSensorActivation(config.SensorId);
+            await handler.ProcessSensorDeactivation(config.SensorId);
+
+            publisherMock.Verify(m => m.SendEvent(It.IsAny<TurnOnEvent>()), Times.Never);
+            publisherMock.Verify(m => m.SendEvent(It.IsAny<TurnOffEvent>()), Times.Once);
+        }
+        
         //multipleSwitches
 
         [Fact]
         public async void TestWhenBindingReactivated_ActivationPublishesTurnOn()
         {
-            var config = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -148,7 +183,7 @@ namespace homeControl.Tests.Controller
         [Fact]
         public async void TestWhenBindingReactivated_DeactivationPublishesTurnOff()
         {
-            var config = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -167,8 +202,8 @@ namespace homeControl.Tests.Controller
         public async void TestWhenSensorBindToMultipleSwitches_ThenTurnOnThemAll()
         {
             var sensorId = SensorId.NewId();
-            var config1 = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = sensorId };
-            var config2 = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = sensorId };
+            var config1 = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = sensorId };
+            var config2 = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = sensorId };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config1, config2};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
@@ -186,8 +221,8 @@ namespace homeControl.Tests.Controller
         public async void TestWhenSensorBindToMultipleSwitches_ThenTurnOffThemAll()
         {
             var sensorId = SensorId.NewId();
-            var config1 = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = sensorId };
-            var config2 = new SwitchToSensorBinding { SwitchId = SwitchId.NewId(), SensorId = sensorId };
+            var config1 = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = sensorId };
+            var config2 = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = sensorId };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config1, config2};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));

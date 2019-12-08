@@ -1,7 +1,8 @@
 ﻿[
   {
-    "$type": "homeControl.Domain.SwitchToSensorBinding, homeControl.Domain",
-    "SwitchId": "567E8945-2AA3-4891-B59B-91B3C077701E",
-    "SensorId": "1f94da1e-6fc8-4977-ab9a-96654adcacb8"
+    "$type": "homeControl.Domain.Configuration.Bindings.OnOffBinding, homeControl.Domain",
+    "SwitchId": "ac27f946-79fe-4c10-85bd-c72454e152fb",
+    "SensorId": "1f94da1e-6fc8-4977-ab9a-96654adcacb8",
+    "Mode": "OnOnly"
   }
 ]

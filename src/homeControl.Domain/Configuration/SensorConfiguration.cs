@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace homeControl.Domain
+namespace homeControl.Domain.Configuration
 {
     [DebuggerDisplay("SensorId")]
     public sealed class SensorConfiguration

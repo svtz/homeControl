@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace homeControl.Domain
+namespace homeControl.Domain.Configuration.Bindings
 {
     [DebuggerDisplay("SwitchId::SensorId")]
-    public sealed class SwitchToSensorBinding: IEquatable<SwitchToSensorBinding>
+    public abstract class SwitchToSensorBinding: IEquatable<SwitchToSensorBinding>
     {
         public SwitchId SwitchId { get; set; }
         public SensorId SensorId { get; set; }

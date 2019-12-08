@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using homeControl.Domain;
+using homeControl.Domain.Configuration;
 using homeControl.Domain.Events;
 using homeControl.Domain.Repositories;
 using JetBrains.Annotations;

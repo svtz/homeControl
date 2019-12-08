@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using homeControl.Domain;
+using homeControl.Domain.Configuration.Bindings;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Switches;
 using homeControl.Domain.Repositories;
@@ -13,8 +14,8 @@ namespace homeControl.ControllerService.Bindings
     {
         private class State
         {
-            private readonly Dictionary<SensorId, HashSet<SwitchId>> _enabledBindings = new Dictionary<SensorId, HashSet<SwitchId>>();
-            private readonly HashSet<Tuple<SwitchId, SensorId>> _allowedCombinations;
+            private readonly Dictionary<SensorId, Dictionary<SwitchId, SwitchToSensorBinding>> _enabledBindings = new Dictionary<SensorId, Dictionary<SwitchId, SwitchToSensorBinding>>();
+            private readonly Dictionary<(SwitchId, SensorId), SwitchToSensorBinding> _allBindings;
 
             public State(IReadOnlyCollection<SwitchToSensorBinding> bindings)
             {
@@ -22,21 +23,20 @@ namespace homeControl.ControllerService.Bindings
 
                 foreach (var sensorGroup in bindings.GroupBy(b => b.SensorId))
                 {
-                    var sensorBindings = sensorGroup.Select(binding => binding.SwitchId);
-                    _enabledBindings[sensorGroup.Key] = new HashSet<SwitchId>(sensorBindings);
+                    _enabledBindings[sensorGroup.Key] = sensorGroup.ToDictionary(x => x.SwitchId);
                 }
 
-                var allowedCombinations = bindings.Select(b => Tuple.Create(b.SwitchId, b.SensorId));
-                _allowedCombinations = new HashSet<Tuple<SwitchId, SensorId>>(allowedCombinations);
+                _allBindings = bindings.ToDictionary(b => (b.SwitchId, b.SensorId));
             }
 
-            private void CheckBindingIsValid(SwitchId switchId, SensorId sensorId)
+            private SwitchToSensorBinding GetBinding(SwitchId switchId, SensorId sensorId)
             {
-                if (!_enabledBindings.ContainsKey(sensorId) ||
-                    !_allowedCombinations.Contains(Tuple.Create(switchId, sensorId)))
+                if (!_allBindings.TryGetValue((switchId, sensorId), out var binding))
                 {
                     throw new InvalidOperationException($"Sensor {sensorId} not found in the configuration.");
                 }
+
+                return binding;
             }
 
             public void Enable(SwitchId switchId, SensorId sensorId)
@@ -44,13 +44,13 @@ namespace homeControl.ControllerService.Bindings
                 Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
                 Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
 
-                CheckBindingIsValid(switchId, sensorId);
+                var binding = GetBinding(switchId, sensorId);
 
                 var enabledSwitches = _enabledBindings[sensorId];
-                if (enabledSwitches.Contains(switchId)) return;
+                if (enabledSwitches.ContainsKey(switchId)) return;
 
                 lock (enabledSwitches)
-                    enabledSwitches.Add(switchId);
+                    enabledSwitches.Add(switchId, binding);
             }
 
             public void Disable(SwitchId switchId, SensorId sensorId)
@@ -58,26 +58,23 @@ namespace homeControl.ControllerService.Bindings
                 Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
                 Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
 
-                CheckBindingIsValid(switchId, sensorId);
-
                 var enabledSwitches = _enabledBindings[sensorId];
-                if (!enabledSwitches.Contains(switchId)) return;
+                if (!enabledSwitches.ContainsKey(switchId)) return;
 
                 lock (enabledSwitches)
                     enabledSwitches.Remove(switchId);
             }
 
-            public IReadOnlyCollection<SwitchId> GetAutomatedSwitches(SensorId sensorId)
+            public IReadOnlyCollection<SwitchToSensorBinding> GetAutomatedSwitches(SensorId sensorId)
             {
                 Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
 
-                HashSet<SwitchId> switches;
-                if (!_enabledBindings.TryGetValue(sensorId, out switches))
+                if (!_enabledBindings.TryGetValue(sensorId, out var switches))
                 {
-                    return Array.Empty<SwitchId>();
+                    return Array.Empty<SwitchToSensorBinding>();
                 }
 
-                return switches;
+                return switches.Values;
             }
         }
 
@@ -127,19 +124,25 @@ namespace homeControl.ControllerService.Bindings
 
         public async Task ProcessSensorActivation(SensorId sensorId)
         {
-            var switchesToTurnOn = (await GetState()).GetAutomatedSwitches(sensorId);
-            foreach (var switchId in switchesToTurnOn)
+            var bindingsToTurnOn = (await GetState())
+                .GetAutomatedSwitches(sensorId)
+                .OfType<OnOffBinding>()
+                .Where(s => s.Mode != OnOffBindingMode.OffOnly);
+            foreach (var binding in bindingsToTurnOn)
             {
-                _eventSender.SendEvent(new TurnOnEvent(switchId));
+                _eventSender.SendEvent(new TurnOnEvent(binding.SwitchId));
             }
         }
 
         public async Task ProcessSensorDeactivation(SensorId sensorId)
         {
-            var switchesToTurnOff = (await GetState()).GetAutomatedSwitches(sensorId);
-            foreach (var switchId in switchesToTurnOff)
+            var bindingsToTurnOff = (await GetState())
+                .GetAutomatedSwitches(sensorId)
+                .OfType<OnOffBinding>()
+                .Where(s => s.Mode != OnOffBindingMode.OnOnly);
+            foreach (var binding in bindingsToTurnOff)
             {
-                _eventSender.SendEvent(new TurnOffEvent(switchId));
+                _eventSender.SendEvent(new TurnOffEvent(binding.SwitchId));
             }
         }
     }

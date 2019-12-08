@@ -1,4 +1,4 @@
-﻿namespace homeControl.Domain
+﻿namespace homeControl.Domain.Configuration
 {
     public enum SwitchKind
     {
