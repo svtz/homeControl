@@ -17,7 +17,7 @@ namespace homeControl.NooliteF
         private readonly IEventSender _eventSender;
         private readonly IMtrfAdapter _adapter;
         private readonly ILogger _log;
-        private readonly Lazy<IDictionary<int, NooliteFSensorInfo>> _channelToSensorConfig;
+        private readonly Lazy<IDictionary<int, AbstractNooliteFSensorInfo>> _channelToSensorConfig;
 
         public NooliteFSensor(
             IEventSender eventSender,
@@ -32,7 +32,7 @@ namespace homeControl.NooliteF
             _eventSender = eventSender;
             _adapter = adapter;
             _log = log;
-            _channelToSensorConfig = new Lazy<IDictionary<int, NooliteFSensorInfo>>(() => LoadSensorConfig(sensorRepository));
+            _channelToSensorConfig = new Lazy<IDictionary<int, AbstractNooliteFSensorInfo>>(() => LoadSensorConfig(sensorRepository));
         }
 
         public void Activate()
@@ -42,7 +42,7 @@ namespace homeControl.NooliteF
             _log.Debug("Noolite sensor started.");
         }
 
-        private static Dictionary<int, NooliteFSensorInfo> LoadSensorConfig(INooliteFSensorInfoRepository repository)
+        private static Dictionary<int, AbstractNooliteFSensorInfo> LoadSensorConfig(INooliteFSensorInfoRepository repository)
         {
             Guard.DebugAssertArgumentNotNull(repository, nameof(repository));
 
@@ -63,13 +63,13 @@ namespace homeControl.NooliteF
             switch (receivedData.Command)
             {
                 case MTRFXXCommand.On:
-                    var onSensorInfo = GetSensorInfo(receivedData);
+                    var onSensorInfo = GetSensorInfo<OnOffNooliteFSensorInfo>(receivedData);
                     _eventSender.SendEvent(new SensorActivatedEvent(onSensorInfo.SensorId));
                     _log.Information("Noolite.F sensor activated: {SensorId}", onSensorInfo.SensorId);
                     break;
                 
                 case MTRFXXCommand.Off:
-                    var offSensorInfo = GetSensorInfo(receivedData);
+                    var offSensorInfo = GetSensorInfo<OnOffNooliteFSensorInfo>(receivedData);
                     _eventSender.SendEvent(new SensorDeactivatedEvent(offSensorInfo.SensorId));
                     _log.Information("Noolite.F sensor deactivated: {SensorId}", offSensorInfo.SensorId);
                     break;
@@ -78,6 +78,15 @@ namespace homeControl.NooliteF
                     break;
                 
                 case MTRFXXCommand.MicroclimateData:
+                    var temperatureSensor = GetSensorInfo<TemperatureNooliteFSensorInfo>(receivedData);
+                    var microclimateData = (MicroclimateData)receivedData;
+                    _eventSender.SendEvent(new SensorValueEvent(temperatureSensor.TemperatureSensorId, microclimateData.Temperature));
+                    if (microclimateData.Humidity.HasValue &&
+                        temperatureSensor is TemperatureAndHumidityNooliteFSensorInfo humiditySensor)
+                    {
+                        _eventSender.SendEvent(new SensorValueEvent(humiditySensor.HumiditySensorId, microclimateData.Humidity.Value));
+                    }
+                    
                     break;
                 
                 default:
@@ -85,12 +94,15 @@ namespace homeControl.NooliteF
             }
         }
 
-        private NooliteFSensorInfo GetSensorInfo(ReceivedData receivedData)
+        private TInfo GetSensorInfo<TInfo>(ReceivedData receivedData) where TInfo : AbstractNooliteFSensorInfo
         {
             if (!_channelToSensorConfig.Value.TryGetValue(receivedData.Channel, out var info))
                 throw new InvalidConfigurationException($"Could not locate Noolite channel #{receivedData.Channel} in the sensors configuration.");
 
-            return info;
+            if (!(info is TInfo typedInfo))
+                throw new InvalidConfigurationException($"Noolite sensor with channel #{receivedData.Channel} has invalid type {info.GetType()}. Expected type: {typeof(TInfo)}");
+            
+            return typedInfo;
         }
 
         public void Dispose()
