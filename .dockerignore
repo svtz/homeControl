@@ -8,6 +8,7 @@
 **/.toolstarget
 **/.vs
 **/.vscode
+**/.idea
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
@@ -21,5 +22,6 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/*.csproj.user
 LICENSE
 README.md

@@ -5,6 +5,7 @@ using homeControl.ControllerService.Bindings;
 using homeControl.Domain;
 using homeControl.Domain.Configuration.Bindings;
 using homeControl.Domain.Events;
+using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
 using homeControl.Domain.Repositories;
 using Moq;
@@ -15,7 +16,7 @@ namespace homeControl.Tests.Controller
     public class BindingControllerTests
     {
         [Fact]
-        public async void TestWnehUnknownSensor_ThenDoNothing()
+        public async void TestWhenUnknownSensor_ThenDoNothing()
         {
             IReadOnlyCollection<SwitchToSensorBinding> config = new []
             {
@@ -134,6 +135,7 @@ namespace homeControl.Tests.Controller
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
             var publisherMock = new Mock<IEventSender>(MockBehavior.Strict);
+            publisherMock.Setup(m => m.SendEvent(It.Is<TurnOnEvent>(e => e.SwitchId == config.SwitchId)));
             var handler = new BindingController(publisherMock.Object, bindingsRepoMock.Object);
 
             await handler.ProcessSensorActivation(config.SensorId);
@@ -146,11 +148,12 @@ namespace homeControl.Tests.Controller
         [Fact]
         public async void TestWhenBindingOffOnly_IgnoreOnSensorEvents()
         {
-            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOnly, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OffOnly, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
             IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
             var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
             bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
             var publisherMock = new Mock<IEventSender>(MockBehavior.Strict);
+            publisherMock.Setup(m => m.SendEvent(It.Is<TurnOffEvent>(e => e.SwitchId == config.SwitchId)));
             var handler = new BindingController(publisherMock.Object, bindingsRepoMock.Object);
 
             await handler.ProcessSensorActivation(config.SensorId);
@@ -160,8 +163,6 @@ namespace homeControl.Tests.Controller
             publisherMock.Verify(m => m.SendEvent(It.IsAny<TurnOffEvent>()), Times.Once);
         }
         
-        //multipleSwitches
-
         [Fact]
         public async void TestWhenBindingReactivated_ActivationPublishesTurnOn()
         {
@@ -197,6 +198,61 @@ namespace homeControl.Tests.Controller
 
             publisherMock.Verify(m => m.SendEvent(It.IsAny<TurnOffEvent>()), Times.Once);
         }
+        
+        [Fact]
+        public async void TestWhenValueCommandButOnOffConfigured_ThenDoNothing()
+        {
+            var config = new OnOffBinding { Mode = OnOffBindingMode.OnOff, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
+            var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
+            bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
+            var publisherMock = new Mock<IEventSender>(MockBehavior.Strict);
+            var handler = new BindingController(publisherMock.Object, bindingsRepoMock.Object);
+
+            await handler.ProcessSensorValue(config.SensorId, 0);
+
+            publisherMock.Verify(m => m.SendEvent(It.IsAny<IEvent>()), Times.Never);
+        }
+        
+        [Fact]
+        public async void TestWhenOnOffCommandButThresholdConfigured_ThenDoNothing()
+        {
+            var config = new ThresholdBinding { Operator = ThresholdOperator.GreaterThanThreshold, Threshold = 0, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
+            var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
+            bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
+            var publisherMock = new Mock<IEventSender>(MockBehavior.Strict);
+            var handler = new BindingController(publisherMock.Object, bindingsRepoMock.Object);
+
+            await handler.ProcessSensorActivation(config.SensorId);
+            await handler.ProcessSensorDeactivation(config.SensorId);
+
+            publisherMock.Verify(m => m.SendEvent(It.IsAny<IEvent>()), Times.Never);
+        }
+        
+        [Theory]
+        [InlineData(ThresholdOperator.GreaterThanThreshold, 10, 11, 1, 0)]
+        [InlineData(ThresholdOperator.GreaterThanThreshold, 10, 9, 0, 1)]
+        [InlineData(ThresholdOperator.LessThanThreshold, 10, 11, 0, 1)]
+        [InlineData(ThresholdOperator.LessThanThreshold, 10, 9, 1, 0)]
+        public async void TestWhenValueCommand_ThenProcessIt(ThresholdOperator @operator, decimal threshold, decimal value, int turnOnTimes, int turnOffTimes)
+        {
+            var config = new ThresholdBinding { Operator = @operator, Threshold = threshold, SwitchId = SwitchId.NewId(), SensorId = SensorId.NewId() };
+            IReadOnlyCollection<SwitchToSensorBinding> configCollection = new [] {config};
+            var bindingsRepoMock = new Mock<ISwitchToSensorBindingsRepository>(MockBehavior.Strict);
+            bindingsRepoMock.Setup(m => m.GetAll()).Returns(Task.FromResult(configCollection));
+            var publisherMock = new Mock<IEventSender>(MockBehavior.Strict);
+            publisherMock.Setup(m => m.SendEvent(It.Is<TurnOnEvent>(e => e.SwitchId == config.SwitchId)));
+            publisherMock.Setup(m => m.SendEvent(It.Is<TurnOffEvent>(e => e.SwitchId == config.SwitchId)));
+            var handler = new BindingController(publisherMock.Object, bindingsRepoMock.Object);
+
+            await handler.ProcessSensorValue(config.SensorId, value);
+
+            publisherMock.Verify(m => m.SendEvent(It.Is<TurnOnEvent>(e => e.SwitchId == config.SwitchId)), Times.Exactly(turnOnTimes));
+            publisherMock.Verify(m => m.SendEvent(It.Is<TurnOffEvent>(e => e.SwitchId == config.SwitchId)), Times.Exactly(turnOffTimes));
+        }
+        
+        //multipleSwitches
 
         [Fact]
         public async void TestWhenSensorBindToMultipleSwitches_ThenTurnOnThemAll()

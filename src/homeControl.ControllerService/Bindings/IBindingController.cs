@@ -7,5 +7,6 @@ namespace homeControl.ControllerService.Bindings
     {
         Task ProcessSensorActivation(SensorId sensorId);
         Task ProcessSensorDeactivation(SensorId sensorId);
+        Task ProcessSensorValue(SensorId sensorId, decimal value);
     }
 }

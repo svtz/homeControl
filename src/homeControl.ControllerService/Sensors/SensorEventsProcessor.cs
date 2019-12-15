@@ -50,6 +50,11 @@ namespace homeControl.ControllerService.Sensors
                 _log.Information("Sensor {SensorId} deactivated", sensorEvent.SensorId);
                 await _bindingController.ProcessSensorDeactivation(sensorEvent.SensorId);
             }
+            else if (sensorEvent is SensorValueEvent valueEvent)
+            {
+                _log.Information("Sensor {SensorId} value={value}", sensorEvent.SensorId, valueEvent.Value);
+                await _bindingController.ProcessSensorValue(valueEvent.SensorId, valueEvent.Value);
+            }
             else
             {
                 throw new NotImplementedException();

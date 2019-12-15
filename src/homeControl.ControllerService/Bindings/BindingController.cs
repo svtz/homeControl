@@ -29,22 +29,15 @@ namespace homeControl.ControllerService.Bindings
                 _allBindings = bindings.ToDictionary(b => (b.SwitchId, b.SensorId));
             }
 
-            private SwitchToSensorBinding GetBinding(SwitchId switchId, SensorId sensorId)
-            {
-                if (!_allBindings.TryGetValue((switchId, sensorId), out var binding))
-                {
-                    throw new InvalidOperationException($"Sensor {sensorId} not found in the configuration.");
-                }
-
-                return binding;
-            }
-
             public void Enable(SwitchId switchId, SensorId sensorId)
             {
                 Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
                 Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
 
-                var binding = GetBinding(switchId, sensorId);
+                if (!_allBindings.TryGetValue((switchId, sensorId), out var binding))
+                {
+                    throw new InvalidOperationException($"Sensor {sensorId} not found in the configuration.");
+                }
 
                 var enabledSwitches = _enabledBindings[sensorId];
                 if (enabledSwitches.ContainsKey(switchId)) return;
@@ -58,6 +51,11 @@ namespace homeControl.ControllerService.Bindings
                 Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
                 Guard.DebugAssertArgumentNotNull(sensorId, nameof(sensorId));
 
+                if (!_allBindings.ContainsKey((switchId, sensorId)))
+                {
+                    throw new InvalidOperationException($"Sensor {sensorId} not found in the configuration.");
+                }
+                
                 var enabledSwitches = _enabledBindings[sensorId];
                 if (!enabledSwitches.ContainsKey(switchId)) return;
 
@@ -143,6 +141,27 @@ namespace homeControl.ControllerService.Bindings
             foreach (var binding in bindingsToTurnOff)
             {
                 _eventSender.SendEvent(new TurnOffEvent(binding.SwitchId));
+            }
+        }
+        
+        public async Task ProcessSensorValue(SensorId sensorId, decimal value)
+        {
+            var bindingsToTurnOff = (await GetState())
+                .GetAutomatedSwitches(sensorId)
+                .OfType<ThresholdBinding>();
+            foreach (var binding in bindingsToTurnOff)
+            {
+                var isOn = binding.Operator == ThresholdOperator.GreaterThanThreshold && value > binding.Threshold
+                           || binding.Operator == ThresholdOperator.LessThanThreshold && value < binding.Threshold;
+
+                if (isOn)
+                {
+                    _eventSender.SendEvent(new TurnOnEvent(binding.SwitchId));
+                }
+                else
+                {
+                    _eventSender.SendEvent(new TurnOffEvent(binding.SwitchId));
+                }
             }
         }
     }
