@@ -6,5 +6,6 @@ namespace homeControl.Domain.Configuration
     public sealed class SensorConfiguration
     {
         public SensorId SensorId { get; set; }
+        public string Description { get; set; }
     }
 }

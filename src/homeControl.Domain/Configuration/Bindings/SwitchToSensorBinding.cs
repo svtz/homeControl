@@ -8,6 +8,7 @@ namespace homeControl.Domain.Configuration.Bindings
     {
         public SwitchId SwitchId { get; set; }
         public SensorId SensorId { get; set; }
+        public string Description { get; set; }
 
         public bool Equals(SwitchToSensorBinding other)
         {

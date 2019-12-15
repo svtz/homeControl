@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ( sleep 60 ; \
 rabbitmqctl add_user controller controller 2>/dev/null ; \
