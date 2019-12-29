@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace homeControl.ConfigurationStore.IoC
 {
@@ -8,7 +9,7 @@ namespace homeControl.ConfigurationStore.IoC
         public static void AddConfigurationStoreServices(this IServiceCollection services)
         {
             var configPath = Path.Combine(Directory.GetCurrentDirectory(), "conf");
-            services.AddSingleton(sp => new ConfigurationProvider(configPath));
+            services.AddSingleton(sp => new ConfigurationProvider(configPath, sp.GetRequiredService<ILogger>()));
             services.AddSingleton<ConfigurationRequestsProcessor>();
         }
     }

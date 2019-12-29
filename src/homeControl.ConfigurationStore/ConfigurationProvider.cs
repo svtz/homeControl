@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using JetBrains.Annotations;
+using Serilog;
 
 namespace homeControl.ConfigurationStore
 {
@@ -8,11 +9,13 @@ namespace homeControl.ConfigurationStore
     internal sealed class ConfigurationProvider
     {
         private readonly string _configurationsDirectory;
+        private readonly ILogger _logger;
 
-        public ConfigurationProvider(string configurationsDirectory)
+        public ConfigurationProvider(string configurationsDirectory, ILogger logger)
         {
             Guard.DebugAssertArgumentNotNull(configurationsDirectory, nameof(configurationsDirectory));
             _configurationsDirectory = configurationsDirectory;
+            _logger = logger;
         }
 
         public string GetConfiguration(string key)
@@ -26,8 +29,9 @@ namespace homeControl.ConfigurationStore
             {
                 return File.ReadAllText(fullPath);
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                _logger.Error(ex, "Error reading configuration {key}", key);
                 return null;
             }
         }
