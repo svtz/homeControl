@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using Serilog;
@@ -17,7 +18,25 @@ namespace homeControl.Client.WPF
 
         private string GetProgramPath()
         {
-            return System.Reflection.Assembly.GetExecutingAssembly().Location;
+            const string exe = ".exe";
+            
+            var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var extension = Path.GetExtension(path);
+            if (exe.Equals(extension, StringComparison.OrdinalIgnoreCase))
+            {
+                return extension;
+            }
+
+            var exeFileName = Path.GetFileNameWithoutExtension(path) + exe;
+            var directory = Path.GetDirectoryName(path);
+            var exePath = Path.Combine(directory, exeFileName);
+
+            if (File.Exists(exePath))
+            {
+                return exePath;
+            }
+
+            throw new NotSupportedException("Can't get executable path to register autorun");
         }
 
         public AutorunConfigurator(ILogger log)
