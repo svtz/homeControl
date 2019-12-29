@@ -60,36 +60,38 @@ namespace homeControl.NooliteF
         {
             Guard.DebugAssertArgumentNotNull(receivedData, nameof(receivedData));
 
-            if (receivedData.Mode == MTRFXXMode.Service)
+            switch (receivedData.Mode, receivedData.Command, receivedData.Result)
             {
-                return;
-            }
+                case (MTRFXXMode.Service, _, _):
+                    // this happens at startup when block exits service mode
+                    break;
 
-            if (receivedData.Result == ResultCode.NoResponse)
-            {
-                //todo noResponce event
-                return;
-            }
-            
-            switch (receivedData.Command)
-            {
-                case MTRFXXCommand.On:
-                case MTRFXXCommand.TemporarySwitchOn:
+                case (MTRFXXMode.RX, MTRFXXCommand.On, ResultCode.Success):
+                case (MTRFXXMode.RXF, MTRFXXCommand.On, ResultCode.Success):
+                case (MTRFXXMode.RX, MTRFXXCommand.TemporarySwitchOn, ResultCode.Success):
+                case (MTRFXXMode.RXF, MTRFXXCommand.TemporarySwitchOn, ResultCode.Success):
                     var onSensorInfo = GetSensorInfo<OnOffNooliteFSensorInfo>(receivedData);
                     _eventSender.SendEvent(new SensorActivatedEvent(onSensorInfo.SensorId));
                     _log.Information("Noolite.F sensor activated: {SensorId}", onSensorInfo.SensorId);
                     break;
                 
-                case MTRFXXCommand.Off:
+                case (MTRFXXMode.RX, MTRFXXCommand.Off, ResultCode.Success):
+                case (MTRFXXMode.RXF, MTRFXXCommand.Off, ResultCode.Success):
                     var offSensorInfo = GetSensorInfo<OnOffNooliteFSensorInfo>(receivedData);
                     _eventSender.SendEvent(new SensorDeactivatedEvent(offSensorInfo.SensorId));
                     _log.Information("Noolite.F sensor deactivated: {SensorId}", offSensorInfo.SensorId);
                     break;
                     
-                case MTRFXXCommand.SendState:
+                case (MTRFXXMode.TXF, _, ResultCode.NoResponse):
+                    //todo noResponse event
                     break;
                 
-                case MTRFXXCommand.MicroclimateData when receivedData is MicroclimateData microclimateData:
+                case (MTRFXXMode.TXF, MTRFXXCommand.SendState, ResultCode.Success):
+                case (MTRFXXMode.TX, MTRFXXCommand.On, ResultCode.Success):
+                case (MTRFXXMode.TX, MTRFXXCommand.Off, ResultCode.Success):
+                    break;
+                
+                case (MTRFXXMode.RX, MTRFXXCommand.MicroclimateData, ResultCode.Success) when receivedData is MicroclimateData microclimateData:
                     var temperatureSensor = GetSensorInfo<TemperatureNooliteFSensorInfo>(receivedData);
                     _eventSender.SendEvent(new SensorValueEvent(temperatureSensor.TemperatureSensorId, microclimateData.Temperature));
                     if (microclimateData.Humidity.HasValue &&

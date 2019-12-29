@@ -8,9 +8,6 @@ using homeControl.Domain.Events.Sensors;
 using homeControl.NooliteF;
 using homeControl.NooliteF.Adapters;
 using homeControl.NooliteF.Configuration;
-using homeControl.NooliteService;
-using homeControl.NooliteService.Adapters;
-using homeControl.NooliteService.Configuration;
 using Moq;
 using Serilog;
 using ThinkingHome.NooLite;
@@ -21,10 +18,11 @@ namespace homeControl.Tests.NooliteF
 {
     public class NooliteFSensorTests
     {
-        private ReceivedData CreateCommandData(MTRFXXCommand cmd, byte channel, byte[] data = null)
+        private ReceivedData CreateCommandData(MTRFXXMode mode, MTRFXXCommand cmd, byte channel, byte[] data = null)
         {
             var buf = new byte[17];
             buf[0] = 173;
+            buf[1] = (byte)mode;
             buf[16] = 174; 
             buf[4] = channel;
             buf[5] = (byte)cmd;
@@ -57,7 +55,7 @@ namespace homeControl.Tests.NooliteF
             var sensor = new NooliteFSensor(gateMock.Object, adapterMock.Object, configMock.Object, Mock.Of<ILogger>());
             sensor.Activate();
 
-            adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(command, sensorConfig.Channel));
+            adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(MTRFXXMode.RX, command, sensorConfig.Channel));
 
             gateMock.Verify(m => m.SendEvent(It.Is<SensorActivatedEvent>(e => e.SensorId == sensorConfig.SensorId)), Times.Exactly(expectedActivateCallCount));
             gateMock.Verify(m => m.SendEvent(It.Is<SensorDeactivatedEvent>(e => e.SensorId == sensorConfig.SensorId)), Times.Exactly(expectedDeactivateCallCount));
@@ -79,7 +77,7 @@ namespace homeControl.Tests.NooliteF
             var sensor = new NooliteFSensor(gateMock.Object, adapterMock.Object, configMock.Object, Mock.Of<ILogger>());
             sensor.Activate();
 
-            adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(MTRFXXCommand.MicroclimateData, sensorConfig.Channel, data));
+            adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(MTRFXXMode.RX,MTRFXXCommand.MicroclimateData, sensorConfig.Channel, data));
 
             gateMock.Verify(m => m.SendEvent(It.Is<SensorValueEvent>(e => e.SensorId == sensorConfig.TemperatureSensorId && e.Value == temperature)), Times.Once);
         }
@@ -101,7 +99,7 @@ namespace homeControl.Tests.NooliteF
             var sensor = new NooliteFSensor(gateMock.Object, adapterMock.Object, configMock.Object, Mock.Of<ILogger>());
             sensor.Activate();
 
-            adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(MTRFXXCommand.MicroclimateData, sensorConfig.Channel, data));
+            adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(MTRFXXMode.RX,MTRFXXCommand.MicroclimateData, sensorConfig.Channel, data));
 
             gateMock.Verify(m => m.SendEvent(It.Is<SensorValueEvent>(e => e.SensorId == sensorConfig.TemperatureSensorId && e.Value == temperature)), Times.Once);
             gateMock.Verify(m => m.SendEvent(It.Is<SensorValueEvent>(e => e.SensorId == sensorConfig.HumiditySensorId && e.Value == humidity)), Times.Once);
@@ -120,9 +118,9 @@ namespace homeControl.Tests.NooliteF
             var sensor = new NooliteFSensor(gateMock.Object, adapterMock.Object, configMock.Object, Mock.Of<ILogger>());
             sensor.Activate();
 
-            void Act() => adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(command, 13));
+            void Act() => adapterMock.Raise(ad => ad.ReceiveData += null, null, CreateCommandData(MTRFXXMode.RX, command, 13));
 
-            Assert.Throws<InvalidConfigurationException>((Action)Act);
+            Assert.Throws<InvalidConfigurationException>(Act);
         }
     }
 }
