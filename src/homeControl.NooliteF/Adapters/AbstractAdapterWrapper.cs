@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog;
 using ThinkingHome.NooLite;
+using ThinkingHome.NooLite.Internal;
 
 namespace homeControl.NooliteF.Adapters
 {
@@ -99,12 +100,24 @@ namespace homeControl.NooliteF.Adapters
         private void OnReceiveMicroclimateData(object sender, MicroclimateData data)
         {
             _logger.Information($"Получены климатические данные: {data}");
+            
+            RaiseDataReceived(data);
         }
 
         private void OnReceiveData(object sender, ReceivedData data)
         {
+            if (data.Command == MTRFXXCommand.MicroclimateData)
+            {
+                return;
+            }
+            
             _logger.Information($"Получены данные: {JsonConvert.SerializeObject(data, Formatting.Indented, new StringEnumConverter())}");
             
+            RaiseDataReceived(data);
+        }
+
+        private void RaiseDataReceived(ReceivedData data)
+        {
             var handler = Interlocked.CompareExchange(ref ReceiveData, null, null);
             handler?.Invoke(this, data);
         }

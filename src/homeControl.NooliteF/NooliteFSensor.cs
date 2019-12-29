@@ -60,9 +60,21 @@ namespace homeControl.NooliteF
         {
             Guard.DebugAssertArgumentNotNull(receivedData, nameof(receivedData));
 
+            if (receivedData.Mode == MTRFXXMode.Service)
+            {
+                return;
+            }
+
+            if (receivedData.Result == ResultCode.NoResponse)
+            {
+                //todo noResponce event
+                return;
+            }
+            
             switch (receivedData.Command)
             {
                 case MTRFXXCommand.On:
+                case MTRFXXCommand.TemporarySwitchOn:
                     var onSensorInfo = GetSensorInfo<OnOffNooliteFSensorInfo>(receivedData);
                     _eventSender.SendEvent(new SensorActivatedEvent(onSensorInfo.SensorId));
                     _log.Information("Noolite.F sensor activated: {SensorId}", onSensorInfo.SensorId);
@@ -77,9 +89,8 @@ namespace homeControl.NooliteF
                 case MTRFXXCommand.SendState:
                     break;
                 
-                case MTRFXXCommand.MicroclimateData:
+                case MTRFXXCommand.MicroclimateData when receivedData is MicroclimateData microclimateData:
                     var temperatureSensor = GetSensorInfo<TemperatureNooliteFSensorInfo>(receivedData);
-                    var microclimateData = (MicroclimateData)receivedData;
                     _eventSender.SendEvent(new SensorValueEvent(temperatureSensor.TemperatureSensorId, microclimateData.Temperature));
                     if (microclimateData.Humidity.HasValue &&
                         temperatureSensor is TemperatureAndHumidityNooliteFSensorInfo humiditySensor)
