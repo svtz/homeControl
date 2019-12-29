@@ -21,6 +21,7 @@
         Topmost="True"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
+        SizeChanged="OnSizeChanged"
         Deactivated="OnDeactivated">
 
     <Window.Resources>

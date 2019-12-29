@@ -59,6 +59,16 @@ namespace homeControl.Client.WPF.Views
             Hide();
         }
 
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (e.PreviousSize.Width == 0)
+            {
+                return;
+            }
+
+            Left -= e.NewSize.Width - e.PreviousSize.Width;
+        }
+        
         #endregion
 
         
