@@ -29,13 +29,13 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             if (e.SwitchId != Id)
                 return Value;
 
-            if (e is TurnOffEvent)
+            if (e is TurnSwitchOffEvent)
                 return false;
 
-            if (e is TurnOnEvent)
+            if (e is TurnSwitchOnEvent)
                 return true;
 
-            if (e is SetPowerEvent powerEvent)
+            if (e is SetSwitchPowerEvent powerEvent)
                 return powerEvent.Power >= 0.5;
 
             throw new ArgumentOutOfRangeException(nameof(e));
@@ -45,11 +45,11 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         {
             if (value)
             {
-                yield return new TurnOnEvent(Id);
+                yield return new TurnSwitchOnEvent(Id);
             }
             else
             {
-                yield return new TurnOffEvent(Id);
+                yield return new TurnSwitchOffEvent(Id);
             }
         }
     }

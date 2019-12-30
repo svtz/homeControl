@@ -113,8 +113,8 @@ namespace homeControl.NooliteF
             return IsOnOrOff(current) && IsOnOrOff(next)
                    || IsSetPower(current) && IsSetPower(next);
         }
-        private static bool IsOnOrOff(AbstractSwitchEvent @event) => @event is TurnOnEvent || @event is TurnOffEvent;
-        private static bool IsSetPower(AbstractSwitchEvent @event) => @event is SetPowerEvent;
+        private static bool IsOnOrOff(AbstractSwitchEvent @event) => @event is TurnSwitchOnEvent || @event is TurnSwitchOffEvent;
+        private static bool IsSetPower(AbstractSwitchEvent @event) => @event is SetSwitchPowerEvent;
 
         private void HandleEvent(AbstractSwitchEvent switchEvent)
         {
@@ -126,17 +126,17 @@ namespace homeControl.NooliteF
                 return;
             }
 
-            if (switchEvent is TurnOnEvent)
+            if (switchEvent is TurnSwitchOnEvent)
             {
                 _switchController.TurnOn(switchEvent.SwitchId);
                 _log.Information("Switch turned on: {SwitchId}", switchEvent.SwitchId);
             }
-            else if (switchEvent is TurnOffEvent)
+            else if (switchEvent is TurnSwitchOffEvent)
             {
                 _switchController.TurnOff(switchEvent.SwitchId);
                 _log.Information("Switch turned off: {SwitchId}", switchEvent.SwitchId);
             }
-            else if (switchEvent is SetPowerEvent setPower)
+            else if (switchEvent is SetSwitchPowerEvent setPower)
             {
                 _switchController.SetPower(switchEvent.SwitchId, setPower.Power);
                 _log.Information("Adjusted switch power: {SwitchId}, {Power:G}", setPower.SwitchId, setPower.Power);

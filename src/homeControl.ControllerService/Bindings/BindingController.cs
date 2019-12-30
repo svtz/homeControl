@@ -128,7 +128,7 @@ namespace homeControl.ControllerService.Bindings
                 .Where(s => s.Mode != OnOffBindingMode.OffOnly);
             foreach (var binding in bindingsToTurnOn)
             {
-                _eventSender.SendEvent(new TurnOnEvent(binding.SwitchId));
+                _eventSender.SendEvent(new TurnSwitchOnEvent(binding.SwitchId));
             }
         }
 
@@ -140,7 +140,7 @@ namespace homeControl.ControllerService.Bindings
                 .Where(s => s.Mode != OnOffBindingMode.OnOnly);
             foreach (var binding in bindingsToTurnOff)
             {
-                _eventSender.SendEvent(new TurnOffEvent(binding.SwitchId));
+                _eventSender.SendEvent(new TurnSwitchOffEvent(binding.SwitchId));
             }
         }
         
@@ -156,11 +156,11 @@ namespace homeControl.ControllerService.Bindings
 
                 if (isOn)
                 {
-                    _eventSender.SendEvent(new TurnOnEvent(binding.SwitchId));
+                    _eventSender.SendEvent(new TurnSwitchOnEvent(binding.SwitchId));
                 }
                 else
                 {
-                    _eventSender.SendEvent(new TurnOffEvent(binding.SwitchId));
+                    _eventSender.SendEvent(new TurnSwitchOffEvent(binding.SwitchId));
                 }
             }
         }

@@ -17,28 +17,28 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         {
         }
 
-        protected override double GetMinimumValue() => SetPowerEvent.MinPower;
+        protected override double GetMinimumValue() => SetSwitchPowerEvent.MinPower;
 
-        protected override double GetMaximumValue() => SetPowerEvent.MaxPower;
+        protected override double GetMaximumValue() => SetSwitchPowerEvent.MaxPower;
 
         protected override double GetMouseWheelUpValue() 
-            => Math.Min(SetPowerEvent.MaxPower, Value + WheelStep);
+            => Math.Min(SetSwitchPowerEvent.MaxPower, Value + WheelStep);
 
         protected override double GetMouseWheelDownValue()
-            => Math.Max(SetPowerEvent.MinPower, Value - WheelStep);
+            => Math.Max(SetSwitchPowerEvent.MinPower, Value - WheelStep);
 
         protected override double GetValueFromEvent(AbstractSwitchEvent e)
         {
             if (e.SwitchId != Id)
                 return Value;
 
-            if (e is TurnOffEvent)
-                return SetPowerEvent.MinPower;
+            if (e is TurnSwitchOffEvent)
+                return SetSwitchPowerEvent.MinPower;
 
-            if (e is TurnOnEvent)
-                return SetPowerEvent.MaxPower;
+            if (e is TurnSwitchOnEvent)
+                return SetSwitchPowerEvent.MaxPower;
 
-            if (e is SetPowerEvent powerEvent)
+            if (e is SetSwitchPowerEvent powerEvent)
                 return powerEvent.Power;
 
             throw new ArgumentOutOfRangeException(nameof(e));
@@ -46,13 +46,13 @@ namespace homeControl.Client.WPF.ViewModels.Switches
 
         protected override IEnumerable<AbstractSwitchEvent> GetEventsFromValue(double value)
         {
-            if (value >= SetPowerEvent.MaxPower)
-                yield return new TurnOnEvent(Id);
+            if (value >= SetSwitchPowerEvent.MaxPower)
+                yield return new TurnSwitchOnEvent(Id);
             
-            yield return new SetPowerEvent(Id, value);
+            yield return new SetSwitchPowerEvent(Id, value);
             
-            if (value <= SetPowerEvent.MinPower)
-                yield return new TurnOffEvent(Id);
+            if (value <= SetSwitchPowerEvent.MinPower)
+                yield return new TurnSwitchOffEvent(Id);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace homeControl.Tests.Noolite
         public async void TestTurnOn()
         {
             var switchId = SwitchId.NewId();
-            var onEvent = new TurnOnEvent(switchId);
+            var onEvent = new TurnSwitchOnEvent(switchId);
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
             switchControllerMock.Setup(ctrl => ctrl.CanHandleSwitch(switchId)).Returns(true);
             switchControllerMock.Setup(ctrl => ctrl.TurnOn(switchId));
@@ -60,7 +60,7 @@ namespace homeControl.Tests.Noolite
         public async void TestTurnOff()
         {
             var switchId = SwitchId.NewId();
-            var offEvent = new TurnOffEvent(switchId);
+            var offEvent = new TurnSwitchOffEvent(switchId);
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
             switchControllerMock.Setup(ctrl => ctrl.CanHandleSwitch(switchId)).Returns(true);
             switchControllerMock.Setup(ctrl => ctrl.TurnOff(switchId));
@@ -76,7 +76,7 @@ namespace homeControl.Tests.Noolite
         {
             var switchId = SwitchId.NewId();
             const double power = 0.4;
-            var powerEvent = new SetPowerEvent(switchId, power);
+            var powerEvent = new SetSwitchPowerEvent(switchId, power);
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
             switchControllerMock.Setup(ctrl => ctrl.CanHandleSwitch(switchId)).Returns(true);
             switchControllerMock.Setup(ctrl => ctrl.SetPower(switchId, power));
@@ -93,7 +93,7 @@ namespace homeControl.Tests.Noolite
             var switchId = SwitchId.NewId();
             var events = Enumerable
                 .Range(0, 10)
-                .Select(v => new SetPowerEvent(switchId, (double) v / 10))
+                .Select(v => new SetSwitchPowerEvent(switchId, (double) v / 10))
                 .ToArray();
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
             switchControllerMock.Setup(ctrl => ctrl.CanHandleSwitch(switchId)).Returns(true);
@@ -111,12 +111,12 @@ namespace homeControl.Tests.Noolite
             var switchId = SwitchId.NewId();
             var events = new AbstractSwitchEvent[]
             {
-                new TurnOnEvent(switchId), 
-                new TurnOnEvent(switchId),
-                new TurnOffEvent(switchId), 
-                new TurnOffEvent(switchId),
-                new TurnOnEvent(switchId),
-                new TurnOffEvent(switchId) 
+                new TurnSwitchOnEvent(switchId), 
+                new TurnSwitchOnEvent(switchId),
+                new TurnSwitchOffEvent(switchId), 
+                new TurnSwitchOffEvent(switchId),
+                new TurnSwitchOnEvent(switchId),
+                new TurnSwitchOffEvent(switchId) 
             };
                 
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
@@ -135,14 +135,14 @@ namespace homeControl.Tests.Noolite
             var switchId = SwitchId.NewId();
             var events = new AbstractSwitchEvent[]
             {
-                new TurnOnEvent(switchId), 
-                new TurnOffEvent(switchId), 
-                new TurnOffEvent(switchId),
-                new TurnOnEvent(switchId),
-                new TurnOnEvent(switchId),
-                new TurnOnEvent(switchId),
-                new TurnOffEvent(switchId), 
-                new TurnOnEvent(switchId),
+                new TurnSwitchOnEvent(switchId), 
+                new TurnSwitchOffEvent(switchId), 
+                new TurnSwitchOffEvent(switchId),
+                new TurnSwitchOnEvent(switchId),
+                new TurnSwitchOnEvent(switchId),
+                new TurnSwitchOnEvent(switchId),
+                new TurnSwitchOffEvent(switchId), 
+                new TurnSwitchOnEvent(switchId),
             };
                 
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
@@ -162,9 +162,9 @@ namespace homeControl.Tests.Noolite
             const double power = 0.5;
             var events = new AbstractSwitchEvent[]
             {
-                new TurnOnEvent(switchId), 
-                new SetPowerEvent(switchId, power),
-                new TurnOffEvent(switchId), 
+                new TurnSwitchOnEvent(switchId), 
+                new SetSwitchPowerEvent(switchId, power),
+                new TurnSwitchOffEvent(switchId), 
             };
                 
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
@@ -189,8 +189,8 @@ namespace homeControl.Tests.Noolite
             var switchId2 = SwitchId.NewId();
             var events = new AbstractSwitchEvent[]
             {
-                new TurnOnEvent(switchId1), 
-                new TurnOnEvent(switchId2), 
+                new TurnSwitchOnEvent(switchId1), 
+                new TurnSwitchOnEvent(switchId2), 
             };
                 
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
@@ -213,9 +213,9 @@ namespace homeControl.Tests.Noolite
         public static IEnumerable<object[]> AbstractSwitchEvents =>
            new[]
            {
-               new object[] { new TurnOnEvent(SwitchId.NewId()), }, 
-               new object[] { new TurnOffEvent(SwitchId.NewId()), }, 
-               new object[] { new SetPowerEvent(SwitchId.NewId(), 0.333), }, 
+               new object[] { new TurnSwitchOnEvent(SwitchId.NewId()), }, 
+               new object[] { new TurnSwitchOffEvent(SwitchId.NewId()), }, 
+               new object[] { new SetSwitchPowerEvent(SwitchId.NewId(), 0.333), }, 
            };
        
         [Theory]
