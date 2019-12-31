@@ -3,6 +3,7 @@ using System.Text;
 using System.Windows;
 using homeControl.Client.WPF.ViewModels;
 using homeControl.Configuration.IoC;
+using homeControl.Domain.Events;
 using homeControl.Domain.Events.Bindings;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Switches;
@@ -39,6 +40,7 @@ namespace homeControl.Client.WPF
                 .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
                 .SetupEventSender<AbstractSwitchEvent>("main")
                 .SetupEventSender<AbstractBindingEvent>("main")
+                .SetupEventSender<NeedStatusEvent>("main")
                 .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
                 .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
                 .Apply(services);

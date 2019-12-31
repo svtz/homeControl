@@ -76,6 +76,8 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 result.Add(vm);
             }
 
+            _eventSender.SendEvent(new NeedStatusEvent());
+            
             return result.ToArray();
         }
     }
