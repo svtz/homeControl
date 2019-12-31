@@ -20,7 +20,7 @@ namespace homeControl.NooliteF
         protected override void Run(IServiceProvider serviceProvider, CancellationToken ct)
         {
             serviceProvider.GetRequiredService<NooliteFSensor>().Activate();
-            serviceProvider.GetRequiredService<NooliteFSwitchController>().InitializeState().Wait(ct);
+            serviceProvider.GetRequiredService<ISwitchController>().InitializeState().Wait(ct);
             
             var switchesProcessor = serviceProvider.GetRequiredService<SwitchEventsProcessorF>();
 

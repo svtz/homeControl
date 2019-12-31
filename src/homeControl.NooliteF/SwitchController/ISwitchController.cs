@@ -1,4 +1,5 @@
-﻿using homeControl.Domain;
+﻿using System.Threading.Tasks;
+using homeControl.Domain;
 
 namespace homeControl.NooliteF.SwitchController
 {
@@ -10,5 +11,7 @@ namespace homeControl.NooliteF.SwitchController
         void SetPower(SwitchId switchId, double power);
 
         void RequestStatus(SwitchId switchId);
+
+        Task InitializeState();
     }
 }
