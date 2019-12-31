@@ -70,7 +70,11 @@ namespace homeControl.NooliteF.Adapters
         {
             Adapter.SetBrightnessF(channel, brightness, deviceId);
         }
-
+        
+        void IMtrfAdapter.ReadState(byte channel)
+        {
+            Adapter.SendCommand(MTRFXXMode.TXF, MTRFXXAction.SendCommand, channel, MTRFXXCommand.ReadState);
+        }
 
         private void EnsureAdapterConnected()
         {

@@ -20,6 +20,7 @@ namespace homeControl.NooliteF.IoC
             services.AddSingleton<NooliteFSensor>();
             services.AddSingleton<SwitchEventsProcessorF>();
             services.AddSingleton<SwitchEventsObserverF>();
+            services.AddSingleton<NooliteFSwitchesStatusHolder>();
         }
     }
 }

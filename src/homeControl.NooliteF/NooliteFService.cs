@@ -8,6 +8,7 @@ using homeControl.Domain.Events.Switches;
 using homeControl.Entry;
 using homeControl.Interop.Rabbit.IoC;
 using homeControl.NooliteF.IoC;
+using homeControl.NooliteF.SwitchController;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 
@@ -19,6 +20,7 @@ namespace homeControl.NooliteF
         protected override void Run(IServiceProvider serviceProvider, CancellationToken ct)
         {
             serviceProvider.GetRequiredService<NooliteFSensor>().Activate();
+            serviceProvider.GetRequiredService<NooliteFSwitchController>().InitializeState().Wait(ct);
             
             var switchesProcessor = serviceProvider.GetRequiredService<SwitchEventsProcessorF>();
 
@@ -33,6 +35,7 @@ namespace homeControl.NooliteF
                 .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
                 .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
                 .SetupEventSender<AbstractSensorEvent>("main")
+                .SetupEventSender<AbstractSwitchEvent>("main")
                 .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
                 .Apply(services);
             

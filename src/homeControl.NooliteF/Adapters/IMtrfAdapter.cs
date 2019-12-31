@@ -23,5 +23,7 @@ namespace homeControl.NooliteF.Adapters
         void SetBrightness(byte channel, byte brightness);
 
         void SetBrightnessF(byte channel, byte brightness, uint? deviceId = null);
+        
+        void ReadState(byte channel);
     }
 }

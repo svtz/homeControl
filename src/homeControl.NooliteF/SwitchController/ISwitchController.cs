@@ -8,5 +8,7 @@ namespace homeControl.NooliteF.SwitchController
         void TurnOn(SwitchId switchId);
         void TurnOff(SwitchId switchId);
         void SetPower(SwitchId switchId, double power);
+
+        void RequestStatus(SwitchId switchId);
     }
 }

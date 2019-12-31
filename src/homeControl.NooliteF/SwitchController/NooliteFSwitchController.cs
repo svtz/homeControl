@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using homeControl.Configuration;
 using homeControl.Domain;
 using homeControl.NooliteF.Adapters;
@@ -10,18 +11,42 @@ namespace homeControl.NooliteF.SwitchController
     {
         private readonly INooliteFSwitchInfoRepository _configurationRepository;
         private readonly IMtrfAdapter _adapter;
+        private readonly NooliteFSwitchesStatusHolder _statusHolder;
 
         public NooliteFSwitchController(
             INooliteFSwitchInfoRepository configurationRepository,
-            IMtrfAdapter adapter)
+            IMtrfAdapter adapter,
+            NooliteFSwitchesStatusHolder statusHolder)
         {
             Guard.DebugAssertArgumentNotNull(configurationRepository, nameof(configurationRepository));
             Guard.DebugAssertArgumentNotNull(adapter, nameof(adapter));
 
             _configurationRepository = configurationRepository;
             _adapter = adapter;
+            _statusHolder = statusHolder;
         }
 
+        private bool _initializeCalled = false;
+        public async Task InitializeState()
+        {
+            if (_initializeCalled)
+                throw new InvalidOperationException();
+
+            _initializeCalled = true;
+
+            foreach (var switchInfo in await _configurationRepository.GetAll())
+            {
+                if (switchInfo.UseF)
+                {
+                    RequestStatus(switchInfo.SwitchId);
+                }
+                else
+                {
+                    TurnOff(switchInfo.SwitchId);
+                }
+            }
+        }
+        
         public bool CanHandleSwitch(SwitchId switchId)
         {
             Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
@@ -35,6 +60,13 @@ namespace homeControl.NooliteF.SwitchController
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
             var config = _configurationRepository.GetConfig(switchId).Result;
+
+            var currentStatus = _statusHolder.GetStatus(config.Channel);
+            if (currentStatus != null && currentStatus.Value.isOn)
+            {
+                return;
+            }
+            
             if (config.UseF)
                 _adapter.OnF(config.Channel);
             else
@@ -49,6 +81,13 @@ namespace homeControl.NooliteF.SwitchController
             Guard.DebugAssertArgument(CanHandleSwitch(switchId), nameof(switchId));
 
             var config = _configurationRepository.GetConfig(switchId).Result;
+            
+            var currentStatus = _statusHolder.GetStatus(config.Channel);
+            if (currentStatus != null && !currentStatus.Value.isOn)
+            {
+                return;
+            }
+            
             if (config.UseF)
                 _adapter.OffF(config.Channel);
             else
@@ -70,12 +109,29 @@ namespace homeControl.NooliteF.SwitchController
             }
 
             var level = Convert.ToByte(config.ZeroPowerLevel + (config.FullPowerLevel - config.ZeroPowerLevel) * power);
+            
+            var currentStatus = _statusHolder.GetStatus(config.Channel);
+            if (currentStatus != null && currentStatus.Value.power == level)
+            {
+                return;
+            }
+            
             if (config.UseF)
                 _adapter.SetBrightnessF(config.Channel, level);
             else
             {
                 _adapter.SetBrightness(config.Channel, level);
             }
+        }
+
+        public void RequestStatus(SwitchId switchId)
+        {
+            Guard.DebugAssertArgumentNotNull(switchId, nameof(switchId));
+
+            var config = _configurationRepository.GetConfig(switchId).Result;
+            Guard.DebugAssert(config.UseF, "Switch must be nooliteF to request its status");
+            
+            _adapter.ReadState(config.Channel);
         }
     }
 }

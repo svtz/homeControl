@@ -28,7 +28,7 @@ namespace homeControl.Tests.NooliteF
                 .Setup(repository => repository.GetConfig(switchId))
                 .Returns(Task.FromResult(config));
 
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object);
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, new NooliteFSwitchesStatusHolder());
             controller.TurnOn(switchId);
 
             adapterMock.Verify(adapter => adapter.On(config.Channel), Times.Once);
@@ -48,7 +48,7 @@ namespace homeControl.Tests.NooliteF
                 .Setup(repository => repository.GetConfig(switchId))
                 .Returns(Task.FromResult(config));
 
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object);
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, new NooliteFSwitchesStatusHolder());
             controller.TurnOn(switchId);
 
             adapterMock.Verify(adapter => adapter.OnF(config.Channel, null), Times.Once);
@@ -68,7 +68,7 @@ namespace homeControl.Tests.NooliteF
                 .Setup(repository => repository.GetConfig(switchId))
                 .Returns(Task.FromResult(config));
 
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object);
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, new NooliteFSwitchesStatusHolder());
             controller.TurnOff(switchId);
 
             adapterMock.Verify(adapter => adapter.Off(config.Channel), Times.Once);
@@ -88,7 +88,7 @@ namespace homeControl.Tests.NooliteF
                 .Setup(repository => repository.GetConfig(switchId))
                 .Returns(Task.FromResult(config));
 
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object);
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, new NooliteFSwitchesStatusHolder());
             controller.TurnOff(switchId);
 
             adapterMock.Verify(adapter => adapter.OffF(config.Channel, null), Times.Once);
@@ -102,7 +102,7 @@ namespace homeControl.Tests.NooliteF
                 .Setup(repository => repository.ContainsConfig(It.IsAny<SwitchId>()))
                 .Returns(Task.FromResult(false));
 
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, Mock.Of<IMtrfAdapter>());
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, Mock.Of<IMtrfAdapter>(), new NooliteFSwitchesStatusHolder());
             Assert.False(controller.CanHandleSwitch(SwitchId.NewId()));
 
             configRepositoryMock.Verify(repo => repo.ContainsConfig(It.IsAny<SwitchId>()), Times.Once);
@@ -117,7 +117,7 @@ namespace homeControl.Tests.NooliteF
                 .Setup(repository => repository.ContainsConfig(switchId))
                 .Returns(Task.FromResult(true));
             
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, Mock.Of<IMtrfAdapter>());
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, Mock.Of<IMtrfAdapter>(), new NooliteFSwitchesStatusHolder());
             Assert.True(controller.CanHandleSwitch(switchId));
 
             configRepositoryMock.Verify(repo => repo.ContainsConfig(switchId), Times.Once);
@@ -149,7 +149,7 @@ namespace homeControl.Tests.NooliteF
                 .Returns(Task.FromResult(config));
             var adapterMock = new Mock<IMtrfAdapter>(MockBehavior.Strict);
             adapterMock.Setup(adapter => adapter.SetBrightness(config.Channel, expectedLevel));
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object);
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, new NooliteFSwitchesStatusHolder());
 
             controller.SetPower(config.SwitchId, requestedPower);
 
@@ -182,11 +182,57 @@ namespace homeControl.Tests.NooliteF
                 .Returns(Task.FromResult(config));
             var adapterMock = new Mock<IMtrfAdapter>(MockBehavior.Strict);
             adapterMock.Setup(adapter => adapter.SetBrightnessF(config.Channel, expectedLevel, null));
-            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object);
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, new NooliteFSwitchesStatusHolder());
 
             controller.SetPower(config.SwitchId, requestedPower);
 
             adapterMock.Verify(adapter => adapter.SetBrightnessF(config.Channel, expectedLevel, null), Times.Once);
+        }
+
+        [Fact]
+        public void Test_WhenTurnOnCalled_DontCallAdapterIfStatusAlreadyOn()
+        {
+            var switchId = SwitchId.NewId();
+            var configRepositoryMock = new Mock<INooliteFSwitchInfoRepository>(MockBehavior.Strict);
+            var adapterMock = new Mock<IMtrfAdapter>(MockBehavior.Strict);
+            var config = new NooliteFSwitchInfo { Channel = 98, UseF = false };
+            configRepositoryMock
+                .Setup(repository => repository.ContainsConfig(switchId))
+                .Returns(Task.FromResult(true));
+            configRepositoryMock
+                .Setup(repository => repository.GetConfig(switchId))
+                .Returns(Task.FromResult(config));
+
+            var statusHolder = new NooliteFSwitchesStatusHolder();
+            statusHolder.SetStatus(config.Channel, 1, true);
+            
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, statusHolder);
+            controller.TurnOn(switchId);
+
+            adapterMock.Verify(adapter => adapter.On(config.Channel), Times.Never);
+        }
+        
+        [Fact]
+        public void Test_WhenTurnOffCalled_DontCallAdapterIfStatusAlreadyOff()
+        {
+            var switchId = SwitchId.NewId();
+            var configRepositoryMock = new Mock<INooliteFSwitchInfoRepository>(MockBehavior.Strict);
+            var adapterMock = new Mock<IMtrfAdapter>(MockBehavior.Strict);
+            var config = new NooliteFSwitchInfo { Channel = 98, UseF = false };
+            configRepositoryMock
+                .Setup(repository => repository.ContainsConfig(switchId))
+                .Returns(Task.FromResult(true));
+            configRepositoryMock
+                .Setup(repository => repository.GetConfig(switchId))
+                .Returns(Task.FromResult(config));
+
+            var statusHolder = new NooliteFSwitchesStatusHolder();
+            statusHolder.SetStatus(config.Channel, 0, false);
+            
+            var controller = new NooliteFSwitchController(configRepositoryMock.Object, adapterMock.Object, statusHolder);
+            controller.TurnOff(switchId);
+
+            adapterMock.Verify(adapter => adapter.Off(config.Channel), Times.Never);
         }
     }
 }
