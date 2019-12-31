@@ -21,6 +21,7 @@ namespace homeControl.NooliteF.IoC
             services.AddSingleton<SwitchEventsProcessorF>();
             services.AddSingleton<SwitchEventsObserverF>();
             services.AddSingleton<NooliteFSwitchesStatusHolder>();
+            services.AddSingleton<StatusReporter>();
         }
     }
 }
