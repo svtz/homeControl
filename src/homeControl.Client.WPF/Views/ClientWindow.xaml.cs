@@ -27,24 +27,41 @@ namespace homeControl.Client.WPF.Views
         /// <summary> Клик по трей-иконке </summary>
         private void TrayIconClick(object sender, RoutedEventArgs e)
         {
-            var cursorPos = System.Windows.Forms.Control.MousePosition;
+            Show();
+            Activate();
+            _clickMousePosition = System.Windows.Forms.Control.MousePosition;
+        }
+
+        private System.Drawing.Point _clickMousePosition;
+        private bool _positioned = false;
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+
+            if (_positioned) 
+            {
+                return;
+            }
+            
+            _positioned = true;
 
             var width = Math.Max(ActualWidth, MinWidth);
-            var heigth = Math.Max(ActualHeight, MinHeight);
+            var height = Math.Max(ActualHeight, MinHeight);
 
-            var suggestedLeft = cursorPos.X - width;
-            var suggestedTop = cursorPos.Y - heigth;
+            var transform = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformFromDevice;
+            var dpiAwareCursorPos = new Point(_clickMousePosition.X, _clickMousePosition.Y);
+            dpiAwareCursorPos = transform?.Transform(dpiAwareCursorPos) ?? dpiAwareCursorPos;
+
+            var suggestedLeft = dpiAwareCursorPos.X - width;
+            var suggestedTop = dpiAwareCursorPos.Y - height;
 
             if (suggestedLeft < 0)
-                suggestedLeft = cursorPos.X;
+                suggestedLeft = dpiAwareCursorPos.X;
             if (suggestedTop < 0)
-                suggestedTop = cursorPos.Y;
+                suggestedTop = dpiAwareCursorPos.Y;
 
             Left = suggestedLeft;
             Top = suggestedTop;
-
-            Show();
-            Activate();
         }
 
         /// <summary> По крестику - в трей </summary>

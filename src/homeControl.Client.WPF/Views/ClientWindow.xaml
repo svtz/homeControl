@@ -22,7 +22,8 @@
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         SizeChanged="OnSizeChanged"
-        Deactivated="OnDeactivated">
+        Deactivated="OnDeactivated"
+        WindowStyle="SingleBorderWindow">
 
     <Window.Resources>
         <Label x:Key="ToolTip" Content="Управление домом" 
