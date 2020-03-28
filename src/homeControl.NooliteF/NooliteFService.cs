@@ -1,25 +1,22 @@
 ﻿using System;
-using System.Text;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Configuration.IoC;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Configuration;
-using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
 using homeControl.Entry;
-using homeControl.Interop.Rabbit.IoC;
 using homeControl.NooliteF.IoC;
 using homeControl.NooliteF.SwitchController;
 using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
 
 namespace homeControl.NooliteF
 {
     public class NooliteFService : AbstractService
     {
-        protected override string ServiceNamePrefix { get; } = "noolite-f";
-        protected override void Run(IServiceProvider serviceProvider, CancellationToken ct)
+        protected override string ServiceName { get; } = "Noolite-f";
+        protected override Task Run(IServiceProvider serviceProvider, CancellationToken ct)
         {
             serviceProvider.GetRequiredService<NooliteFSensor>().Activate();
             serviceProvider.GetRequiredService<ISwitchController>().InitializeState().Wait(ct);
@@ -29,31 +26,21 @@ namespace homeControl.NooliteF
             switchesProcessor.RunAsync(ct);
 
             var statusReporter = serviceProvider.GetRequiredService<StatusReporter>();
-            Task.WaitAll(
+            return Task.WhenAll(
                 switchesProcessor.Completion(ct),
                 statusReporter.Run(ct)
             );
         }
 
-        protected override void ConfigureServices(ServiceCollection services, string uniqueServiceName)
+        protected override void ConfigureServices(ServiceCollection services)
         {
-            new RabbitConfiguration(Config)
-                .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
-                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
-                .SetupEventSender<AbstractSensorEvent>("main")
-                .SetupEventSender<AbstractSwitchEvent>("main")
-                .SetupEventSource<NeedStatusEvent>("main", ExchangeType.Fanout, "")
-                .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
-                .Apply(services);
-            
-            services.AddConfigurationRepositories(uniqueServiceName);
+            services.AddConfigurationRepositories(ServiceName);
             services.AddNooliteFServices(Config);
         }
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            new NooliteFService().Run();
+            await new NooliteFService().Run();
         }
     }
 }

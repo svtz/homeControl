@@ -7,3 +7,5 @@ project.lock.json
 /src/homeControl.Experiments/client-api.json
 /packages
 /.idea
+
+!/.idea

@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using homeControl.Interop.Rabbit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NServiceBus;
 using Serilog;
 
 namespace homeControl.Entry
@@ -11,39 +15,43 @@ namespace homeControl.Entry
         protected static IConfigurationRoot Config => ConfigHolder.Config;
         protected static ILogger Logger => LoggerHolder.Logger;
         
-        protected abstract string ServiceNamePrefix { get; }
-        protected abstract void Run(IServiceProvider serviceProvider, CancellationToken ct);
+        protected abstract string ServiceName { get; }
+        protected abstract Task Run(IServiceProvider serviceProvider, CancellationToken ct);
 
-        protected abstract void ConfigureServices(ServiceCollection services, string uniqueServiceName);
-        
-        private IServiceProvider CreateRootServiceProvider()
+        protected abstract void ConfigureServices(ServiceCollection services);
+
+        private async Task<(IServiceProvider, IEndpointInstance)> CreateRootServiceProviderAndStartEndpoint()
         {
-            var uniqueServiceName = $"{ServiceNamePrefix}-{Guid.NewGuid()}";
-
             var services = new ServiceCollection();
             services.AddSingleton(sp => Logger);
             services.AddSingleton(new CancellationTokenSource());
-            ConfigureServices(services, uniqueServiceName);
+            ConfigureServices(services);
 
             Logger.Debug($"Root service provider created");
-            
-            return services.BuildServiceProvider();
+
+            var endpoint = await new EndpointBuilder(Config, Logger)
+                .UseEndpointName(ServiceName)
+                .Build(services);
+            return (services.BuildServiceProvider(), endpoint);
         }
 
 
-        protected void Run()
+        protected async Task Run()
         {
             var version = GetType().Assembly.GetName().Version;
-            var title = $"{ServiceNamePrefix} v.{version.ToString(3)}";
+            var title = $"{ServiceName} v.{version.ToString(3)}";
             Console.Title = title;
 
             Logger.Information($"Starting service: {title}");
 
-            using var serviceScope = CreateRootServiceProvider().CreateScope();
+            var (rootProvider, endpoint) = await CreateRootServiceProviderAndStartEndpoint();
+            
+            using var serviceScope = rootProvider.CreateScope();
             var cts = serviceScope.ServiceProvider.GetRequiredService<CancellationTokenSource>();
             Console.CancelKeyPress += (s, e) => cts.Cancel();
 
-            Run(serviceScope.ServiceProvider, cts.Token);
+            await Run(serviceScope.ServiceProvider, cts.Token);
+            await endpoint.Stop();
         }
     }
 }

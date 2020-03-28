@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using homeControl.Client.WPF.ViewModels;
 using homeControl.Configuration.IoC;
@@ -7,10 +7,10 @@ using homeControl.Domain.Events;
 using homeControl.Domain.Events.Bindings;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Switches;
-using homeControl.Interop.Rabbit.IoC;
+using homeControl.Interop.Rabbit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
+using NServiceBus;
 using Serilog;
 using Serilog.Events;
 using ClientWindow = homeControl.Client.WPF.Views.ClientWindow;
@@ -28,42 +28,37 @@ namespace homeControl.Client.WPF
                 .AddJsonFile("settings.json")
                 .Build();
 
-        private static readonly IServiceProvider RootServiceProvider;
-        private static IServiceProvider BuildServiceProvider()
+        private const string ServiceName = "WPF";
+        
+        private static async Task<(IServiceProvider, IEndpointInstance)> BuildServiceProviderAndStartNsb()
         {
-            var serviceName = "wpf-" + Guid.NewGuid();
-
             var services = new ServiceCollection();
-            new RabbitConfiguration(Config)
-                .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
-                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
-                .SetupEventSender<AbstractSwitchEvent>("main")
-                .SetupEventSender<AbstractBindingEvent>("main")
-                .SetupEventSender<NeedStatusEvent>("main")
-                .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
-                .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
-                .Apply(services);
 
-            services.AddConfigurationRepositories(serviceName);
+            services.AddConfigurationRepositories(ServiceName);
             services.AddSingleton<ILogger>(Log);
             services.AddClientWpfServices();
+
+            var endpoint = await new EndpointBuilder(Config, Log)
+                .UseEndpointName(ServiceName)
+                .Build(services);
             
-            return services.BuildServiceProvider();
+            return (services.BuildServiceProvider(), endpoint);
         }
 
 
-        private readonly IServiceScope _serviceScope;
-        public App()
-        {
-            _serviceScope = RootServiceProvider.CreateScope();
-            _serviceScope.ServiceProvider.GetRequiredService<AutorunConfigurator>().SetupAutoRun();
-        }
-
-        protected override void OnStartup(StartupEventArgs e)
+        private IServiceScope _serviceScope;
+        private IEndpointInstance _endpoint;
+        
+        protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
+            var (serviceProvider, endpoint) = await BuildServiceProviderAndStartNsb();
+            _endpoint = endpoint;
+            
+            _serviceScope = serviceProvider.CreateScope();
+            _serviceScope.ServiceProvider.GetRequiredService<AutorunConfigurator>().SetupAutoRun();
+            
             var mainView = new ClientWindow();
             var mainVm = _serviceScope.ServiceProvider.GetRequiredService<ClientViewModel>();
 
@@ -74,10 +69,11 @@ namespace homeControl.Client.WPF
             Log.Debug("Startup complete.");
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        protected override async void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-            _serviceScope.Dispose();
+            await (_endpoint?.Stop() ?? Task.CompletedTask);
+            _serviceScope?.Dispose();
             Log.Information("Exiting, return code = {ReturnCode}.", e.ApplicationExitCode);
         }
 
@@ -94,8 +90,6 @@ namespace homeControl.Client.WPF
             AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Fatal("Необработанное исключение: {Exception}", e.ExceptionObject);
 
             Log.Debug("Logging initialized.");
-
-            RootServiceProvider = BuildServiceProvider();
         }
     }
 }

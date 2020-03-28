@@ -7,6 +7,14 @@
     <LangVersion>8</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\homeControl.Domain\homeControl.Domain.csproj" />
     <ProjectReference Include="..\homeControl.Entry\homeControl.Entry.csproj" />

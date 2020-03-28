@@ -18,6 +18,7 @@ namespace homeControl.Entry
             Logger = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
+                .WriteTo.File("logs/log-{Date}.txt", retainedFileCountLimit: 5, rollOnFileSizeLimit: true, fileSizeLimitBytes: 10 * 1024)
                 .CreateLogger()
                 .ForContext(context);
             

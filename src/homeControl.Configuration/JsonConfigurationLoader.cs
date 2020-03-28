@@ -47,8 +47,10 @@ namespace homeControl.Configuration
                 ConfigurationKey = configKey,
                 ReplyAddress = _serviceName.ServiceName
             };
-            var response = _source.ReceiveEvents<ConfigurationResponseEvent>().FirstAsync();
-            _sender.SendEvent(request);
+            var response = _source.ReceiveEvents<ConfigurationResponseEvent>()
+                .Where(e => e.Address == _serviceName.ServiceName)
+                .FirstAsync();
+            await _sender.SendEvent(request);
             
             var config = (await response).Configuration;
 

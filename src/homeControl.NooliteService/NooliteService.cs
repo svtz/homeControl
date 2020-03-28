@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using homeControl.Configuration.IoC;
 using homeControl.Domain.Events.Configuration;
 using homeControl.Domain.Events.Sensors;
 using homeControl.Domain.Events.Switches;
 using homeControl.Entry;
-using homeControl.Interop.Rabbit.IoC;
+using homeControl.Interop.Rabbit;
 using homeControl.NooliteService.IoC;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
@@ -15,8 +17,8 @@ namespace homeControl.NooliteService
 {
     public class NooliteService : AbstractService
     {
-        protected override string ServiceNamePrefix { get; } = "noolite";
-        protected override void Run(IServiceProvider serviceProvider, CancellationToken ct)
+        protected override string ServiceName { get; } = "noolite";
+        protected override async Task Run(IServiceProvider serviceProvider, CancellationToken ct)
         {
             Logger.Debug("Run: the beginning");
             
@@ -26,26 +28,18 @@ namespace homeControl.NooliteService
  
             Logger.Debug("Starting SwitchEventsProcessor");
             switchesProcessor.RunAsync(ct);
-            switchesProcessor.Completion(ct).Wait(ct);
+            await switchesProcessor.Completion(ct);
         }
-
-        protected override void ConfigureServices(ServiceCollection services, string uniqueServiceName)
+        
+        protected override void ConfigureServices(ServiceCollection services)
         {
-            new RabbitConfiguration(Config)
-                .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
-                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
-                .SetupEventSender<AbstractSensorEvent>("main")
-                .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
-                .Apply(services);
-            
-            services.AddConfigurationRepositories(uniqueServiceName);
+            services.AddConfigurationRepositories(ServiceName);
             services.AddNooliteServices();
         }
         
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            new NooliteService().Run();
+            await new NooliteService().Run();
         }
     }
 }

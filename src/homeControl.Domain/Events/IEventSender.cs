@@ -1,7 +1,9 @@
-﻿namespace homeControl.Domain.Events
+﻿using System.Threading.Tasks;
+
+namespace homeControl.Domain.Events
 {
     public interface IEventSender
     {
-        void SendEvent(IEvent @event);
+        Task SendEvent(IEvent @event);
     }
 }
