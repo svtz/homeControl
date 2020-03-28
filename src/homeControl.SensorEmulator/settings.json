@@ -1,7 +1,0 @@
-{
-  "RabbitUserName": "client",
-  "RabbitUserPass": "client",
-  "RabbitHost": "192.168.1.17/debug",
-
-  "LogEventLevel": "Verbose"
-}
