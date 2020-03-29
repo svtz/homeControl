@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using homeControl.Domain.Events;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +49,7 @@ namespace homeControl.Interop.Rabbit
                 throw new InvalidOperationException("Endpoint name is not specified");
             
             var endpointConfiguration = new EndpointConfiguration(_endpointName);
+            endpointConfiguration.LicensePath(Path.Combine("license", "License.xml"));
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             transport.ConnectionString($@"host={_rootConfig["RabbitHost"]};
                                           username={_rootConfig["RabbitUserName"]};
