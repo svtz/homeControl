@@ -83,10 +83,12 @@ namespace homeControl.Client.WPF
 
             Log = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
-                .WriteTo.File("logs/log-{Date}.txt", retainedFileCountLimit: 5)
+                .WriteTo.File("logs/log.txt", retainedFileCountLimit: 5, rollOnFileSizeLimit: true, fileSizeLimitBytes: 10 * 1024 * 1024)
                 .WriteTo.Trace()
                 .CreateLogger();
 
+            Serilog.Log.Logger = Log;
+            
             AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Fatal("Необработанное исключение: {Exception}", e.ExceptionObject);
 
             Log.Debug("Logging initialized.");

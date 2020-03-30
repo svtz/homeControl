@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
 using NServiceBus.Faults;
+using NServiceBus.Logging;
+using NServiceBus.Serilog;
 using Serilog;
 using IEvent = homeControl.Domain.Events.IEvent;
 
@@ -48,6 +50,8 @@ namespace homeControl.Interop.Rabbit
             if (string.IsNullOrWhiteSpace(_endpointName))
                 throw new InvalidOperationException("Endpoint name is not specified");
             
+            LogManager.Use<SerilogFactory>();
+            
             var endpointConfiguration = new EndpointConfiguration(_endpointName);
             endpointConfiguration.LicensePath(Path.Combine("license", "License.xml"));
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
@@ -57,8 +61,9 @@ namespace homeControl.Interop.Rabbit
                                           virtualHost=homeControl");
             transport.UseConventionalRoutingTopology();
             transport.Transactions(TransportTransactionMode.ReceiveOnly);
-            
-            endpointConfiguration.Notifications.Errors.MessageSentToErrorQueue += ErrorsOnMessageSentToErrorQueue;
+
+            endpointConfiguration.Recoverability().Failed(cfg =>
+                cfg.OnMessageSentToErrorQueue(ErrorsOnMessageSentToErrorQueue));
 
             endpointConfiguration.AssemblyScanner()
                 .ScanAppDomainAssemblies = true;
@@ -80,9 +85,10 @@ namespace homeControl.Interop.Rabbit
             return endpoint;
         }
 
-        private void ErrorsOnMessageSentToErrorQueue(object sender, FailedMessage e)
+        private Task ErrorsOnMessageSentToErrorQueue(FailedMessage failedMessage)
         {
-            _logger.Fatal(e.Exception, $"Failed to process message with Id {e.MessageId}: {e.Exception.Message}");
+            _logger.Fatal(failedMessage.Exception, $"Failed to process message with Id {failedMessage.MessageId}: {failedMessage.Exception.Message}");
+            return Task.CompletedTask;
         }
     }
 }
