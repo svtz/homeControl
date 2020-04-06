@@ -121,6 +121,8 @@ namespace homeControl.NooliteF
                 case (MTRFXXMode.RXF, MTRFXXCommand.On, ResultCode.Success):
                 case (MTRFXXMode.RX, MTRFXXCommand.TemporarySwitchOn, ResultCode.Success):
                 case (MTRFXXMode.RXF, MTRFXXCommand.TemporarySwitchOn, ResultCode.Success):
+                case (MTRFXXMode.RX, MTRFXXCommand.BrightnessUp, ResultCode.Success):
+                case (MTRFXXMode.RXF, MTRFXXCommand.BrightnessUp, ResultCode.Success):
                     switchInfo = TryGetSwitchInfo(receivedData);
                     if (switchInfo != null)
                     {
@@ -144,6 +146,8 @@ namespace homeControl.NooliteF
                 
                 case (MTRFXXMode.RX, MTRFXXCommand.Off, ResultCode.Success):
                 case (MTRFXXMode.RXF, MTRFXXCommand.Off, ResultCode.Success):
+                case (MTRFXXMode.RX, MTRFXXCommand.BrightnessDown, ResultCode.Success):
+                case (MTRFXXMode.RXF, MTRFXXCommand.BrightnessDown, ResultCode.Success):
                     switchInfo = TryGetSwitchInfo(receivedData);
                     if (switchInfo != null)
                     {
