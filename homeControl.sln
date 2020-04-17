@@ -49,6 +49,7 @@ ProjectSection(SolutionItems) = preProject
 	src\rabbitmq\docker\arm32v7\Dockerfile = src\rabbitmq\docker\arm32v7\Dockerfile
 	src\rabbitmq\docker\arm64v8\Dockerfile = src\rabbitmq\docker\arm64v8\Dockerfile
 	src\rabbitmq\docker\debug\Dockerfile = src\rabbitmq\docker\debug\Dockerfile
+	src\rabbitmq\init-management.sh = src\rabbitmq\init-management.sh
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "homeControl.NooliteF", "src\homeControl.NooliteF\homeControl.NooliteF.csproj", "{98D7D8E4-9BBA-4D57-9C7B-A7CA749AF0BD}"
