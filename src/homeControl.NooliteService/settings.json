@@ -1,7 +1,6 @@
 {
   "RabbitUserName": "noolite",
   "RabbitUserPass": "noolite",
-  "RabbitHost": "homecontrol_rabbitmq",
-
+  "RabbitVirtualHost": "homeControl",
   "LogEventLevel": "Verbose"
 }

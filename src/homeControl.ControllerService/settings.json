@@ -1,7 +1,6 @@
 {
   "RabbitUserName": "controller",
   "RabbitUserPass": "controller",
-  "RabbitHost": "homecontrol_rabbitmq",
-
+  "RabbitVirtualHost": "homeControl",
   "LogEventLevel": "Verbose"
 }

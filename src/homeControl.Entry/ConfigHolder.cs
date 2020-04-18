@@ -1,12 +1,27 @@
+using System;
 using Microsoft.Extensions.Configuration;
 
 namespace homeControl.Entry
 {
-    internal static class ConfigHolder
+    public class ConfigReader
     {
-        public static IConfigurationRoot Config { get; }
-            = new ConfigurationBuilder()
-                .AddJsonFile("settings.json")
-                .Build();
+        public IConfigurationRoot ReadConfig()
+        {
+            var builder = new ConfigurationBuilder()
+                .AddJsonFile("settings.json");
+
+            var environment = Environment.GetEnvironmentVariable("ENVIRONMENT");
+
+            if (string.IsNullOrWhiteSpace(environment))
+            {
+                builder.AddJsonFile("settings.Debug.json");
+            }
+            else
+            {
+                builder.AddJsonFile($"settings.{environment}.json");
+            }
+
+            return builder.Build();
+        }
     }
 }

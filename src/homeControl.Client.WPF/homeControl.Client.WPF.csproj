@@ -37,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\homeControl.Configuration\homeControl.Configuration.csproj" />
     <ProjectReference Include="..\homeControl.Domain\homeControl.Domain.csproj" />
+    <ProjectReference Include="..\homeControl.Entry\homeControl.Entry.csproj" />
     <ProjectReference Include="..\homeControl.Guard\homeControl.Guard.csproj" />
     <ProjectReference Include="..\homeControl.Interop.Rabbit\homeControl.Interop.Rabbit.csproj" />
     <ProjectReference Include="..\NotifyIconWpf\NotifyIconWpf.csproj" />
@@ -48,6 +49,14 @@
     <Resource Include="Resources\MainIcon.ico" />
     <None Update="settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="settings.Debug.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>settings.json</DependentUpon>
+    </None>
+    <None Update="settings.Production.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>settings.json</DependentUpon>
     </None>
   </ItemGroup>
 </Project>

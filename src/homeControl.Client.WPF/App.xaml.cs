@@ -3,16 +3,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using homeControl.Client.WPF.ViewModels;
 using homeControl.Configuration.IoC;
-using homeControl.Domain.Events;
-using homeControl.Domain.Events.Bindings;
-using homeControl.Domain.Events.Configuration;
-using homeControl.Domain.Events.Switches;
+using homeControl.Entry;
 using homeControl.Interop.Rabbit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
 using Serilog;
-using Serilog.Events;
 using ClientWindow = homeControl.Client.WPF.Views.ClientWindow;
 
 namespace homeControl.Client.WPF
@@ -22,15 +18,12 @@ namespace homeControl.Client.WPF
     /// </summary>
     public partial class App : Application
     {
-        private static readonly ILogger Log;
-        private static readonly IConfigurationRoot Config =
-            new ConfigurationBuilder()
-                .AddJsonFile("settings.json")
-                .Build();
+        private ILogger Log { get; }
+        private IConfigurationRoot Config { get; }
 
         private const string ServiceName = "WPF";
         
-        private static async Task<(IServiceProvider, IEndpointInstance)> BuildServiceProviderAndStartNsb()
+        private async Task<(IServiceProvider, IEndpointInstance)> BuildServiceProviderAndStartNsb()
         {
             var services = new ServiceCollection();
 
@@ -77,21 +70,10 @@ namespace homeControl.Client.WPF
             Log.Information("Exiting, return code = {ReturnCode}.", e.ApplicationExitCode);
         }
 
-        static App()
+        public App()
         {
-            var level = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), Config["LogEventLevel"]);
-
-            Log = new LoggerConfiguration()
-                .MinimumLevel.Is(level)
-                .WriteTo.File("logs/log.txt", retainedFileCountLimit: 5, rollOnFileSizeLimit: true, fileSizeLimitBytes: 10 * 1024 * 1024)
-                .WriteTo.Trace()
-                .CreateLogger();
-
-            Serilog.Log.Logger = Log;
-            
-            AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Fatal("Необработанное исключение: {Exception}", e.ExceptionObject);
-
-            Log.Debug("Logging initialized.");
+            Config = new ConfigReader().ReadConfig();
+            Log = new LoggerBuilder(Config).BuildLogger();
         }
     }
 }

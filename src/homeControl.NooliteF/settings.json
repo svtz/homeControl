@@ -1,8 +1,7 @@
 {
   "RabbitUserName": "noolitef",
   "RabbitUserPass": "noolitef",
-  "RabbitHost": "homecontrol_rabbitmq",
   "AdapterPort": "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A907VDB1-if00-port0",
-
+  "RabbitVirtualHost": "homeControl",
   "LogEventLevel": "Verbose"
 }

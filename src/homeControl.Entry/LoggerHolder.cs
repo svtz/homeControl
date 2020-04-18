@@ -1,23 +1,27 @@
 using System;
-using System.Collections.Concurrent;
 using System.Reflection;
-using NServiceBus.Logging;
-using NServiceBus.Serilog;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
 
 namespace homeControl.Entry
 {
-    internal static class LoggerHolder
+    public class LoggerBuilder
     {
-        public static ILogger Logger { get; }
+        private readonly IConfigurationRoot _config;
 
-        static LoggerHolder()
+        public LoggerBuilder(IConfigurationRoot config)
         {
-            var level = (LogEventLevel) Enum.Parse(typeof(LogEventLevel), ConfigHolder.Config["LogEventLevel"]);
+            Guard.DebugAssertArgumentNotNull(config, nameof(config));
+            _config = config;
+        }
+        
+        public ILogger BuildLogger()
+        {
+            var level = (LogEventLevel) Enum.Parse(typeof(LogEventLevel), _config["LogEventLevel"]);
 
             var context = Assembly.GetEntryAssembly().EntryPoint.ReflectedType;
-            Logger = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
                 .WriteTo.File("logs/log.txt", retainedFileCountLimit: 5, rollOnFileSizeLimit: true, fileSizeLimitBytes: 10 * 1024 * 1024)
@@ -26,14 +30,15 @@ namespace homeControl.Entry
 
             AppDomain.CurrentDomain.UnhandledException += LogUnhandledException;
 
-            Log.Logger = Logger;
+            Log.Logger = logger;
             
-            Logger.Debug("Logging initialized.");
+            logger.Debug("Logging initialized.");
+            return logger;
         }
 
-        private static void LogUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void LogUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Logger.Fatal(e.ExceptionObject as Exception, "Unhandled exception!");
+            Log.Logger.Fatal(e.ExceptionObject as Exception, "Unhandled exception!");
         }
     }
 }

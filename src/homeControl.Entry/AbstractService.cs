@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.Interop.Rabbit;
@@ -12,8 +11,14 @@ namespace homeControl.Entry
 {
     public abstract class AbstractService
     {
-        protected static IConfigurationRoot Config => ConfigHolder.Config;
-        protected static ILogger Logger => LoggerHolder.Logger;
+        protected IConfigurationRoot Config { get; }
+        protected ILogger Logger { get; }
+
+        protected AbstractService()
+        {
+            Config = new ConfigReader().ReadConfig();
+            Logger = new LoggerBuilder(Config).BuildLogger();
+        }
         
         protected abstract string ServiceName { get; }
         protected abstract Task Run(IServiceProvider serviceProvider, CancellationToken ct);

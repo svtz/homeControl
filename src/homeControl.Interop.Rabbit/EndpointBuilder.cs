@@ -53,12 +53,12 @@ namespace homeControl.Interop.Rabbit
             LogManager.Use<SerilogFactory>();
             
             var endpointConfiguration = new EndpointConfiguration(_endpointName);
-            endpointConfiguration.LicensePath(Path.Combine("license", "License.xml"));
+            endpointConfiguration.LicensePath(_rootConfig["NsbLicensePath"]);
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             transport.ConnectionString($@"host={_rootConfig["RabbitHost"]};
                                           username={_rootConfig["RabbitUserName"]};
                                           password={_rootConfig["RabbitUserPass"]};
-                                          virtualHost=homeControl");
+                                          virtualHost={_rootConfig["RabbitVirtualHost"]}");
             transport.UseConventionalRoutingTopology();
             transport.Transactions(TransportTransactionMode.ReceiveOnly);
 
