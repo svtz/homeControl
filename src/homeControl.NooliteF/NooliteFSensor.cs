@@ -116,6 +116,10 @@ namespace homeControl.NooliteF
                 case (MTRFXXMode.Service, _, _):
                     // this happens at startup when block exits service mode
                     break;
+                
+                case (MTRFXXMode.RX, MTRFXXCommand.BrightnessStop, ResultCode.Success):
+                    // won't support continuous brightness change now
+                    break;
 
                 case (MTRFXXMode.RX, MTRFXXCommand.On, ResultCode.Success):
                 case (MTRFXXMode.RXF, MTRFXXCommand.On, ResultCode.Success):

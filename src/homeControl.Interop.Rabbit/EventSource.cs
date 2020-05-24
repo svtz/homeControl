@@ -19,7 +19,7 @@ namespace homeControl.Interop.Rabbit
     internal sealed class EventSource : IEventSource
     {
         private readonly ILogger _logger;
-        private readonly ISubject<object> _events = new Subject<object>();
+        private readonly ISubject<IEvent> _events = new Subject<IEvent>();
 
         public EventSource(ILogger logger)
         {

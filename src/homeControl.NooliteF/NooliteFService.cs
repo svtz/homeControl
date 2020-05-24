@@ -16,17 +16,17 @@ namespace homeControl.NooliteF
     public class NooliteFService : AbstractService
     {
         protected override string ServiceName { get; } = "Noolite-f";
-        protected override Task Run(IServiceProvider serviceProvider, CancellationToken ct)
+        protected override async Task Run(IServiceProvider serviceProvider, CancellationToken ct)
         {
             serviceProvider.GetRequiredService<NooliteFSensor>().Activate();
-            serviceProvider.GetRequiredService<ISwitchController>().InitializeState().Wait(ct);
+            await serviceProvider.GetRequiredService<ISwitchController>().InitializeState();
             
             var switchesProcessor = serviceProvider.GetRequiredService<SwitchEventsProcessorF>();
 
             switchesProcessor.RunAsync(ct);
 
             var statusReporter = serviceProvider.GetRequiredService<StatusReporter>();
-            return Task.WhenAll(
+            await Task.WhenAll(
                 switchesProcessor.Completion(ct),
                 statusReporter.Run(ct)
             );
