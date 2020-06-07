@@ -10,12 +10,12 @@ rabbitmqctl add_user noolite noolite 2>/dev/null ; \
 rabbitmqctl add_user noolitef noolitef 2>/dev/null ; \
 rabbitmqctl add_user configStore configStore 2>/dev/null ; \
 rabbitmqctl add_user client client 2>/dev/null ; \
-rabbitmqctl add_vhost homeControl ; \
-rabbitmqctl set_permissions -p homeControl configStore ".*" ".*" ".*" ; \
-rabbitmqctl set_permissions -p homeControl controller ".*" ".*" ".*" ; \
-rabbitmqctl set_permissions -p homeControl noolite ".*" ".*" ".*" ; \
-rabbitmqctl set_permissions -p homeControl noolitef ".*" ".*" ".*" ; \
-rabbitmqctl set_permissions -p homeControl client ".*" ".*" ".*" ; \
+rabbitmqctl add_vhost homecontrol ; \
+rabbitmqctl set_permissions -p homecontrol configStore ".*" ".*" ".*" ; \
+rabbitmqctl set_permissions -p homecontrol controller ".*" ".*" ".*" ; \
+rabbitmqctl set_permissions -p homecontrol noolite ".*" ".*" ".*" ; \
+rabbitmqctl set_permissions -p homecontrol noolitef ".*" ".*" ".*" ; \
+rabbitmqctl set_permissions -p homecontrol client ".*" ".*" ".*" ; \
 echo "*** Users completed. ***") &
 
 # $@ is used to pass arguments to the rabbitmq-server command.

@@ -10,17 +10,12 @@ namespace homeControl.Entry
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("settings.json");
 
-            var environment = Environment.GetEnvironmentVariable("ENVIRONMENT");
-
-            if (string.IsNullOrWhiteSpace(environment))
-            {
+#if DEBUG
                 builder.AddJsonFile("settings.Debug.json");
-            }
-            else
-            {
-                builder.AddJsonFile($"settings.{environment}.json");
-            }
-
+#else
+                builder.AddJsonFile($"settings.Production.json");
+#endif
+            
             return builder.Build();
         }
     }
