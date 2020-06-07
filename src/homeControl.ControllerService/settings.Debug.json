@@ -1,4 +1,3 @@
 {
-  "RabbitHost": "localhost",
-  "NsbLicensePath": "c:\\License.xml"
+  "RabbitHost": "localhost/homecontrol"
 }

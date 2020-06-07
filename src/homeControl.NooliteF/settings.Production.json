@@ -1,4 +1,3 @@
 {
-  "RabbitHost": "homecontrol_rabbitmq",
-  "NsbLicensePath": "license/License.xml"
+  "RabbitHost": "homecontrol_rabbitmq/homecontrol"
 }
