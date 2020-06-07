@@ -26,7 +26,7 @@ namespace homeControl.NooliteF
             
             var switchesProcessor = serviceProvider.GetRequiredService<SwitchEventsProcessorF>();
 
-            switchesProcessor.RunAsync(ct);
+            switchesProcessor.Start(ct);
 
             var statusReporter = serviceProvider.GetRequiredService<StatusReporter>();
             await Task.WhenAll(
@@ -51,9 +51,9 @@ namespace homeControl.NooliteF
             services.AddNooliteFServices(Config);
         }
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            new NooliteFService().Run();
+            await new NooliteFService().Run();
         }
     }
 }

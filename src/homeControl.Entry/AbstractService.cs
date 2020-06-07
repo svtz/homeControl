@@ -38,7 +38,7 @@ namespace homeControl.Entry
         }
 
 
-        protected void Run()
+        protected async Task Run()
         {
             var version = GetType().Assembly.GetName().Version;
             var title = $"{ServiceNamePrefix} v.{version.ToString(3)}";
@@ -50,7 +50,7 @@ namespace homeControl.Entry
             var cts = serviceScope.ServiceProvider.GetRequiredService<CancellationTokenSource>();
             Console.CancelKeyPress += (s, e) => cts.Cancel();
 
-            Run(serviceScope.ServiceProvider, cts.Token);
+            await Run(serviceScope.ServiceProvider, cts.Token);
         }
     }
 }

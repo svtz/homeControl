@@ -45,9 +45,9 @@ namespace homeControl.ControllerService
             services.AddControllerServices();
         }
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            new ControllerService().Run();
+            await new ControllerService().Run();
         }
     }
 }

@@ -44,9 +44,9 @@ namespace homeControl.NooliteService
             services.AddNooliteServices();
         }
         
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            new NooliteService().Run();
+            await new NooliteService().Run();
         }
     }
 }

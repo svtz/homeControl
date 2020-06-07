@@ -33,7 +33,7 @@ namespace homeControl.Tests.NooliteF
 
                 using (var handler = new SwitchEventsProcessorF(switchCtrl, eventsSourceMock.Object, TestLoggerHolder.Logger.ForContext<SwitchEventsProcessorF>()))
                 {
-                    handler.RunAsync(cts.Token);
+                    handler.Start(cts.Token);
                     await handler.Completion(cts.Token);
                 }
             }

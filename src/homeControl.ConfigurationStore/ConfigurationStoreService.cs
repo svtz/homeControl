@@ -30,9 +30,9 @@ namespace homeControl.ConfigurationStore
             services.AddConfigurationStoreServices();
         }
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            new ConfigurationStoreService().Run();
+            await new ConfigurationStoreService().Run();
         }
     }
 }
