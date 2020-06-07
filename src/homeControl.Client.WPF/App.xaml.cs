@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Text;
 using System.Windows;
 using homeControl.Client.WPF.ViewModels;
 using homeControl.Configuration.IoC;
+using homeControl.Domain.Events;
+using homeControl.Domain.Events.Bindings;
+using homeControl.Domain.Events.Configuration;
+using homeControl.Domain.Events.Switches;
 using homeControl.Entry;
-using homeControl.Interop.Rabbit;
+using homeControl.Interop.Rabbit.IoC;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NServiceBus;
+using RabbitMQ.Client;
 using Serilog;
 using ClientWindow = homeControl.Client.WPF.Views.ClientWindow;
 
@@ -21,37 +25,43 @@ namespace homeControl.Client.WPF
         private ILogger Log { get; }
         private IConfigurationRoot Config { get; }
 
-        private const string ServiceName = "WPF";
-        
-        private async Task<(IServiceProvider, IEndpointInstance)> BuildServiceProviderAndStartNsb()
+        private IServiceProvider BuildServiceProvider()
         {
-            var services = new ServiceCollection();
+            var serviceName = "wpf-" + Guid.NewGuid();
 
-            services.AddConfigurationRepositories(ServiceName);
+            var services = new ServiceCollection();
+            new RabbitConfiguration(Config)
+                .UseJsonSerializationWithEncoding(Encoding.UTF8)
+                .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
+                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
+                .SetupEventSender<AbstractSwitchEvent>("main")
+                .SetupEventSender<AbstractBindingEvent>("main")
+                .SetupEventSender<NeedStatusEvent>("main")
+                .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
+                .Apply(services);
+
+            services.AddConfigurationRepositories(serviceName);
             services.AddSingleton<ILogger>(Log);
             services.AddClientWpfServices();
-
-            var endpoint = await new EndpointBuilder(Config, Log)
-                .UseEndpointName(ServiceName)
-                .Build(services);
             
-            return (services.BuildServiceProvider(), endpoint);
+            return services.BuildServiceProvider();
         }
 
 
-        private IServiceScope _serviceScope;
-        private IEndpointInstance _endpoint;
-        
-        protected override async void OnStartup(StartupEventArgs e)
+        private readonly IServiceScope _serviceScope;
+        public App()
+        {            
+            Config = new ConfigReader().ReadConfig();
+            Log = new LoggerBuilder(Config).BuildLogger();
+            _serviceScope = BuildServiceProvider().CreateScope();
+            _serviceScope.ServiceProvider.GetRequiredService<AutorunConfigurator>().SetupAutoRun();
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            var (serviceProvider, endpoint) = await BuildServiceProviderAndStartNsb();
-            _endpoint = endpoint;
-            
-            _serviceScope = serviceProvider.CreateScope();
-            _serviceScope.ServiceProvider.GetRequiredService<AutorunConfigurator>().SetupAutoRun();
-            
             var mainView = new ClientWindow();
             var mainVm = _serviceScope.ServiceProvider.GetRequiredService<ClientViewModel>();
 
@@ -62,18 +72,11 @@ namespace homeControl.Client.WPF
             Log.Debug("Startup complete.");
         }
 
-        protected override async void OnExit(ExitEventArgs e)
+        protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-            await (_endpoint?.Stop() ?? Task.CompletedTask);
-            _serviceScope?.Dispose();
+            _serviceScope.Dispose();
             Log.Information("Exiting, return code = {ReturnCode}.", e.ApplicationExitCode);
-        }
-
-        public App()
-        {
-            Config = new ConfigReader().ReadConfig();
-            Log = new LoggerBuilder(Config).BuildLogger();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace homeControl.NooliteService
         private readonly List<SwitchEventsObserver> _observers = new List<SwitchEventsObserver>();
         private readonly SemaphoreSlim _completionSemaphore = new SemaphoreSlim(0, 1);
         
-        public void RunAsync(CancellationToken ct)
+        public void Start(CancellationToken ct)
         {
             _log.Debug("Starting events processing.");
             var eventSource = _source.ReceiveEvents<AbstractSwitchEvent>();
