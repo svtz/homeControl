@@ -12,6 +12,8 @@ namespace homeControl.Interop.Rabbit
     [UsedImplicitly]
     internal sealed class RabbitEventSource : IEventSource, IDisposable
     {
+        private readonly ILogger _log;
+        private readonly string _exchangeName;
         private readonly IConnectableObservable<IEvent> _deserializedEvents;
         private readonly IDisposable _eventsConnection;
 
@@ -29,6 +31,9 @@ namespace homeControl.Interop.Rabbit
             Guard.DebugAssertArgumentNotNull(eventSerializer, nameof(eventSerializer));
             Guard.DebugAssertArgumentNotNull(channel, nameof(channel));
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
+            
+            _log = log;
+            _exchangeName = exchangeName;
 
             channel.ExchangeDeclare(exchangeName, exchangeType);
 
@@ -45,7 +50,6 @@ namespace homeControl.Interop.Rabbit
             _deserializedEvents = messageSource
                 .Select(e => e.EventArgs.Body)
                 .Select(eventSerializer.Deserialize)
-                .Do(msg => log.Verbose("{ExchangeName}>>>{Event}", exchangeName, msg))
                 .Publish();
             _eventsConnection = _deserializedEvents.Connect();
 
@@ -54,7 +58,8 @@ namespace homeControl.Interop.Rabbit
 
         public IObservable<TEvent> ReceiveEvents<TEvent>() where TEvent : IEvent
         {
-            return _deserializedEvents.OfType<TEvent>();
+            return _deserializedEvents.OfType<TEvent>()
+                    .Do(msg => _log.Verbose("{ExchangeName}>>>{Event}", _exchangeName, msg));
         }
 
         public void Dispose()
