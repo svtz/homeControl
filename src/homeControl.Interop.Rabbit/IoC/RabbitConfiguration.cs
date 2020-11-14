@@ -26,11 +26,11 @@ namespace homeControl.Interop.Rabbit.IoC
                 {
                     Uri = new Uri($"amqp://{config["RabbitUserName"]}:{config["RabbitUserPass"]}@{config["RabbitHost"]}")
                 });
-                services.AddTransient<Bus>();
+                services.AddSingleton<Bus>();
                 services.AddTransient<IEventSource>(sp => sp.GetRequiredService<Bus>());
                 services.AddTransient<IEventSender>(sp => sp.GetRequiredService<Bus>());
-                services.AddTransient<IConnection>(sp => sp.GetRequiredService<ConnectionFactory>().CreateConnection());
-                services.AddTransient<IModel>(sp => sp.GetRequiredService<IConnection>().CreateModel());
+                services.AddSingleton<IConnection>(sp => sp.GetRequiredService<ConnectionFactory>().CreateConnection());
+                services.AddSingleton<IModel>(sp => sp.GetRequiredService<IConnection>().CreateModel());
                 services.AddTransient<IEventProcessorFactory, RabbitEventProcessorFactory>();
             });
         }

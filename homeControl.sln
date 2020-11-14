@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThinkingHome.NooLite.NetCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "homeControl.Configuration", "src\homeControl.Configuration\homeControl.Configuration.csproj", "{63F17DB5-E64A-4ECC-BB00-87826E9D5A34}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "homeControl.Experiments", "src\homeControl.Experiments\homeControl.Experiments.csproj", "{727F9156-ADE4-4525-B07E-FE4A9680F768}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{FA115D62-2BFE-47C2-82B3-6CCCDA3C1EEB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "homeControl.Guard", "src\homeControl.Guard\homeControl.Guard.csproj", "{E0504883-AC00-4227-AC94-A791B0510C23}"
@@ -40,8 +38,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client.PC", "Client.PC", "{CC36EE76-9C83-4F6F-94A3-DB6F7EBDB453}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "homeControl.Client.WPF", "src\homeControl.Client.WPF\homeControl.Client.WPF.csproj", "{C1DA3856-66CF-4111-BD32-150C72D433F3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "homeControl.SensorEmulator", "src\homeControl.SensorEmulator\homeControl.SensorEmulator.csproj", "{F510CDD6-F385-4163-A065-7B114FA8569F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "homeControl.Entry", "src\homeControl.Entry\homeControl.Entry.csproj", "{EF57A7E7-5A16-4F58-990E-143CA243F52F}"
 EndProject
