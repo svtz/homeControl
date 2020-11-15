@@ -59,7 +59,7 @@ namespace homeControl.Interop.Rabbit
         public IObservable<TEvent> ReceiveEvents<TEvent>() where TEvent : IEvent
         {
             return _deserializedEvents.OfType<TEvent>()
-                    .Do(msg => _log.Verbose("{ExchangeName}>>>{Event}", _exchangeName, msg));
+                    .Do(msg => _log.Verbose("{ExchangeName} >>> {Event}", _exchangeName, msg));
         }
 
         public void Dispose()

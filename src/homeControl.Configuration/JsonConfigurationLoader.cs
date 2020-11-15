@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -36,6 +37,12 @@ namespace homeControl.Configuration
             _log = log;
         }
 
+        private async Task<string> WaitResponse(IObservable<ConfigurationResponseEvent> responseObservable)
+        {
+            Guard.DebugAssertArgumentNotNull(responseObservable, nameof(responseObservable));
+            return (await responseObservable).Configuration;
+        }
+        
         public async Task<TConfiguration> Load(string configKey)
         {
             Guard.DebugAssertArgumentNotNull(configKey, nameof(configKey));
@@ -50,7 +57,15 @@ namespace homeControl.Configuration
             var response = _receiver.ReceiveEvents<ConfigurationResponseEvent>().FirstAsync();
             _sender.SendEvent(request);
 
-            var config = (await response).Configuration;
+            var configTask = WaitResponse(response);
+            await Task.WhenAny(
+                configTask,
+                Task.Delay(TimeSpan.FromSeconds(10)));
+
+            if (!configTask.IsCompleted)
+            {
+                throw new TimeoutException("Unable to get configuration response.");
+            }
 
             _log.Verbose("Got response, deserializing...");
 
@@ -62,7 +77,7 @@ namespace homeControl.Configuration
 
             try
             {
-                var result = JsonConvert.DeserializeObject<TConfiguration>(config, serializerSettings);
+                var result = JsonConvert.DeserializeObject<TConfiguration>(configTask.Result, serializerSettings);
                 _log.Debug("Configuration {ConfigurationKey} loaded successfully.", configKey);
                 return result;
             }

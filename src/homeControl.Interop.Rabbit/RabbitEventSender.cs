@@ -39,7 +39,7 @@ namespace homeControl.Interop.Rabbit
             var messageBytes = _eventSerializer.Serialize(@event);
 
             _channel.BasicPublish(_exchangeName, address, false, null, messageBytes);
-            _log.Verbose("{ExchangeName}<<<{Event}", _exchangeName, @event);
+            _log.Verbose("{ExchangeName} <<< {Event}", _exchangeName, @event);
         }
     }
 }

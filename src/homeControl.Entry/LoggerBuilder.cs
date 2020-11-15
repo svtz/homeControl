@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
@@ -24,16 +25,24 @@ namespace homeControl.Entry
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Is(level)
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} (from {SourceContext}){NewLine}{Exception}")
-                .WriteTo.File("logs/log.txt", retainedFileCountLimit: 5, rollOnFileSizeLimit: true, fileSizeLimitBytes: 10 * 1024 * 1024)
+                .WriteTo.File("logs/log.txt", retainedFileCountLimit: 30, 
+                    rollOnFileSizeLimit: true, fileSizeLimitBytes: 10 * 1024 * 1024,
+                    rollingInterval: RollingInterval.Day)
                 .CreateLogger()
                 .ForContext(context);
 
-            AppDomain.CurrentDomain.UnhandledException += LogUnhandledException;
-
             Log.Logger = logger;
+
+            AppDomain.CurrentDomain.UnhandledException += LogUnhandledException;
+            AppDomain.CurrentDomain.FirstChanceException += LogFirstChanceException;
             
             logger.Debug("Logging initialized.");
             return logger;
+        }
+
+        private void LogFirstChanceException(object sender, FirstChanceExceptionEventArgs e)
+        {
+            Log.Logger.Verbose(e.Exception, "First chance exception: {message}", e.Exception.Message);
         }
 
         private void LogUnhandledException(object sender, UnhandledExceptionEventArgs e)
