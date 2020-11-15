@@ -13,24 +13,24 @@ namespace homeControl.ControllerService.Bindings
     internal sealed class BindingEventsProcessor
     {
         private readonly IBindingStateManager _bindingStateManager;
-        private readonly IEventSource _source;
+        private readonly IEventReceiver _receiver;
         private readonly ILogger _log;
 
-        public BindingEventsProcessor(IBindingStateManager bindingStateManager, IEventSource source,
+        public BindingEventsProcessor(IBindingStateManager bindingStateManager, IEventReceiver receiver,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(bindingStateManager, nameof(bindingStateManager));
-            Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(receiver, nameof(receiver));
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
             _bindingStateManager = bindingStateManager;
-            _source = source;
+            _receiver = receiver;
             _log = log;
         }
         
         public Task Run(CancellationToken ct)
         {
-            return _source
+            return _receiver
                 .ReceiveEvents<AbstractBindingEvent>()
                 .ForEachAsync(async e => await HandleEvent(e), ct);
         }

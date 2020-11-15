@@ -14,24 +14,24 @@ namespace homeControl.ControllerService.Sensors
     internal sealed class SensorEventsProcessor
     {
         private readonly IBindingController _bindingController;
-        private readonly IEventSource _source;
+        private readonly IEventReceiver _receiver;
         private readonly ILogger _log;
 
-        public SensorEventsProcessor(IBindingController bindingController, IEventSource source,
+        public SensorEventsProcessor(IBindingController bindingController, IEventReceiver receiver,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(bindingController, nameof(bindingController));
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
-            Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(receiver, nameof(receiver));
 
             _bindingController = bindingController;
-            _source = source;
+            _receiver = receiver;
             _log = log;
         }
 
         public Task Run(CancellationToken ct)
         {
-            return _source
+            return _receiver
                 .ReceiveEvents<AbstractSensorEvent>()
                 .ForEachAsync(async e => await Handle(e), ct);
         }

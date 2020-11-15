@@ -9,10 +9,10 @@ namespace homeControl.Client.WPF.ViewModels.Switches
 {
     internal sealed class ToggleSwitchViewModel : SwitchViewModelBaseOfT<bool>
     {
-        public ToggleSwitchViewModel(IEventSource eventSource,
+        public ToggleSwitchViewModel(IEventReceiver eventReceiver,
             IEventSender eventSender,
             SensorId[] sensors,
-            ILogger log) : base(eventSource, eventSender, sensors, log)
+            ILogger log) : base(eventReceiver, eventSender, sensors, log)
         {
         }
 

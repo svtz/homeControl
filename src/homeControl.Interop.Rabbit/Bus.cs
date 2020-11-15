@@ -9,13 +9,13 @@ using JetBrains.Annotations;
 namespace homeControl.Interop.Rabbit
 {
     [UsedImplicitly]
-    internal sealed class Bus : IEventSender, IEventSource, IDisposable
+    internal sealed class Bus : IEventSender, IEventReceiver, IDisposable
     {
         private readonly IEventProcessorFactory _factory;
         private readonly ExchangeConfiguration _routes;
 
-        private readonly Dictionary<(string name, string type, string route), IEventSource> _allEventSources
-            = new Dictionary<(string, string, string), IEventSource>();
+        private readonly Dictionary<(string name, string type, string route), IEventReceiver> _allEventReceivers
+            = new Dictionary<(string, string, string), IEventReceiver>();
 
         private readonly Dictionary<string, IEventSender> _allEventSenders =
             new Dictionary<string, IEventSender>();
@@ -50,23 +50,23 @@ namespace homeControl.Interop.Rabbit
             }
         }
 
-        IObservable<TEvent> IEventSource.ReceiveEvents<TEvent>()
+        IObservable<TEvent> IEventReceiver.ReceiveEvents<TEvent>()
         {
             CheckNotDisposed();
             EnsureInitialized();
 
-            var suitableSources =
-                _routes.SourceExchangesByType.Where(kv => kv.Key.IsAssignableFrom(typeof(TEvent)))
+            var suitableReceivers =
+                _routes.ReceiveExchangesByType.Where(kv => kv.Key.IsAssignableFrom(typeof(TEvent)))
                     .SelectMany(kv => kv.Value)
-                    .Select(exchange => _allEventSources[exchange])
+                    .Select(exchange => _allEventReceivers[exchange])
                     .ToArray();
 
-            if (!suitableSources.Any())
-                throw new InvalidOperationException($"No sources configured for event type \"{typeof(TEvent)}\".");
+            if (!suitableReceivers.Any())
+                throw new InvalidOperationException($"No receivers configured for event type \"{typeof(TEvent)}\".");
 
-            return suitableSources.Aggregate(
+            return suitableReceivers.Aggregate(
                 Observable.Empty<TEvent>(),
-                (current, suitableSource) => current.Merge(suitableSource.ReceiveEvents<TEvent>()));
+                (current, receiver) => current.Merge(receiver.ReceiveEvents<TEvent>()));
         }
 
         private bool _disposed = false;
@@ -86,9 +86,9 @@ namespace homeControl.Interop.Rabbit
                 (sender.Value as IDisposable)?.Dispose();
             }
 
-            foreach (var source in _allEventSources)
+            foreach (var receiver in _allEventReceivers)
             {
-                (source.Value as IDisposable)?.Dispose();
+                (receiver.Value as IDisposable)?.Dispose();
             }
 
             _disposed = true;
@@ -107,11 +107,11 @@ namespace homeControl.Interop.Rabbit
                 if (_initialized)
                     return;
 
-                foreach (var exchangesByType in _routes.SourceExchangesByType)
+                foreach (var exchangesByType in _routes.ReceiveExchangesByType)
                 foreach (var exchange in exchangesByType.Value)
                 {
-                    if (!_allEventSources.ContainsKey(exchange))
-                        _allEventSources[exchange] = CreateEventSource(exchange);
+                    if (!_allEventReceivers.ContainsKey(exchange))
+                        _allEventReceivers[exchange] = CreateEventReceiver(exchange);
                 }
 
                 foreach (var exchangesByType in _routes.SendExchangesByType)
@@ -125,9 +125,9 @@ namespace homeControl.Interop.Rabbit
             }
         }
 
-        private IEventSource CreateEventSource((string name, string type, string route) newExchange)
+        private IEventReceiver CreateEventReceiver((string name, string type, string route) newExchange)
         {
-            return _factory.CreateSource(newExchange.name, newExchange.type, newExchange.route);
+            return _factory.CreateReceiver(newExchange.name, newExchange.type, newExchange.route);
         }
 
         private IEventSender CreateEventSender(string exchangeName)

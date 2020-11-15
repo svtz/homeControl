@@ -23,13 +23,13 @@ namespace homeControl.Interop.Rabbit
             _logger = logger;
         }
 
-        public IEventSource CreateSource(string exchangeName, string exchangeType, string routingKey)
+        public IEventReceiver CreateReceiver(string exchangeName, string exchangeType, string routingKey)
         {
             Guard.DebugAssertArgumentNotNull(exchangeName, nameof(exchangeName));
             Guard.DebugAssertArgumentNotNull(exchangeType, nameof(exchangeType));
             Guard.DebugAssertArgumentNotNull(routingKey, nameof(routingKey));
 
-            return new RabbitEventSource(_model, _serializer, _logger.ForContext(typeof(RabbitEventSource)), exchangeName, exchangeType, routingKey);
+            return new RabbitEventReceiver(_model, _serializer, _logger.ForContext(typeof(RabbitEventReceiver)), exchangeName, exchangeType, routingKey);
         }
 
         public IEventSender CreateSender(string exchangeName)

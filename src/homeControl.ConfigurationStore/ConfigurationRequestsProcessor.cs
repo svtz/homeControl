@@ -11,22 +11,22 @@ namespace homeControl.ConfigurationStore
     [UsedImplicitly]
     internal sealed class ConfigurationRequestsProcessor
     {
-        private readonly IEventSource _eventSource;
+        private readonly IEventReceiver _eventReceiver;
         private readonly IEventSender _eventSender;
         private readonly ConfigurationProvider _configurationProvider;
         private readonly ILogger _log;
 
         public ConfigurationRequestsProcessor(
-            IEventSource eventSource, 
+            IEventReceiver eventReceiver, 
             IEventSender eventSender,
             ConfigurationProvider configurationProvider,
             ILogger log)
         {
-            Guard.DebugAssertArgumentNotNull(eventSource, nameof(eventSource));
+            Guard.DebugAssertArgumentNotNull(eventReceiver, nameof(eventReceiver));
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
             Guard.DebugAssertArgumentNotNull(configurationProvider, nameof(configurationProvider));
 
-            _eventSource = eventSource;
+            _eventReceiver = eventReceiver;
             _eventSender = eventSender;
             _configurationProvider = configurationProvider;
             _log = log;
@@ -35,7 +35,7 @@ namespace homeControl.ConfigurationStore
         public Task Run(CancellationToken ct)
         {
             _log.Debug("Starting configuration request processor.");
-            return _eventSource
+            return _eventReceiver
                 .ReceiveEvents<ConfigurationRequestEvent>()
                 .ForEachAsync(ProcessRequest, ct);
         }

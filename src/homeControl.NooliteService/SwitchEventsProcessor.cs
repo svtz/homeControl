@@ -16,17 +16,17 @@ namespace homeControl.NooliteService
     internal sealed class SwitchEventsProcessor : IDisposable
     {
         private readonly ISwitchController _switchController;
-        private readonly IEventSource _source;
+        private readonly IEventReceiver _receiver;
         private readonly ILogger _log;
 
-        public SwitchEventsProcessor(ISwitchController switchController, IEventSource source, ILogger log)
+        public SwitchEventsProcessor(ISwitchController switchController, IEventReceiver receiver, ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(switchController, nameof(switchController));
-            Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(receiver, nameof(receiver));
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
             _switchController = switchController;
-            _source = source;
+            _receiver = receiver;
             _log = log;
         }
 
@@ -36,8 +36,8 @@ namespace homeControl.NooliteService
         public void Start(CancellationToken ct)
         {
             _log.Debug("Starting events processing.");
-            var eventSource = _source.ReceiveEvents<AbstractSwitchEvent>();
-            eventSource
+            var eventReceiver = _receiver.ReceiveEvents<AbstractSwitchEvent>();
+            eventReceiver
                 .GroupBy(e => e.SwitchId)
                 .ForEachAsync(switchObservable =>
                 {

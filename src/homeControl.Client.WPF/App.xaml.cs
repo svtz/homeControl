@@ -33,12 +33,12 @@ namespace homeControl.Client.WPF
             new RabbitConfiguration(Config)
                 .UseJsonSerializationWithEncoding(Encoding.UTF8)
                 .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
-                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
+                .SetupEventReceiver<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, serviceName)
                 .SetupEventSender<AbstractSwitchEvent>("main")
                 .SetupEventSender<AbstractBindingEvent>("main")
                 .SetupEventSender<NeedStatusEvent>("main")
-                .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
-                .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventReceiver<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventReceiver<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
                 .Apply(services);
 
             services.AddConfigurationRepositories(serviceName);

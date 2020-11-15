@@ -35,9 +35,9 @@ namespace homeControl.NooliteService
             new RabbitConfiguration(Config)
                 .UseJsonSerializationWithEncoding(Encoding.UTF8)
                 .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
-                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
+                .SetupEventReceiver<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
                 .SetupEventSender<AbstractSensorEvent>("main")
-                .SetupEventSource<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventReceiver<AbstractSwitchEvent>("main", ExchangeType.Fanout, "")
                 .Apply(services);
             
             services.AddConfigurationRepositories(uniqueServiceName);

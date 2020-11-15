@@ -12,8 +12,8 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         private const double WheelStep = 0.1d;
 
 
-        public GradientSwitchViewModel(IEventSource eventSource, IEventSender eventSender, SensorId[] sensors, ILogger log) 
-            : base(eventSource, eventSender, sensors, log)
+        public GradientSwitchViewModel(IEventReceiver eventReceiver, IEventSender eventSender, SensorId[] sensors, ILogger log) 
+            : base(eventReceiver, eventSender, sensors, log)
         {
         }
 

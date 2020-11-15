@@ -35,9 +35,9 @@ namespace homeControl.ControllerService
             new RabbitConfiguration(Config)
                 .UseJsonSerializationWithEncoding(Encoding.UTF8)
                 .SetupEventSender<ConfigurationRequestEvent>("configuration-requests")
-                .SetupEventSource<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
-                .SetupEventSource<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
-                .SetupEventSource<AbstractSensorEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventReceiver<ConfigurationResponseEvent>("configuration", ExchangeType.Direct, uniqueServiceName)
+                .SetupEventReceiver<AbstractBindingEvent>("main", ExchangeType.Fanout, "")
+                .SetupEventReceiver<AbstractSensorEvent>("main", ExchangeType.Fanout, "")
                 .SetupEventSender<AbstractSwitchEvent>("main")
                 .Apply(services);
             

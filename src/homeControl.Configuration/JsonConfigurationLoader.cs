@@ -13,25 +13,25 @@ namespace homeControl.Configuration
     {
         private readonly JsonConverter[] _converters;
         private readonly IEventSender _sender;
-        private readonly IEventSource _source;
+        private readonly IEventReceiver _receiver;
         private readonly ServiceNameHolder _serviceName;
         private readonly ILogger _log;
 
         public JsonConfigurationLoader(
             IEnumerable<JsonConverter> converters,
             IEventSender sender,
-            IEventSource source,
+            IEventReceiver receiver,
             ServiceNameHolder serviceName,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(converters, nameof(converters));
             Guard.DebugAssertArgumentNotNull(sender, nameof(sender));
-            Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(receiver, nameof(receiver));
             Guard.DebugAssertArgumentNotNull(serviceName, nameof(serviceName));
 
             _converters = converters.ToArray();
             _sender = sender;
-            _source = source;
+            _receiver = receiver;
             _serviceName = serviceName;
             _log = log;
         }
@@ -47,9 +47,9 @@ namespace homeControl.Configuration
                 ConfigurationKey = configKey,
                 ReplyAddress = _serviceName.ServiceName
             };
-            var response = _source.ReceiveEvents<ConfigurationResponseEvent>().FirstAsync();
+            var response = _receiver.ReceiveEvents<ConfigurationResponseEvent>().FirstAsync();
             _sender.SendEvent(request);
-            
+
             var config = (await response).Configuration;
 
             _log.Verbose("Got response, deserializing...");

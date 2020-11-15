@@ -9,7 +9,7 @@ namespace homeControl.Domain.Events.Configuration
 
         public override string ToString()
         {
-            return $"{nameof(ConfigurationResponseEvent)} to:{Address} {Configuration.Substring(0, Math.Min(Configuration.Length, 20))}";
+            return $"{nameof(ConfigurationResponseEvent)} to:{Address}";
         }
     }
 }

@@ -10,14 +10,14 @@ using Serilog;
 namespace homeControl.Interop.Rabbit
 {
     [UsedImplicitly]
-    internal sealed class RabbitEventSource : IEventSource, IDisposable
+    internal sealed class RabbitEventReceiver : IEventReceiver, IDisposable
     {
         private readonly ILogger _log;
         private readonly string _exchangeName;
         private readonly IConnectableObservable<IEvent> _deserializedEvents;
         private readonly IDisposable _eventsConnection;
 
-        public RabbitEventSource(
+        public RabbitEventReceiver(
             IModel channel,
             IEventSerializer eventSerializer,
             ILogger log,
@@ -43,11 +43,11 @@ namespace homeControl.Interop.Rabbit
 
             var consumer = new EventingBasicConsumer(channel);
 
-            var messageSource = Observable.FromEventPattern<BasicDeliverEventArgs>(
+            var messageObservable = Observable.FromEventPattern<BasicDeliverEventArgs>(
                 e => consumer.Received += e,
                 e => consumer.Received -= e);
 
-            _deserializedEvents = messageSource
+            _deserializedEvents = messageObservable
                 .Select(e => e.EventArgs.Body)
                 .Select(eventSerializer.Deserialize)
                 .Publish();

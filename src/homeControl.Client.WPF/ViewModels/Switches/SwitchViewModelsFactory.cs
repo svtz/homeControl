@@ -14,26 +14,26 @@ namespace homeControl.Client.WPF.ViewModels.Switches
     [UsedImplicitly]
     public sealed class SwitchViewModelsFactory
     {
-        private readonly IEventSource _eventSource;
+        private readonly IEventReceiver _eventReceiver;
         private readonly IEventSender _eventSender;
         private readonly ISwitchConfigurationRepository _switchesRepo;
         private readonly ISwitchToSensorBindingsRepository _bindingsRepo;
         private readonly ILogger _log;
 
         public SwitchViewModelsFactory(
-            IEventSource eventSource,
+            IEventReceiver eventReceiver,
             IEventSender eventSender,
             ISwitchConfigurationRepository switchesRepo,
             ISwitchToSensorBindingsRepository bindingsRepo,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
-            Guard.DebugAssertArgumentNotNull(eventSource, nameof(eventSource));
+            Guard.DebugAssertArgumentNotNull(eventReceiver, nameof(eventReceiver));
             Guard.DebugAssertArgumentNotNull(switchesRepo, nameof(switchesRepo));
             Guard.DebugAssertArgumentNotNull(bindingsRepo, nameof(bindingsRepo));
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
-            _eventSource = eventSource;
+            _eventReceiver = eventReceiver;
             _eventSender = eventSender;
             _switchesRepo = switchesRepo;
             _bindingsRepo = bindingsRepo;
@@ -59,11 +59,11 @@ namespace homeControl.Client.WPF.ViewModels.Switches
                 switch (@switch.SwitchKind)
                 {
                     case SwitchKind.Toggle:
-                        vm = new ToggleSwitchViewModel(_eventSource, _eventSender, sensors, _log);
+                        vm = new ToggleSwitchViewModel(_eventReceiver, _eventSender, sensors, _log);
                         break;
 
                     case SwitchKind.Gradient:
-                        vm = new GradientSwitchViewModel(_eventSource, _eventSender, sensors, _log);
+                        vm = new GradientSwitchViewModel(_eventReceiver, _eventSender, sensors, _log);
                         break;
 
                     default:

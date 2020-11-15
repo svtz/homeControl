@@ -15,25 +15,25 @@ namespace homeControl.NooliteF
     internal sealed class StatusReporter
     {
         private readonly NooliteFSwitchesStatusHolder _statusHolder;
-        private readonly IEventSource _source;
+        private readonly IEventReceiver _receiver;
         private readonly IEventSender _sender;
         private readonly ILogger _log;
         private readonly ISwitchConfigurationRepository _switches;
         private readonly INooliteFSwitchInfoRepository _nooliteSwitches;
 
         public StatusReporter(NooliteFSwitchesStatusHolder statusHolder,
-            IEventSource source,
+            IEventReceiver receiver,
             IEventSender sender,
             ILogger log,
             ISwitchConfigurationRepository switches,
             INooliteFSwitchInfoRepository nooliteSwitches)
         {
             Guard.DebugAssertArgumentNotNull(statusHolder, nameof(statusHolder));
-            Guard.DebugAssertArgumentNotNull(source, nameof(source));
+            Guard.DebugAssertArgumentNotNull(receiver, nameof(receiver));
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
 
             _statusHolder = statusHolder;
-            _source = source;
+            _receiver = receiver;
             _sender = sender;
             _log = log;
             _switches = switches;
@@ -43,7 +43,7 @@ namespace homeControl.NooliteF
         
         public Task Run(CancellationToken ct)
         {
-            return _source
+            return _receiver
                 .ReceiveEvents<NeedStatusEvent>()
                 .ForEachAsync(ProcessRequest, ct);
         }

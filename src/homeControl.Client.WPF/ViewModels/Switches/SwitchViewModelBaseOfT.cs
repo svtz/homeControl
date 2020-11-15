@@ -47,13 +47,13 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         public ICommand SetMinimum { get; }
 
 
-        protected SwitchViewModelBaseOfT(IEventSource eventSource,
+        protected SwitchViewModelBaseOfT(IEventReceiver eventReceiver,
             IEventSender eventSender,
             SensorId[] sensors,
             ILogger log)
-            : base(eventSource, eventSender, sensors, log)
+            : base(eventReceiver, eventSender, sensors, log)
         {
-            Guard.DebugAssertArgumentNotNull(eventSource, nameof(eventSource));
+            Guard.DebugAssertArgumentNotNull(eventReceiver, nameof(eventReceiver));
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
 
             MouseWheelDown = new RelayCommand(OnMouseWheelDown);
@@ -62,7 +62,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
             SetMinimum = new RelayCommand(OnSetMinimum);
             _eventSender = eventSender;
 
-            _eventSubscription = eventSource
+            _eventSubscription = eventReceiver
                 .ReceiveEvents<AbstractSwitchEvent>()
                 .Where(e => e.SwitchId == Id)
                 .ForEachAsync(UpdateValueFromEvent, _cts.Token);

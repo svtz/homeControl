@@ -23,20 +23,16 @@ namespace homeControl.Tests.NooliteF
         
         private static async Task Act(ISwitchController switchCtrl, IEnumerable<AbstractSwitchEvent> events)
         {
-            var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            var eventSource = events.ToObservable();
-            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(eventSource);
-            
-            using (var cts = new CancellationTokenSource())
-            {
-                cts.CancelAfter(TimeSpan.FromMilliseconds(500000));
+            var eventReceiverMock = new Mock<IEventReceiver>(MockBehavior.Strict);
+            var eventReceiver = events.ToObservable();
+            eventReceiverMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(eventReceiver);
 
-                using (var handler = new SwitchEventsProcessorF(switchCtrl, eventsSourceMock.Object, TestLoggerHolder.Logger.ForContext<SwitchEventsProcessorF>()))
-                {
-                    handler.Start(cts.Token);
-                    await handler.Completion(cts.Token);
-                }
-            }
+            using var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromMilliseconds(500000));
+
+            using var handler = new SwitchEventsProcessorF(switchCtrl, eventReceiverMock.Object, TestLoggerHolder.Logger.ForContext<SwitchEventsProcessorF>());
+            handler.Start(cts.Token);
+            await handler.Completion(cts.Token);
         }
         
         [Fact]
@@ -222,8 +218,8 @@ namespace homeControl.Tests.NooliteF
         {
             var switchControllerMock = new Mock<ISwitchController>(MockBehavior.Strict);
             switchControllerMock.Setup(ctrl => ctrl.CanHandleSwitch(It.IsAny<SwitchId>())).Returns(false);
-            var eventsSourceMock = new Mock<IEventSource>(MockBehavior.Strict);
-            eventsSourceMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(Observable.Repeat(@event, 1));
+            var eventReceiverMock = new Mock<IEventReceiver>(MockBehavior.Strict);
+            eventReceiverMock.Setup(e => e.ReceiveEvents<AbstractSwitchEvent>()).Returns(Observable.Repeat(@event, 1));
 
             await Act(switchControllerMock.Object, @event);
 

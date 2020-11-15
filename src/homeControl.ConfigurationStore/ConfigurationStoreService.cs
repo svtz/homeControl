@@ -23,7 +23,7 @@ namespace homeControl.ConfigurationStore
         {
             new RabbitConfiguration(Config)
                 .UseJsonSerializationWithEncoding(Encoding.UTF8)
-                .SetupEventSource<ConfigurationRequestEvent>("configuration-requests", ExchangeType.Fanout, string.Empty)
+                .SetupEventReceiver<ConfigurationRequestEvent>("configuration-requests", ExchangeType.Fanout, string.Empty)
                 .SetupEventSender<ConfigurationResponseEvent>("configuration")
                 .Apply(services);
             

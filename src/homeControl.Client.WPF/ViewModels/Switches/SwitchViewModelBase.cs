@@ -42,11 +42,11 @@ namespace homeControl.Client.WPF.ViewModels.Switches
         }
 
 
-        protected SwitchViewModelBase(IEventSource eventSource, IEventSender eventSender, SensorId[] sensors,
+        protected SwitchViewModelBase(IEventReceiver eventReceiver, IEventSender eventSender, SensorId[] sensors,
             ILogger log)
         {
             Guard.DebugAssertArgumentNotNull(log, nameof(log));
-            Guard.DebugAssertArgumentNotNull(eventSource, nameof(eventSource));
+            Guard.DebugAssertArgumentNotNull(eventReceiver, nameof(eventReceiver));
             Guard.DebugAssertArgumentNotNull(eventSender, nameof(eventSender));
             Guard.DebugAssertArgumentNotNull(sensors, nameof(sensors));
             
@@ -57,7 +57,7 @@ namespace homeControl.Client.WPF.ViewModels.Switches
 
             if (sensors.Any())
             {
-                _automationEventSubscription = eventSource
+                _automationEventSubscription = eventReceiver
                     .ReceiveEvents<AbstractBindingEvent>()
                     .Where(e => e.SwitchId == Id)
                     .ForEachAsync(UpdateAutomationFromEvent);

@@ -27,7 +27,7 @@ namespace homeControl.Interop.Rabbit.IoC
                     Uri = new Uri($"amqp://{config["RabbitUserName"]}:{config["RabbitUserPass"]}@{config["RabbitHost"]}")
                 });
                 services.AddSingleton<Bus>();
-                services.AddTransient<IEventSource>(sp => sp.GetRequiredService<Bus>());
+                services.AddTransient<IEventReceiver>(sp => sp.GetRequiredService<Bus>());
                 services.AddTransient<IEventSender>(sp => sp.GetRequiredService<Bus>());
                 services.AddSingleton<IConnection>(sp => sp.GetRequiredService<ConnectionFactory>().CreateConnection());
                 services.AddSingleton<IModel>(sp => sp.GetRequiredService<IConnection>().CreateModel());
@@ -55,10 +55,10 @@ namespace homeControl.Interop.Rabbit.IoC
         }
 
 
-        public RabbitConfiguration SetupEventSource<TEvent>(string exchangeName, string exchangeType, string routingKey)
+        public RabbitConfiguration SetupEventReceiver<TEvent>(string exchangeName, string exchangeType, string routingKey)
             where TEvent : IEvent
         {
-            _exchangeConfigActions.Add(efg => efg.ConfigureEventSource(typeof(TEvent), exchangeName, exchangeType, routingKey));
+            _exchangeConfigActions.Add(efg => efg.ConfigureEventReceiver(typeof(TEvent), exchangeName, exchangeType, routingKey));
 
             return this;
         }
