@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Configuration;
+using Microsoft.Diagnostics.Runtime;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -64,6 +66,36 @@ namespace homeControl.Configuration
 
             if (!configTask.IsCompleted)
             {
+                var result = new Dictionary<int, string[]>();
+
+                var pid = Process.GetCurrentProcess().Id;
+
+                using (var dataTarget = DataTarget.AttachToProcess(pid, false))
+                {
+                    var runtimeInfo = dataTarget.ClrVersions[0];
+                    var runtime = runtimeInfo.CreateRuntime();
+
+                    foreach (var t in runtime.Threads)
+                    {
+                        result.Add(
+                            t.ManagedThreadId,
+                            t.EnumerateStackTrace().Select(f =>
+                            {
+                                if (f.Method != null)
+                                {
+                                    return f.Method.Type.Name + "." + f.Method.Name;
+                                }
+
+                                return null;
+                            }).ToArray()
+                        );
+                    }
+                }
+
+                var json = JsonConvert.SerializeObject(result);
+
+                _log.Verbose(json);
+                
                 throw new TimeoutException("Unable to get configuration response.");
             }
 
