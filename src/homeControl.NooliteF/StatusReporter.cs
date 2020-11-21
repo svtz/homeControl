@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using homeControl.Configuration;
 using homeControl.Domain.Configuration;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Switches;
@@ -45,7 +46,7 @@ namespace homeControl.NooliteF
         {
             return _receiver
                 .ReceiveEvents<NeedStatusEvent>()
-                .ForEachAsync(ProcessRequest, ct);
+                .ForEachAsyncAsync(ProcessRequest, ct);
         }
 
         private readonly object _lock = new object();

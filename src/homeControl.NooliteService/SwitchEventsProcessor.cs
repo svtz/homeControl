@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using homeControl.Configuration;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Switches;
 using homeControl.NooliteService.SwitchController;
@@ -39,7 +40,7 @@ namespace homeControl.NooliteService
             var eventReceiver = _receiver.ReceiveEvents<AbstractSwitchEvent>();
             eventReceiver
                 .GroupBy(e => e.SwitchId)
-                .ForEachAsync(switchObservable =>
+                .ForEachAsyncAsync(switchObservable =>
                 {
                     _log.Debug("Received new SwitchId={SwitchId}, creating observer.", switchObservable.Key);
                     var observer = new SwitchEventsObserver(_switchController, _log.ForContext<SwitchEventsObserver>(), ct);

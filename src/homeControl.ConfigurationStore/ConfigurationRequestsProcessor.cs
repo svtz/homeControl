@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using homeControl.Configuration;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Configuration;
 using JetBrains.Annotations;
@@ -37,7 +38,7 @@ namespace homeControl.ConfigurationStore
             _log.Debug("Starting configuration request processor.");
             return _eventReceiver
                 .ReceiveEvents<ConfigurationRequestEvent>()
-                .ForEachAsync(ProcessRequest, ct);
+                .ForEachAsyncAsync(ProcessRequest, ct);
         }
 
         private void ProcessRequest(ConfigurationRequestEvent request)

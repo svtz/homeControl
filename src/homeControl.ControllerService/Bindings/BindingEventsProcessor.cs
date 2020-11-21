@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using homeControl.Configuration;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Bindings;
 using JetBrains.Annotations;
@@ -32,7 +33,7 @@ namespace homeControl.ControllerService.Bindings
         {
             return _receiver
                 .ReceiveEvents<AbstractBindingEvent>()
-                .ForEachAsync(async e => await HandleEvent(e), ct);
+                .ForEachAsyncAsync(async e => await HandleEvent(e), ct);
         }
 
         private async Task HandleEvent(AbstractBindingEvent bindingEvent)
