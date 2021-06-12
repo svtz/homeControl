@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using homeControl.Client.WPF.ViewModels;
 using homeControl.Configuration.IoC;
@@ -44,6 +45,7 @@ namespace homeControl.Client.WPF
             services.AddConfigurationRepositories(serviceName);
             services.AddSingleton<ILogger>(Log);
             services.AddClientWpfServices();
+            services.AddSingleton<CancellationTokenSource>();
             
             return services.BuildServiceProvider();
         }
