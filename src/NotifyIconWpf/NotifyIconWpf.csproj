@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Hardcodet.Wpf.TaskbarNotification</RootNamespace>
     <AssemblyName>Hardcodet.Wpf.TaskbarNotification</AssemblyName>
     <AssemblyTitle>NotifyIcon for WPF</AssemblyTitle>
     <Product>NotifyIcon WPF</Product>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
     <UseWpf>true</UseWpf>
+    <TargetFramework>net5.0-windows</TargetFramework>
     
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' != 'net45'">
