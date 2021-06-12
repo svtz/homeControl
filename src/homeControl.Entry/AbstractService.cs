@@ -49,6 +49,11 @@ namespace homeControl.Entry
             using var serviceScope = CreateRootServiceProvider().CreateScope();
             var cts = serviceScope.ServiceProvider.GetRequiredService<CancellationTokenSource>();
             Console.CancelKeyPress += (s, e) => cts.Cancel();
+            AppDomain.CurrentDomain.UnhandledException += (_, _) =>
+            {
+                if (!cts.IsCancellationRequested)
+                    cts.Cancel();
+            };
 
             await Run(serviceScope.ServiceProvider, cts.Token);
         }
