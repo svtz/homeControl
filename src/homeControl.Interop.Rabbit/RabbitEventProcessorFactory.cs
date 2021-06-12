@@ -1,4 +1,5 @@
-﻿using homeControl.Domain.Events;
+﻿using System.Threading;
+using homeControl.Domain.Events;
 using JetBrains.Annotations;
 using RabbitMQ.Client;
 using Serilog;
@@ -11,16 +12,19 @@ namespace homeControl.Interop.Rabbit
         private readonly IModel _model;
         private readonly IEventSerializer _serializer;
         private readonly ILogger _logger;
+        private readonly CancellationTokenSource _cts;
 
-        public RabbitEventProcessorFactory(IModel model, IEventSerializer serializer, ILogger logger)
+        public RabbitEventProcessorFactory(IModel model, IEventSerializer serializer, ILogger logger, CancellationTokenSource cts)
         {
             Guard.DebugAssertArgumentNotNull(model, nameof(model));
             Guard.DebugAssertArgumentNotNull(serializer, nameof(serializer));
             Guard.DebugAssertArgumentNotNull(logger, nameof(logger));
+            Guard.DebugAssertArgumentNotNull(logger, nameof(cts));
 
             _model = model;
             _serializer = serializer;
             _logger = logger;
+            _cts = cts;
         }
 
         public IEventReceiver CreateReceiver(string exchangeName, string exchangeType, string routingKey)
@@ -36,7 +40,7 @@ namespace homeControl.Interop.Rabbit
         {
             Guard.DebugAssertArgumentNotNull(exchangeName, nameof(exchangeName));
 
-            return new RabbitEventSender(_model, _serializer, _logger.ForContext(typeof(RabbitEventSender)), exchangeName);
+            return new RabbitEventSender(_model, _serializer, _logger.ForContext(typeof(RabbitEventSender)), _cts, exchangeName);
         }
     }
 }

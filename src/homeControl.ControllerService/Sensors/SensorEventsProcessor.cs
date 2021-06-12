@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using homeControl.Configuration;
 using homeControl.ControllerService.Bindings;
 using homeControl.Domain.Events;
 using homeControl.Domain.Events.Sensors;
@@ -34,7 +33,7 @@ namespace homeControl.ControllerService.Sensors
         {
             return _receiver
                 .ReceiveEvents<AbstractSensorEvent>()
-                .ForEachAsyncAsync(async e => await Handle(e), ct);
+                .ForEachAsync(async e => await Handle(e), ct);
         }
 
         private async Task Handle(AbstractSensorEvent sensorEvent)

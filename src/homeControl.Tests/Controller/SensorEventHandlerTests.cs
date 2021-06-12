@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using homeControl.ControllerService.Bindings;
@@ -49,16 +50,22 @@ namespace homeControl.Tests.Controller
         [Fact]
         public void TestValue()
         {
+            var sync = new ManualResetEventSlim(false);
+            
             var sensorId = SensorId.NewId();
             const decimal value = 10m;
             var valueEvent = new SensorValueEvent(sensorId, value);
             var controllerMock = new Mock<IBindingController>(MockBehavior.Strict);
-            controllerMock.Setup(controller => controller.ProcessSensorValue(sensorId, value)).Returns(Task.CompletedTask);
+            controllerMock
+                .Setup(controller => controller.ProcessSensorValue(sensorId, value))
+                .Callback(() => sync.Set())
+                .Returns(Task.CompletedTask);
             var eventReceiverMock = new Mock<IEventReceiver>(MockBehavior.Strict);
             eventReceiverMock.Setup(e => e.ReceiveEvents<AbstractSensorEvent>()).Returns(Observable.Repeat(valueEvent, 1));
 
             var handler = new SensorEventsProcessor(controllerMock.Object, eventReceiverMock.Object, Mock.Of<ILogger>());
             handler.Run(CancellationToken.None);
+            sync.Wait(TimeSpan.FromSeconds(1));
 
             controllerMock.Verify(controller => controller.ProcessSensorValue(sensorId, value), Times.Once);
         }
